@@ -1,12 +1,9 @@
 package pt.ulisboa.tecnico.cmov.airdesk;
 
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import pt.ulisboa.tecnico.cmov.airdesk.FloatingActionButton.FloatingActionButtonBasicFragment;
 
 
 public class WorkspaceList extends ActionBarActivity {
