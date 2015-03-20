@@ -6,4 +6,6 @@
     <string name="owned_workspaces">Owned Workspaces</string>
     <string name="foreign_workspaces">Foreign Workspaces</string>
     <string name="title_activity_workspace_list">WorkspaceList</string>
+    <string name="plus">+</string>
+
 </resources>
