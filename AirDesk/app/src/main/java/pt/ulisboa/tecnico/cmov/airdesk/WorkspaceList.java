@@ -1,17 +1,42 @@
 package pt.ulisboa.tecnico.cmov.airdesk;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 
 public class WorkspaceList extends ActionBarActivity {
+
+    ListView listView ;
+    ArrayList<String> values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workspace_list);
+
+        listView = (ListView) findViewById(R.id.workspace_list);
+        values = new ArrayList<>();
+
+
+        //populate with workspaces
+        values.add("Snow");
+        values.add("Sun");
+
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+        listView.setAdapter(adapter);
+
     }
 
 
@@ -35,5 +60,12 @@ public class WorkspaceList extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void sendMessage(View view) {
+        //Transfer control to CreateWorkspaceActivity.class
+
+        //Intent intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
     }
 }

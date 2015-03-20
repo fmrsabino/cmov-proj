@@ -11,10 +11,12 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView"
+        android:id="@+id/workspace_list"
         android:layout_weight="1" />
 
     <Button
+        android:onClick = "sendMessage"
+        android:id="@+id/add_workspace"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="end"
