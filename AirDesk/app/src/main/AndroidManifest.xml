@@ -23,10 +23,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.cmov.airdesk.MainActivity" />
         </activity>
-
-
-
-
+        <activity
+            android:name=".CreateWorkspaceActivity"
+            android:label="@string/title_activity_workspace_list"
+            android:parentActivityName=".MainActivity" >
+        </activity>
     </application>
 
 </manifest>
