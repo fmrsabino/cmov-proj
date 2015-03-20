@@ -65,7 +65,7 @@ public class WorkspaceList extends ActionBarActivity {
     public void sendMessage(View view) {
         //Transfer control to CreateWorkspaceActivity.class
 
-        //Intent intent = new Intent(this, MainActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, CreateWorkspaceActivity.class);
+        startActivity(intent);
     }
 }
