@@ -7,5 +7,7 @@
     <string name="foreign_workspaces">Foreign Workspaces</string>
     <string name="title_activity_workspace_list">WorkspaceList</string>
     <string name="plus">+</string>
+    <string name="title_activity_browse_workspace">BrowseWorkspace</string>
+    <string name="remove_files">Remove Selected Files</string>
 
 </resources>
