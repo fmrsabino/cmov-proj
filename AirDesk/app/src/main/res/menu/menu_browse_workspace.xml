@@ -2,6 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.BrowseWorkspace">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_add_file"
+        android:title="@string/addFile"
+        android:icon="@drawable/add_file"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_invite"
+        android:title="@string/plus"
+        android:icon="@drawable/add_user"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
 </menu>

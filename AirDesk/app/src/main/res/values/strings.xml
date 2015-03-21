@@ -11,4 +11,6 @@
     <string name="plus">+</string>
     <string name="title_activity_browse_workspace">BrowseWorkspace</string>
     <string name="remove_files">Remove Selected Files</string>
+    <string name="addFile">Add File</string>
+
 </resources>
