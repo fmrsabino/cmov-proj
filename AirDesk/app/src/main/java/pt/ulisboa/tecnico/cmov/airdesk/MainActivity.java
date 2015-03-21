@@ -39,15 +39,13 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void openOwnedWorkspacesList(View view){
+    public void signIn(View view){
         Intent intent = new Intent(this, WorkspaceList.class);
-        intent.putExtra("owned", true);
         startActivity(intent);
     }
 
-    public void openForeignWorkspacesList(View view){
+    public void register(View view){
         Intent intent = new Intent(this, WorkspaceList.class);
-        intent.putExtra("owned", false);
         startActivity(intent);
     }
 
