@@ -9,8 +9,8 @@
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginRight="65dp"
-        android:layout_marginLeft="65dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
         android:gravity="center_horizontal">
 
         <LinearLayout
@@ -25,8 +25,11 @@
                 android:text="Name:"/>
 
             <EditText
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textSize="14sp"
                 android:singleLine="true"/>
         </LinearLayout>
 
@@ -42,8 +45,11 @@
                 android:text="Quota:"/>
 
             <EditText
+                android:id="@+id/quota"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textSize="14sp"
                 android:singleLine="true"/>
         </LinearLayout>
         
@@ -64,6 +70,7 @@
                 android:text="Public"
                 android:textSize="16sp"/>
             <CheckBox
+                android:id="@+id/is_public"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -79,11 +86,48 @@
                 android:textSize="16sp"
                 android:text="Viewer:"/>
             <EditText
-                android:layout_width="match_parent"
+                android:id="@+id/viewer"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textSize="14sp"
                 android:hint="Viewer Id"
                 android:singleLine="true"/>
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:text="Invite"
+                android:onClick="inviteUser"/>
         </LinearLayout>
 
+        <ListView
+            android:id="@+id/invitation_list"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="Keywords:"/>
+
+        <EditText
+            android:id="@+id/keywords"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textSize="12sp"
+            android:singleLine="true"
+            android:hint="Enter workspace tags, separated by a comma"/>
+
+        <Button
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Create Workspace"
+            android:onClick="createWorkspace"/>
     </LinearLayout>
 </ScrollView>

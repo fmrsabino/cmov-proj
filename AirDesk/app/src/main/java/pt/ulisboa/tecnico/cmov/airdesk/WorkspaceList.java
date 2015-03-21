@@ -19,7 +19,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.utilities.listViewMulticolAdapter;
 
 public class WorkspaceList extends ActionBarActivity {
 
-    public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.MESSAGE";
+    public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     ListView listView ;
     ArrayList<listViewMulticolAdapter.Content> content;
     String selectedWorkspace;
@@ -36,7 +36,7 @@ public class WorkspaceList extends ActionBarActivity {
                                     int position, long id) {
                 TextView textView = (TextView) view.findViewById(R.id.workspace);
                 selectedWorkspace = textView.getText().toString();
-                Log.d("Selection", selectedWorkspace);
+
                 //Transfer control to BrowseWorkspace
         Intent intent = new Intent(WorkspaceList.this, BrowseWorkspace.class);
         String message = selectedWorkspace;
