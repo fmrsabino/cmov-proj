@@ -13,7 +13,7 @@ public class DatabaseAPI {
     public static boolean login(AirDeskDbHelper dbHelper, String nick){
         db = dbHelper.getReadableDatabase();
         String query = "Select * from " + AirDeskContract.Users.TABLE_NAME +
-                " where " + AirDeskContract.Users.COLUMN_NAME_NICK + " = " + nick;
+                " where " + AirDeskContract.Users.COLUMN_NAME_NICK + " = '" + nick + "'";
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.getCount() <= 0){
             return false;

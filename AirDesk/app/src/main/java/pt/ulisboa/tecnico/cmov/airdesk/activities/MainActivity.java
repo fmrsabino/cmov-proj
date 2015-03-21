@@ -61,12 +61,13 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(this, WorkspaceListActivity.class);
         EditText nick = (EditText) findViewById(R.id.userNick);
         EditText email = (EditText) findViewById(R.id.userEmail);
-        if(DatabaseAPI.register(new AirDeskDbHelper(this),
-                nick.getText().toString(), email.getText().toString())){
-            Toast.makeText(this,"Successful Registration",Toast.LENGTH_SHORT).show();
-            startActivity(intent);
-        }
-        else Toast.makeText(this,"Registration Failed",Toast.LENGTH_SHORT).show();
+        if(!nick.getText().toString().isEmpty() && !email.getText().toString().isEmpty()) {
+            if (DatabaseAPI.register(new AirDeskDbHelper(this),
+                    nick.getText().toString(), email.getText().toString())) {
+                Toast.makeText(this, "Successful Registration", Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+            } else Toast.makeText(this,"Registration Failed",Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(this,"Name and Email are Required",Toast.LENGTH_SHORT).show();
     }
 
     public void fileManager(View view) {
