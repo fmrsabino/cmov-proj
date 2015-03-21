@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.airdesk;
+package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
 

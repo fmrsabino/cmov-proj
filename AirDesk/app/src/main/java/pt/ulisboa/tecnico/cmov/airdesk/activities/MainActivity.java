@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.airdesk;
+package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -40,12 +42,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void signIn(View view){
-        Intent intent = new Intent(this, WorkspaceList.class);
+        Intent intent = new Intent(this, WorkspaceListActivity.class);
         startActivity(intent);
     }
 
     public void register(View view){
-        Intent intent = new Intent(this, WorkspaceList.class);
+        Intent intent = new Intent(this, WorkspaceListActivity.class);
         startActivity(intent);
     }
 

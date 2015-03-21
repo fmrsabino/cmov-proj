@@ -1,13 +1,10 @@
-package pt.ulisboa.tecnico.cmov.airdesk;
+package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -16,8 +13,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskContract;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 public class CreateWorkspaceActivity extends ActionBarActivity {
 
@@ -82,7 +78,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
                 values);
         */
         //launch workspace browsing
-        Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspace.class);
+        Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
         intent.putExtra(workspace_name, workspace);
         startActivity(intent);
     }

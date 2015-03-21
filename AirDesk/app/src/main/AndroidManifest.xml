@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,30 +17,30 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WorkspaceList"
+            android:name=".activities.WorkspaceListActivity"
             android:label="@string/title_activity_workspace_list"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".activities.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmov.airdesk.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".CreateWorkspaceActivity"
+            android:name=".activities.CreateWorkspaceActivity"
             android:label="@string/title_activity_workspace_list"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".activities.MainActivity" >
         </activity>
         <activity
-            android:name=".BrowseWorkspace"
+            android:name=".activities.BrowseWorkspaceActivity"
             android:label="@string/title_activity_browse_workspace"
-            android:parentActivityName=".WorkspaceList" >
+            android:parentActivityName=".activities.WorkspaceListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmov.airdesk.WorkspaceList" />
+                android:value=".activities.WorkspaceListActivity" />
         </activity>
         <activity
-            android:name=".FileManagerTestActivity"
+            android:name=".activities.FileManagerTestActivity"
             android:label="@string/title_activity_file_manager_test"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
         </activity>
     </application>
 

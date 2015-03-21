@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.airdesk;
+package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import pt.ulisboa.tecnico.cmov.airdesk.R;
 
-public class BrowseWorkspace extends ActionBarActivity {
+
+public class BrowseWorkspaceActivity extends ActionBarActivity {
 
     private TextView tv;
     private GridView gv;
@@ -28,7 +30,7 @@ public class BrowseWorkspace extends ActionBarActivity {
 
         tv = (TextView) findViewById(R.id.workspace_name);
         Intent intent = getIntent();
-        String workspace_name = intent.getStringExtra(WorkspaceList.workspace_name);
+        String workspace_name = intent.getStringExtra(WorkspaceListActivity.workspace_name);
         tv.setText(workspace_name);
 
         gv = (GridView) findViewById(R.id.workspace_files);

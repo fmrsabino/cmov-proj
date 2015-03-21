@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="pt.ulisboa.tecnico.cmov.airdesk.FileManagerTestActivity">
+    tools:context="pt.ulisboa.tecnico.cmov.airdesk.activities.FileManagerTestActivity">
 
     <EditText
         android:id="@+id/addFile"

@@ -1,9 +1,8 @@
-package pt.ulisboa.tecnico.cmov.airdesk;
+package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,10 +13,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.listViewMulticolAdapter;
 
 
-public class WorkspaceList extends ActionBarActivity {
+public class WorkspaceListActivity extends ActionBarActivity {
 
     public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     ListView listView ;
@@ -38,7 +38,7 @@ public class WorkspaceList extends ActionBarActivity {
                 selectedWorkspace = textView.getText().toString();
 
                 //Transfer control to BrowseWorkspace
-        Intent intent = new Intent(WorkspaceList.this, BrowseWorkspace.class);
+        Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
         String message = selectedWorkspace;
         intent.putExtra(workspace_name, message);
         startActivity(intent);
