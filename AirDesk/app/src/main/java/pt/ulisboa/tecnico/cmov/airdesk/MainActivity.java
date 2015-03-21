@@ -50,4 +50,9 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra("owned", false);
         startActivity(intent);
     }
+
+    public void fileManager(View view) {
+        Intent intent = new Intent(this, FileManagerTestActivity.class);
+        startActivity(intent);
+    }
 }

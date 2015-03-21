@@ -37,6 +37,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.cmov.airdesk.WorkspaceList" />
         </activity>
+        <activity
+            android:name=".FileManagerTestActivity"
+            android:label="@string/title_activity_file_manager_test"
+            android:parentActivityName=".MainActivity">
+        </activity>
     </application>
 
 </manifest>
