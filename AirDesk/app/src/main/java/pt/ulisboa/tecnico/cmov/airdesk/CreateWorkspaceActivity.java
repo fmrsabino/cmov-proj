@@ -1,8 +1,10 @@
 package pt.ulisboa.tecnico.cmov.airdesk;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -13,6 +15,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskContract;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 
 public class CreateWorkspaceActivity extends ActionBarActivity {
 
@@ -60,7 +65,22 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
         //write workspace specs to database
 
+        /*
+        AirDeskDbHelper mDbHelper = new AirDeskDbHelper(this);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Workspaces.COLUMN_NAME_NAME, workspace);
+         values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, ws_quota);
+        values.put(AirDeskContract.Workspaces.COLUMN_NAME_OWNER, content);
+
+
+        long newRowId;
+        newRowId = db.insert(
+                AirDeskContract.Workspaces.TABLE_NAME,
+                null,
+                values);
+        */
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspace.class);
         intent.putExtra(workspace_name, workspace);
