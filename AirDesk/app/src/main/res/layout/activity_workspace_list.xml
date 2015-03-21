@@ -7,15 +7,30 @@
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.WorkspaceList"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:text="@string/workspace"/>
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:text="@string/quota"
+            android:gravity="center"/>
+        </LinearLayout>
+
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/workspace_list"
-        android:layout_weight="1" />
+        android:layout_weight="1"/>
 
     <Button
-        android:onClick = "sendMessage"
+        android:onClick = "addWorkspace"
         android:id="@+id/add_workspace"
         android:layout_width="50dp"
         android:layout_height="50dp"

@@ -6,8 +6,9 @@
     <string name="owned_workspaces">Owned Workspaces</string>
     <string name="foreign_workspaces">Foreign Workspaces</string>
     <string name="title_activity_workspace_list">WorkspaceList</string>
+    <string name="workspace">Workspace</string>
+    <string name="quota">Quota</string>
     <string name="plus">+</string>
     <string name="title_activity_browse_workspace">BrowseWorkspace</string>
     <string name="remove_files">Remove Selected Files</string>
-
 </resources>

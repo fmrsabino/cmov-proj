@@ -3,19 +3,26 @@ package pt.ulisboa.tecnico.cmov.airdesk;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+
 
 import java.util.ArrayList;
+
+import pt.ulisboa.tecnico.cmov.airdesk.utilities.listViewMulticolAdapter;
 
 
 public class WorkspaceList extends ActionBarActivity {
 
+    public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.MESSAGE";
     ListView listView ;
-    ArrayList<String> values;
+    ArrayList<listViewMulticolAdapter.Content> content;
+    String selectedWorkspace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,20 +30,38 @@ public class WorkspaceList extends ActionBarActivity {
         setContentView(R.layout.activity_workspace_list);
 
         listView = (ListView) findViewById(R.id.workspace_list);
-        values = new ArrayList<>();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                TextView textView = (TextView) view.findViewById(R.id.workspace);
+                selectedWorkspace = textView.getText().toString();
+                Log.d("Selection", selectedWorkspace);
+                //Transfer control to BrowseWorkspace
+        Intent intent = new Intent(WorkspaceList.this, BrowseWorkspace.class);
+        String message = selectedWorkspace;
+        intent.putExtra(workspace_name, message);
+        startActivity(intent);
+            }});
 
 
-        //populate with workspaces
-        values.add("Snow");
-        values.add("Sun");
+
+        content = new ArrayList<>();
+
+        populateWorkspaceList();
+    }
+
+    private void populateWorkspaceList() {
+        listViewMulticolAdapter.Content temp = new listViewMulticolAdapter.Content("Snow", "30%");
+        listViewMulticolAdapter.Content temp2 = new listViewMulticolAdapter.Content("Sun", "36%");
+
+        content.add(temp);
+        content.add(temp2);
 
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
+        listViewMulticolAdapter adapter = new listViewMulticolAdapter(this, content);
+        adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
-
     }
 
 
@@ -62,9 +87,8 @@ public class WorkspaceList extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void sendMessage(View view) {
-        //Transfer control to CreateWorkspaceActivity.class
-
+    public void addWorkspace(View view) {
+        //Transfer control to CreateWorkspaceActivity
         Intent intent = new Intent(this, CreateWorkspaceActivity.class);
         startActivity(intent);
     }

@@ -28,10 +28,8 @@ public class BrowseWorkspace extends ActionBarActivity {
 
         tv = (TextView) findViewById(R.id.workspace_name);
         Intent intent = getIntent();
-        //String workspace_name = intent.getStringExtra(WorkspaceList.workspace_name);
-        //tv.setText(workspace_name);
-
-        tv.setText("temporary workspace name");
+        String workspace_name = intent.getStringExtra(WorkspaceList.workspace_name);
+        tv.setText(workspace_name);
 
         gv = (GridView) findViewById(R.id.workspace_files);
 
