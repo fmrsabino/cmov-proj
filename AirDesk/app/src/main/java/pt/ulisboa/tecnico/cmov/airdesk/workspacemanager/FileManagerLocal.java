@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.airdesk.FileManager;
+package pt.ulisboa.tecnico.cmov.airdesk.workspacemanager;
 
 import android.content.Context;
 import android.util.Log;
@@ -17,8 +17,10 @@ public class FileManagerLocal {
         mContext = context;
     }
 
-    public void createFile(String name) {
+    public boolean createFile(String name) {
         File file = new File(mContext.getFilesDir(), name);
+
+        boolean success = false;
         if (!file.exists()) {
             FileOutputStream fos  = null;
             try {
@@ -29,6 +31,7 @@ public class FileManagerLocal {
                 if (fos != null) {
                     try {
                         fos.close();
+                        success = true;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -37,9 +40,11 @@ public class FileManagerLocal {
         } else {
             Log.e(TAG, "File already exists!");
         }
+
+        return success;
     }
 
-    public void createFolder(String name) {
+    public boolean createFolder(String name) {
         File folder = new File(name);
 
         boolean success = false;
@@ -47,27 +52,19 @@ public class FileManagerLocal {
             success = folder.mkdir();
         }
 
-        if (success) {
-            Log.i(TAG, "Folder created successfuly");
-        } else {
-            Log.e(TAG, "Error creating folder");
-        }
+        return success;
     }
 
-    public void removeFile(String name) {
-        Log.d(TAG, "removeFile()");
-
+    public boolean removeFile(String name) {
         File file = new File(mContext.getFilesDir(), name);
+        boolean success = false;
         if (file.exists()) {
-            boolean result = file.delete();
-            if (result) {
-                Log.d(TAG, "File " + name + " removed successfully");
-            } else {
-                Log.e(TAG, "File " + name + "NOT removed");
-            }
+            success = file.delete();
         } else {
-            Log.e(TAG, "The file " + name + " doesn't exist");
+            Log.d(TAG, "The file " + name + " doesn't exist");
         }
+
+        return success;
     }
 
     public void formatWorkspace() {
@@ -77,7 +74,6 @@ public class FileManagerLocal {
     }
 
     public String[] listFilesNames() {
-        Log.d(TAG, "listFilesNames()");
         File file = new File(mContext.getFilesDir(), "");
         return file.list();
     }

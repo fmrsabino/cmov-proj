@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ADD FILE"
-        android:onClick="addFile"/>
+        android:onClick="createFile"/>
 
     <EditText
         android:id="@+id/removeFile"

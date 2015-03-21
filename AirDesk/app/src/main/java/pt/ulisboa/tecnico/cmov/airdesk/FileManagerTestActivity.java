@@ -10,12 +10,13 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.airdesk.FileManager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
 
 public class FileManagerTestActivity extends ActionBarActivity {
@@ -60,13 +61,16 @@ public class FileManagerTestActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void addFile(View view) {
-        Log.d("Main", "addFile()");
+    public void createFile(View view) {
         fileManagerLocal = new FileManagerLocal(this);
         EditText et = (EditText) findViewById(R.id.addFile);
         String text = et.getText().toString();
         if (!TextUtils.isEmpty(text)) {
-            fileManagerLocal.createFile(text);
+            if (fileManagerLocal.createFile(text)) {
+                Toast.makeText(this, "File created", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Error: couldn't create file", Toast.LENGTH_SHORT).show();
+            }
             et.setText("");
             refreshListFiles();
         }
@@ -78,7 +82,12 @@ public class FileManagerTestActivity extends ActionBarActivity {
         EditText et = (EditText) findViewById(R.id.removeFile);
         String text = et.getText().toString();
         if (!TextUtils.isEmpty(text)) {
-            fileManagerLocal.removeFile(text);
+            if (fileManagerLocal.removeFile(text)) {
+                Toast.makeText(this, "File removed", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Error: couldn't remove file", Toast.LENGTH_SHORT).show();
+            }
+
             et.setText("");
         }
         refreshListFiles();
