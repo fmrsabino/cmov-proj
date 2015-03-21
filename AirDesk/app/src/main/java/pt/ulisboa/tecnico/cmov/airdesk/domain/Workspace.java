@@ -7,17 +7,17 @@ import java.util.List;
 public class Workspace {
     private String name;
     private int quota;
-    private boolean isPublic;
+    private int isPublic;
     private List<User> users;
 
-    public Workspace(String name, double quota, boolean isPublic, List<User> users) {
+    public Workspace(String name, int quota, int isPublic, List<User> users) {
         this.name = name;
         this.quota = quota;
         this.isPublic = isPublic;
         this.users = users;
     }
 
-    public Workspace(String name, int quota, boolean isPublic) {
+    public Workspace(String name, int quota, int isPublic) {
         this.name = name;
         this.quota = quota;
         this.isPublic = isPublic;
@@ -40,11 +40,11 @@ public class Workspace {
         this.quota = quota;
     }
 
-    public boolean isPublic() {
+    public int isPublic() {
         return isPublic;
     }
 
-    public void setPublic(boolean isPublic) {
+    public void setPublic(int isPublic) {
         this.isPublic = isPublic;
     }
 
