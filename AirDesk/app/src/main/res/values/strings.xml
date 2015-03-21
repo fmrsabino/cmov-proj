@@ -19,5 +19,6 @@
     <string name="title_activity_file_manager_test">FileManagerTestActivity</string>
     <string name="signin">Sign In</string>
     <string name="register">Register</string>
+    <string name="title_activity_viewers">ViewersActivity</string>
 
 </resources>

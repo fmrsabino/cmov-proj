@@ -42,6 +42,14 @@
             android:label="@string/title_activity_file_manager_test"
             android:parentActivityName=".activities.MainActivity">
         </activity>
+        <activity
+            android:name=".activities.ViewersActivity"
+            android:label="@string/title_activity_viewers"
+            android:parentActivityName=".activities.BrowseWorkspaceActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.BrowseWorkspaceActivity" />
+        </activity>
     </application>
 
 </manifest>

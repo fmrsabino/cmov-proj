@@ -19,9 +19,12 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 public class BrowseWorkspaceActivity extends ActionBarActivity {
 
+    public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
+
     private TextView tv;
     private GridView gv;
     private ArrayList<String> files = new ArrayList<>();
+    private String ws_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +33,9 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
 
         tv = (TextView) findViewById(R.id.workspace_name);
         Intent intent = getIntent();
-        String workspace_name = intent.getStringExtra(WorkspaceListActivity.workspace_name);
-        tv.setText(workspace_name);
+
+        ws_name = intent.getStringExtra(WorkspaceListActivity.workspace_name);
+        tv.setText(ws_name);
 
         gv = (GridView) findViewById(R.id.workspace_files);
 
@@ -79,6 +83,12 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
             return true;
         }
 
+        if (id == R.id.action_viewers){
+            Intent intent = new Intent(this, ViewersActivity.class);
+            intent.putExtra(workspace_name, this.ws_name);
+            startActivity(intent);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }
