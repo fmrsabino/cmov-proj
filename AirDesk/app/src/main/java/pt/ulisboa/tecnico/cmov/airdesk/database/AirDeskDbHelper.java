@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class AirDeskDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "AirDesk.db";
 
     private static final String TEXT_TYPE = " TEXT";
@@ -27,6 +27,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + AirDeskContract.Users.TABLE_NAME + " (" +
                     AirDeskContract.Users.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Users.COLUMN_NAME_NICK + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Users.COLUMN_NAME_LOGED + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Users.COLUMN_NAME_EMAIL + TEXT_TYPE +
             " )";
 

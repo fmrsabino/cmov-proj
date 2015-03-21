@@ -18,7 +18,28 @@ public class DatabaseAPI {
         if(cursor.getCount() <= 0){
             return false;
         }
-        else return true;
+        else{
+            ContentValues values = new ContentValues();
+            values.put(AirDeskContract.Users.COLUMN_NAME_LOGED, 1);
+
+            String selection = AirDeskContract.Users.COLUMN_NAME_NICK + " = ?";
+            String[] selectionArgs = { nick };
+
+            int count = db.update(
+                    AirDeskContract.Users.TABLE_NAME,
+                    values,
+                    selection,
+                    selectionArgs);
+
+            if(count != 0)
+                return true;
+            else return false;
+        }
+    }
+
+    public static String getLogedUser(AirDeskDbHelper dbHelper){
+        //TODO
+        return null;
     }
 
     public static boolean register(AirDeskDbHelper dbHelper, String nick, String email){
@@ -28,6 +49,7 @@ public class DatabaseAPI {
 
         values.put(AirDeskContract.Users.COLUMN_NAME_NICK, nick);
         values.put(AirDeskContract.Users.COLUMN_NAME_EMAIL, email);
+        values.put(AirDeskContract.Users.COLUMN_NAME_LOGED, 1);
 
         long row = db.insert(AirDeskContract.Users.TABLE_NAME, null,values);
         if(row!= -1)
