@@ -59,24 +59,6 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         if(sanitizeInputs(workspace,ws_quota,tags))
             return;
 
-        //write workspace specs to database
-
-        /*
-        AirDeskDbHelper mDbHelper = new AirDeskDbHelper(this);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(AirDeskContract.Workspaces.COLUMN_NAME_NAME, workspace);
-         values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, ws_quota);
-        values.put(AirDeskContract.Workspaces.COLUMN_NAME_OWNER, content);
-
-
-        long newRowId;
-        newRowId = db.insert(
-                AirDeskContract.Workspaces.TABLE_NAME,
-                null,
-                values);
-        */
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
         intent.putExtra(workspace_name, workspace);

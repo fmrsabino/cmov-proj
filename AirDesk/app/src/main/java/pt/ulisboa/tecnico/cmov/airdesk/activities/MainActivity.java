@@ -6,6 +6,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
@@ -43,12 +48,25 @@ public class MainActivity extends ActionBarActivity {
 
     public void signIn(View view){
         Intent intent = new Intent(this, WorkspaceListActivity.class);
-        startActivity(intent);
+        EditText nick = (EditText) findViewById(R.id.userIn);
+        if(!nick.getText().toString().isEmpty()) {
+            if (DatabaseAPI.login(new AirDeskDbHelper(this), nick.getText().toString())) {
+                Toast.makeText(this, "Successful Login", Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+            } else Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(this, "Please write your nick", Toast.LENGTH_SHORT).show();
     }
 
     public void register(View view){
         Intent intent = new Intent(this, WorkspaceListActivity.class);
-        startActivity(intent);
+        EditText nick = (EditText) findViewById(R.id.userNick);
+        EditText email = (EditText) findViewById(R.id.userEmail);
+        if(DatabaseAPI.register(new AirDeskDbHelper(this),
+                nick.getText().toString(), email.getText().toString())){
+            Toast.makeText(this,"Successful Registration",Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+        }
+        else Toast.makeText(this,"Registration Failed",Toast.LENGTH_SHORT).show();
     }
 
     public void fileManager(View view) {
