@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Workspace {
     private String name;
-    private double quota;
+    private int quota;
     private boolean isPublic;
     private List<User> users;
 
@@ -17,7 +17,7 @@ public class Workspace {
         this.users = users;
     }
 
-    public Workspace(String name, double quota, boolean isPublic) {
+    public Workspace(String name, int quota, boolean isPublic) {
         this.name = name;
         this.quota = quota;
         this.isPublic = isPublic;
@@ -32,11 +32,11 @@ public class Workspace {
         this.name = name;
     }
 
-    public double getQuota() {
+    public int getQuota() {
         return quota;
     }
 
-    public void setQuota(double quota) {
+    public void setQuota(int quota) {
         this.quota = quota;
     }
 

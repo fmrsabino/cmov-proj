@@ -11,14 +11,15 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "AirDesk.db";
 
     private static final String TEXT_TYPE = " TEXT";
+    private static final String INTEGER_TYPE = " INTEGER";
     private static final String COMMA_SEP = ",";
 
-    private static final String SQL_CREATE_OWNER_TABLE =
-            "CREATE TABLE " + AirDeskContract.Owner.TABLE_NAME + " (" +
-                    AirDeskContract.Owner.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    AirDeskContract.Owner.COLUMN_NAME_NICK + TEXT_TYPE + COMMA_SEP +
-                    AirDeskContract.Owner.COLUMN_NAME_EMAIL+ TEXT_TYPE + COMMA_SEP +
-                    " FOREIGN KEY ("+AirDeskContract.Owner.COLUMN_NAME_NICK+ ")" +
+    private static final String SQL_CREATE_VIEWERS_TABLE =
+            "CREATE TABLE " + AirDeskContract.Viewers.TABLE_NAME + " (" +
+                    AirDeskContract.Viewers.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    AirDeskContract.Viewers.COLUMN_NAME_NICK + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Viewers.COLUMN_NAME_EMAIL+ TEXT_TYPE + COMMA_SEP +
+                    " FOREIGN KEY ("+AirDeskContract.Viewers.COLUMN_NAME_NICK+ ")" +
                     " REFERENCES "+AirDeskContract.Users.TABLE_NAME + " ("+
                     AirDeskContract.Users.COLUMN_NAME_NICK + "));";
 
@@ -34,7 +35,8 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Workspaces.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Workspaces.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
                     AirDeskContract.Workspaces.COLUMN_NAME_OWNER + TEXT_TYPE + COMMA_SEP +
-                    AirDeskContract.Workspaces.COLUMN_NAME_QUOTA + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Workspaces.COLUMN_NAME_QUOTA + INTEGER_TYPE + COMMA_SEP +
+                    AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC + INTEGER_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Workspaces.COLUMN_NAME_OWNER+ ")" +
                     " REFERENCES "+AirDeskContract.Users.TABLE_NAME + " ("+
                     AirDeskContract.Users.COLUMN_NAME_NICK + "));";
@@ -44,7 +46,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Files.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Files.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
                     AirDeskContract.Files.COLUMN_NAME_PATH + TEXT_TYPE + COMMA_SEP +
-                    AirDeskContract.Files.COLUMN_NAME_OWNER + " INTEGER" + COMMA_SEP +
+                    AirDeskContract.Files.COLUMN_NAME_OWNER + INTEGER_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Files.COLUMN_NAME_OWNER+ ")" +
                     " REFERENCES "+AirDeskContract.Workspaces.TABLE_NAME + " ("+
                     AirDeskContract.Workspaces.COLUMN_NAME_ID + "));";
@@ -67,7 +69,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_USERS_TABLE);
-        db.execSQL(SQL_CREATE_OWNER_TABLE);
+        db.execSQL(SQL_CREATE_VIEWERS_TABLE);
         db.execSQL(SQL_CREATE_WORKSPACES_TABLE);
         db.execSQL(SQL_CREATE_FILES_TABLE);
     }

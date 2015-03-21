@@ -6,7 +6,7 @@ public final class AirDeskContract {
 
     public AirDeskContract() {}
 
-    public static abstract class Owner implements BaseColumns {
+    public static abstract class Viewers implements BaseColumns {
         public static final String TABLE_NAME = "owner";
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_NICK = "nick";
@@ -26,6 +26,7 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_OWNER = "owner";
         public static final String COLUMN_NAME_QUOTA = "quota";
+        public static final String COLUMN_NAME_PUBLIC = "public";
     }
 
     public static abstract class Files implements BaseColumns {
