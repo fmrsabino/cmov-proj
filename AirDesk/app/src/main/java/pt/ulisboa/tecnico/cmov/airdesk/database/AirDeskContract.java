@@ -18,6 +18,7 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_OWNER = "owner";
+        public static final String COLUMN_NAME_QUOTA = "quota";
         public static final String FOREIGN_KEY_OWNER = "fkowner";
     }
 

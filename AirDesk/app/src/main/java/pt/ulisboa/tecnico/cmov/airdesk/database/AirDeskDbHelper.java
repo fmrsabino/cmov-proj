@@ -25,6 +25,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Workspaces.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Workspaces.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
                     AirDeskContract.Workspaces.COLUMN_NAME_OWNER + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Workspaces.COLUMN_NAME_QUOTA + TEXT_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Workspaces.FOREIGN_KEY_OWNER+ ")" +
                     " REFERENCES "+AirDeskContract.Users.TABLE_NAME + " ("+
                     AirDeskContract.Users.COLUMN_NAME_ID + "));";

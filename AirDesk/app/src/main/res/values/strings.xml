@@ -17,5 +17,7 @@
     <string name="manage_quota">Manage Workspace Quota</string>
     <string name="leave_delete">Leave / Delete Workspace</string>
     <string name="title_activity_file_manager_test">FileManagerTestActivity</string>
+    <string name="signin">Sign In</string>
+    <string name="register">Register</string>
 
 </resources>
