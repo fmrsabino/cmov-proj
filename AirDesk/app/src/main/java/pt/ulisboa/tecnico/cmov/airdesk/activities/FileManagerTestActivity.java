@@ -96,7 +96,7 @@ public class FileManagerTestActivity extends ActionBarActivity {
 
     public void refreshListFiles() {
         files.clear();
-        files.addAll(Arrays.asList(fileManagerLocal.listFilesNames()));
+        files.addAll(Arrays.asList(fileManagerLocal.getFilesNames()));
         adapter.notifyDataSetChanged();
     }
 

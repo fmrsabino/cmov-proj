@@ -68,12 +68,12 @@ public class FileManagerLocal {
     }
 
     public void formatWorkspace() {
-        for (String file : listFilesNames()) {
+        for (String file : getFilesNames()) {
             removeFile(file);
         }
     }
 
-    public String[] listFilesNames() {
+    public String[] getFilesNames() {
         File file = new File(mContext.getFilesDir(), "");
         return file.list();
     }

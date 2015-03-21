@@ -1,20 +1,20 @@
 package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
 
 public class BrowseWorkspaceActivity extends ActionBarActivity {
@@ -23,13 +23,18 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
 
     private TextView tv;
     private GridView gv;
-    private ArrayList<String> files = new ArrayList<>();
     private String ws_name;
+    private List<String> files = new ArrayList<>();
+    private ArrayAdapter<String> gridAdapter;
+    private FileManagerLocal fileManager = null;
+    private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_workspace);
+
+        fileManager = new FileManagerLocal(getApplicationContext());
 
         tv = (TextView) findViewById(R.id.workspace_name);
         Intent intent = getIntent();
@@ -37,30 +42,14 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
         ws_name = intent.getStringExtra(WorkspaceListActivity.workspace_name);
         tv.setText(ws_name);
 
+        files.addAll(Arrays.asList(fileManager.getFilesNames()));
         gv = (GridView) findViewById(R.id.workspace_files);
-
-        //populate with your spaces
-        files.add("ficheiro fixe");
-        files.add("ficheiro cool");
-        files.add("ficheiro com SWAG");
-        files.add("ficheiro hipster");
-        files.add("ficheiro #YOLO");
-        files.add("ultimo ficheiro");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+        gridAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, files);
 
-        gv.setAdapter(adapter);
-        gv.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
-        gv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int pos, long id) {
+        gv.setAdapter(gridAdapter);
 
-                gv.setSelection(pos);
-                Log.v("long clicked","pos: " + pos);
-                return true;
-            }
-        });
+        refreshFilesList();
     }
 
 
@@ -78,9 +67,14 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case (R.id.action_settings):
+                return true;
+            case (R.id.action_add_file):
+                fileManager.createFile("file"+counter);
+                refreshFilesList();
+                counter++;
+                return true;
         }
 
         if (id == R.id.action_viewers){
@@ -90,5 +84,11 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refreshFilesList() {
+        files.clear();
+        files.addAll(Arrays.asList(fileManager.getFilesNames()));
+        gridAdapter.notifyDataSetChanged();
     }
 }
