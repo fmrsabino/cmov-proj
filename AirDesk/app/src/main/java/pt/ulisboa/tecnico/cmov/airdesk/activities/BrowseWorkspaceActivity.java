@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -14,10 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
 
-public class BrowseWorkspaceActivity extends ActionBarActivity {
+public class BrowseWorkspaceActivity extends ActionBarActivity
+        implements CreateFileDialogFragment.CreateFileDialogListener {
 
     public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
 
@@ -71,9 +74,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
             case (R.id.action_settings):
                 return true;
             case (R.id.action_add_file):
-                fileManager.createFile("file"+counter);
-                refreshFilesList();
-                counter++;
+                showCreateFileDialog();
                 return true;
         }
 
@@ -86,9 +87,26 @@ public class BrowseWorkspaceActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void showCreateFileDialog() {
+        CreateFileDialogFragment dialog = new CreateFileDialogFragment();
+        dialog.show(getFragmentManager(), "CreateFileDialogFragment");
+    }
+
     private void refreshFilesList() {
         files.clear();
         files.addAll(Arrays.asList(fileManager.getFilesNames()));
         gridAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName());
+        refreshFilesList();
+        counter++;
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
     }
 }
