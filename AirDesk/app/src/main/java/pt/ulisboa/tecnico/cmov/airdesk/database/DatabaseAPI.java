@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 
 public class DatabaseAPI {
@@ -57,7 +59,13 @@ public class DatabaseAPI {
         else return false;
     }
 
-    public static boolean createWorkspace(AirDeskDbHelper dbHelper, String name, String owner, int quota, int is_public){
+    public static boolean createWorkspace(AirDeskDbHelper dbHelper,
+                                          String name,
+                                          String owner,
+                                          int quota,
+                                          int is_public,
+                                          ArrayList<String> viewers){
+
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -66,7 +74,26 @@ public class DatabaseAPI {
         values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, quota);
         values.put(AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC, is_public);
 
+        addUsersToWorkspace(dbHelper, viewers, name);
+
+
         long row = db.insert(AirDeskContract.Workspaces.TABLE_NAME, null,values);
+        if(row!= -1)
+            return true;
+        else return false;
+    }
+
+
+    public static boolean addUsersToWorkspace(AirDeskDbHelper dbHelper, ArrayList<String> viewers, String wsname){
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        for(String v : viewers){
+            values.put(AirDeskContract.Viewers.COLUMN_NAME_NICK, v);
+            values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
+        }
+
+        long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
         if(row!= -1)
             return true;
         else return false;

@@ -14,6 +14,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class CreateWorkspaceActivity extends ActionBarActivity {
 
@@ -54,10 +56,25 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         String ws_quota = quota.getText().toString();
         boolean is_public = checkbox.isChecked();
         String tags = keywords.getText().toString();
+        int quota = Integer.parseInt(ws_quota);
+        int isPublic = (is_public) ? 1 : 0;
+
+
+        Workspace ws = new Workspace(workspace, quota, isPublic, tags, viewers);
+        WorkspaceManager wsManager = new WorkspaceManager(ws);
 
         //result of sanitization
-        if(sanitizeInputs(workspace,ws_quota,tags))
+        if(wsManager.sanitizeInputs()){
+            new AlertDialog.Builder(this)
+                    .setTitle("No Keywords defined")
+                    .setMessage("Please insert some keywords to describe your workspace")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).show();
             return;
+        }
+
 
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
@@ -78,43 +95,5 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         listView.setAdapter(adapter);
     }
 
-    public boolean sanitizeInputs(String wsname, String wsquota, String wstags){
-        boolean incompleteFields = false;
-
-        //sanitize inputs
-        if(wsname.equals("")) {
-            new AlertDialog.Builder(this)
-                    .setTitle("No Workspace name")
-                    .setMessage("Please choose a name to your workspace")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    }).show();
-            incompleteFields=true;
-        }
-
-        if(wsquota.equals("")) {
-            new AlertDialog.Builder(this)
-                    .setTitle("No Storage Quota defined")
-                    .setMessage("Please choose a maximum storage for your workspace")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    }).show();
-            incompleteFields=true;
-        }
-
-        if(wstags.equals("")) {
-            new AlertDialog.Builder(this)
-                    .setTitle("No Keywords defined")
-                    .setMessage("Please insert some keywords to describe your workspace")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    }).show();
-            incompleteFields=true;
-        }
-        return incompleteFields;
-    }
 
 }

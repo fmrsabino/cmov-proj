@@ -8,9 +8,11 @@ public class Workspace {
     private String name;
     private int quota;
     private int isPublic;
-    private List<User> users;
+    private String keywords;
+    private List<String> users;
 
-    public Workspace(String name, int quota, int isPublic, List<User> users) {
+
+    public Workspace(String name, int quota, int isPublic, String keywords, List<String> users) {
         this.name = name;
         this.quota = quota;
         this.isPublic = isPublic;
@@ -48,11 +50,19 @@ public class Workspace {
         this.isPublic = isPublic;
     }
 
-    public List<User> getUsers() {
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    public List<String> getUsers() {
         return users;
     }
 
-    public void addUser(User user) {
+    public void addUser(String user) {
         //TODO: Check if the user isn't already in the list
         users.add(user);
     }
