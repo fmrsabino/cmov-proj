@@ -18,7 +18,7 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_NICK = "nick";
         public static final String COLUMN_NAME_EMAIL = "email";
-        public static final String COLUMN_NAME_LOGED = "loged";
+        public static final String COLUMN_NAME_LOGGED = "logged";
     }
 
     public static abstract class Workspaces implements BaseColumns {
@@ -28,6 +28,7 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_OWNER = "owner";
         public static final String COLUMN_NAME_QUOTA = "quota";
         public static final String COLUMN_NAME_PUBLIC = "public";
+        public static final String COLUMN_NAME_KEYWORDS = "keywords";
     }
 
     public static abstract class Files implements BaseColumns {

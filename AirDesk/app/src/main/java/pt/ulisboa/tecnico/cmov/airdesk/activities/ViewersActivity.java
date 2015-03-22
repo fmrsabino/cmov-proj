@@ -32,7 +32,9 @@ public class ViewersActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.viewers_list);
         viewer = (EditText) findViewById(R.id.viewer);
         tv = (TextView) findViewById(R.id.workspace_name);
+
         viewers = new ArrayList<String>();
+        //TODO: Populate viewers according to database
 
         Intent intent = getIntent();
         ws_name = intent.getStringExtra(BrowseWorkspaceActivity.workspace_name);
@@ -71,6 +73,8 @@ public class ViewersActivity extends ActionBarActivity {
         String v = viewer.getText().toString();
 
         viewers.add(v);
+
+        //TODO: Add new viewer to database as well
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, viewers);

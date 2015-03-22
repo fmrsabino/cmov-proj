@@ -22,7 +22,7 @@ public class DatabaseAPI {
         }
         else{
             ContentValues values = new ContentValues();
-            values.put(AirDeskContract.Users.COLUMN_NAME_LOGED, 1);
+            values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 1);
 
             String selection = AirDeskContract.Users.COLUMN_NAME_NICK + " = ?";
             String[] selectionArgs = { nick };
@@ -51,7 +51,7 @@ public class DatabaseAPI {
 
         values.put(AirDeskContract.Users.COLUMN_NAME_NICK, nick);
         values.put(AirDeskContract.Users.COLUMN_NAME_EMAIL, email);
-        values.put(AirDeskContract.Users.COLUMN_NAME_LOGED, 1);
+        values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 1);
 
         long row = db.insert(AirDeskContract.Users.TABLE_NAME, null,values);
         if(row!= -1)
@@ -64,6 +64,7 @@ public class DatabaseAPI {
                                           String owner,
                                           int quota,
                                           int is_public,
+                                          String keywords,
                                           ArrayList<String> viewers){
 
         db = dbHelper.getWritableDatabase();
@@ -73,6 +74,7 @@ public class DatabaseAPI {
         values.put(AirDeskContract.Workspaces.COLUMN_NAME_OWNER, owner);
         values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, quota);
         values.put(AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC, is_public);
+        values.put(AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS, keywords);
 
         addUsersToWorkspace(dbHelper, viewers, name);
 

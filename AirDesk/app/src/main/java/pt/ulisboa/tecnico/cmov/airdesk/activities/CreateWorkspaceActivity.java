@@ -27,6 +27,8 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     EditText viewer;
     EditText keywords;
     ArrayList<String> viewers;
+    Workspace ws;
+    WorkspaceManager wsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +62,14 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         int isPublic = (is_public) ? 1 : 0;
 
 
-        Workspace ws = new Workspace(workspace, quota, isPublic, tags, viewers);
-        WorkspaceManager wsManager = new WorkspaceManager(ws);
+        ws = new Workspace(workspace, quota, isPublic, tags, viewers);
+        wsManager = new WorkspaceManager(ws, getApplicationContext());
 
         //result of sanitization
-        if(wsManager.sanitizeInputs()){
+        if(wsManager.sanitizeBlankInputs()){
             new AlertDialog.Builder(this)
-                    .setTitle("No Keywords defined")
-                    .setMessage("Please insert some keywords to describe your workspace")
+                    .setTitle("Blank fields")
+                    .setMessage("Please fill all fields")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                         }
@@ -75,6 +77,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
             return;
         }
 
+        wsManager.addWorkspace();
 
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);

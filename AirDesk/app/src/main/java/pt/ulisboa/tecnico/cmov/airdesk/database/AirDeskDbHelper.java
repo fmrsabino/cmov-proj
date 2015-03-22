@@ -21,7 +21,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE+ TEXT_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Viewers.COLUMN_NAME_NICK+ ")" +
                     " REFERENCES "+AirDeskContract.Users.TABLE_NAME + " ("+
-                    AirDeskContract.Users.COLUMN_NAME_NICK +
+                    AirDeskContract.Users.COLUMN_NAME_NICK + ")" +
                     " FOREIGN KEY ("+AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE+ ")" +
                     " REFERENCES "+AirDeskContract.Workspaces.TABLE_NAME + " ("+
                     AirDeskContract.Workspaces.COLUMN_NAME_NAME +"));";
@@ -30,7 +30,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + AirDeskContract.Users.TABLE_NAME + " (" +
                     AirDeskContract.Users.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Users.COLUMN_NAME_NICK + TEXT_TYPE + COMMA_SEP +
-                    AirDeskContract.Users.COLUMN_NAME_LOGED + INTEGER_TYPE + COMMA_SEP +
+                    AirDeskContract.Users.COLUMN_NAME_LOGGED + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Users.COLUMN_NAME_EMAIL + TEXT_TYPE +
             " )";
 
@@ -41,6 +41,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Workspaces.COLUMN_NAME_OWNER + TEXT_TYPE + COMMA_SEP +
                     AirDeskContract.Workspaces.COLUMN_NAME_QUOTA + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC + INTEGER_TYPE + COMMA_SEP +
+                    AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS + TEXT_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Workspaces.COLUMN_NAME_OWNER+ ")" +
                     " REFERENCES "+AirDeskContract.Users.TABLE_NAME + " ("+
                     AirDeskContract.Users.COLUMN_NAME_NICK + "));";

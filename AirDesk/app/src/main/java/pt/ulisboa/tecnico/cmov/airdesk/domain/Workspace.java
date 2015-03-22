@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.domain;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,13 +10,14 @@ public class Workspace {
     private int quota;
     private int isPublic;
     private String keywords;
-    private List<String> users;
+    private ArrayList<String> users;
 
 
-    public Workspace(String name, int quota, int isPublic, String keywords, List<String> users) {
+    public Workspace(String name, int quota, int isPublic, String keywords, ArrayList<String> users) {
         this.name = name;
         this.quota = quota;
         this.isPublic = isPublic;
+        this.keywords = keywords;
         this.users = users;
     }
 
@@ -58,7 +60,7 @@ public class Workspace {
         this.keywords = keywords;
     }
 
-    public List<String> getUsers() {
+    public ArrayList<String> getUsers() {
         return users;
     }
 
