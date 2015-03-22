@@ -4,8 +4,11 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -30,7 +33,6 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     private List<String> files = new ArrayList<>();
     private ArrayAdapter<String> gridAdapter;
     private FileManagerLocal fileManager = null;
-    private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +50,51 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         files.addAll(Arrays.asList(fileManager.getFilesNames()));
         gv = (GridView) findViewById(R.id.workspace_files);
         gridAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, files);
+                R.layout.activity_browse_workspace_grid_item, R.id.text1, files);
 
         gv.setAdapter(gridAdapter);
 
+        gv.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+        gv.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate the menu for the CAB
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_browse_workspace_context, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                // Respond to clicks on the actions in the CAB
+                switch (item.getItemId()) {
+                    case R.id.action_delete:
+                        deleteSelectedItems();
+                        mode.finish(); // Action picked, so close the CAB
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {}
+        });
         refreshFilesList();
     }
 
+    private void deleteSelectedItems() {
+        gv.getCheckedItemPositions();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,11 +142,8 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     public void onDialogPositiveClick(DialogFragment dialog) {
         fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName());
         refreshFilesList();
-        counter++;
     }
 
     @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
-    }
+    public void onDialogNegativeClick(DialogFragment dialog) {}
 }

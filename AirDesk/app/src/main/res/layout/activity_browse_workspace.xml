@@ -29,6 +29,7 @@
         android:stretchMode="columnWidth"
         android:gravity="center"
         android:longClickable="true"
+        android:background="?android:attr/activatedBackgroundIndicator"
         />
     
     <Button
