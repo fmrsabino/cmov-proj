@@ -82,8 +82,8 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
         wsManager.addWorkspace();
 
-       // FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
-        //fileManagerLocal.createFolder(workspace);
+        FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
+        fileManagerLocal.createFolder(workspace);
 
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);

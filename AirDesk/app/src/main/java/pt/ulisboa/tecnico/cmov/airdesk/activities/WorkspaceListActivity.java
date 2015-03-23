@@ -40,8 +40,9 @@ public class WorkspaceListActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.workspace_list);
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
-        refreshDirectoryListing();
+       // refreshDirectoryListing();
 
+        populateWorkspaceList();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -57,8 +58,6 @@ public class WorkspaceListActivity extends ActionBarActivity {
         intent.putExtra(WORKSPACE_NAME_KEY, message);
         startActivity(intent);
             }}});
-
-        populateWorkspaceList();
     }
 
     private void populateWorkspaceList() {
