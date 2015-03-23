@@ -39,8 +39,28 @@ public class DatabaseAPI {
         }
     }
 
-    public static String getLogedUser(AirDeskDbHelper dbHelper){
-        //TODO
+    public static String getLoggedUser(AirDeskDbHelper dbHelper){
+        db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                AirDeskContract.Users.COLUMN_NAME_NICK};
+
+        String[] selectionArgs = { "1" };
+
+        Cursor c = db.query(
+                AirDeskContract.Users.TABLE_NAME,
+                projection,
+                AirDeskContract.Users.COLUMN_NAME_LOGGED + " = ?",
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+
+        if(c.moveToFirst())
+            return c.getString(0);
+        else
         return null;
     }
 
@@ -85,6 +105,20 @@ public class DatabaseAPI {
         else return false;
     }
 
+
+    public static boolean addUserToWorkspace(AirDeskDbHelper dbHelper, String viewer, String wsname){
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        boolean smoothInsert = true;
+
+            values.put(AirDeskContract.Viewers.COLUMN_NAME_NICK, viewer);
+            values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
+            long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
+            if(row == -1)
+                smoothInsert = false;
+
+        return smoothInsert;
+    }
 
     public static boolean addUsersToWorkspace(AirDeskDbHelper dbHelper, List<String> viewers, String wsname){
         db = dbHelper.getWritableDatabase();
@@ -211,7 +245,6 @@ public class DatabaseAPI {
 
         if (c2.moveToFirst())
             do { //add such viewers to a list
-                Log.d("USERS_RETRIEVED",c2.getString(0));
                  viewers.add(c2.getString(0));
             } while(c2.moveToNext());
 

@@ -9,12 +9,6 @@
         android:orderInCategory="100"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/action_invite"
-        android:title="@string/invite"
-        android:icon="@drawable/add_user"
-        android:orderInCategory="100"
-        app:showAsAction="never"/>
-
     <item android:id="@+id/action_viewers"
         android:title="@string/viewers"
         android:orderInCategory="100"

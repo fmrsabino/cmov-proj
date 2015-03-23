@@ -20,19 +20,29 @@ public class WorkspaceManager {
         this.context = context;
     }
 
+    public Workspace getWorkspace() {
+        return workspace;
+    }
+
     public WorkspaceManager(Context context) {
         this.context = context;
     }
-    //Adds or updates a workspace in a DB
+
+
     public void addWorkspace() {
         dbHelper = new AirDeskDbHelper(context);
         dbAPI = new DatabaseAPI();
 
-
-        //TODO Change to find REAL logged-in user
-        String loggedUser ="nick";
+        String loggedUser = dbAPI.getLoggedUser(dbHelper);
 
         dbAPI.createWorkspace(dbHelper, workspace.getName(), loggedUser, workspace.getQuota(), workspace.isPublic(), workspace.getKeywords(), workspace.getUsers());
+    }
+
+    public void addViewer(String viewer, String ws_name) {
+        dbHelper = new AirDeskDbHelper(context);
+        dbAPI = new DatabaseAPI();
+
+        dbAPI.addUserToWorkspace(dbHelper, viewer, ws_name );
     }
 
     public List<Workspace> retrieveWorkspaces(){
@@ -47,14 +57,6 @@ public class WorkspaceManager {
         dbAPI = new DatabaseAPI();
 
         return dbAPI.getWorkspace(dbHelper, ws_name);
-    }
-
-    public Workspace getWorkspace() {
-        return workspace;
-    }
-
-    public void setWorkspace(Workspace workspace) {
-        this.workspace = workspace;
     }
 
     public boolean sanitizeBlankInputs(){

@@ -21,5 +21,6 @@
     <string name="signin">Sign In</string>
     <string name="register">Register</string>
     <string name="title_activity_viewers">ViewersActivity</string>
+    <string name="title_activity_create_workspace">CreateWorkspace</string>
 
 </resources>

@@ -36,7 +36,6 @@ public class ViewersActivity extends ActionBarActivity {
         viewer = (EditText) findViewById(R.id.viewer);
         tv = (TextView) findViewById(R.id.workspace_name);
 
-        viewers = new ArrayList<String>();
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
@@ -77,11 +76,14 @@ public class ViewersActivity extends ActionBarActivity {
     }
 
     public void inviteUser(View view) {
+        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
+        Intent intent = getIntent();
+        ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         String v = viewer.getText().toString();
 
         viewers.add(v);
 
-        //TODO: Add new viewer to database as well
+        wsManager.addViewer(v, ws_name);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
