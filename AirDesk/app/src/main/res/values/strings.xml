@@ -12,6 +12,7 @@
     <string name="title_activity_browse_workspace">BrowseWorkspace</string>
     <string name="remove_files">Remove Selected Files</string>
     <string name="addFile">Add File</string>
+    <string name="add_workspace">Add Workspace</string>
     <string name="invite">Invite to Workspace</string>
     <string name="viewers">Browse Workspace Viewers</string>
     <string name="manage_quota">Manage Workspace Quota</string>

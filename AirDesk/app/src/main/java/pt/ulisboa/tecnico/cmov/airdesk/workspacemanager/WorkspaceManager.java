@@ -1,12 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.workspacemanager;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 
-import java.util.List;
-
-import pt.ulisboa.tecnico.cmov.airdesk.activities.CreateWorkspaceActivity;
 import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;

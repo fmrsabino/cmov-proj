@@ -1,8 +1,8 @@
 package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
@@ -22,7 +23,7 @@ public class ViewersActivity extends ActionBarActivity {
     private String ws_name;
     private ListView listView ;
     private EditText viewer;
-    private ArrayList<String> viewers;
+    private List<String> viewers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class ViewersActivity extends ActionBarActivity {
         //TODO: Populate viewers according to database
 
         Intent intent = getIntent();
-        ws_name = intent.getStringExtra(BrowseWorkspaceActivity.workspace_name);
+        ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         tv.setText(ws_name + " Viewers");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,

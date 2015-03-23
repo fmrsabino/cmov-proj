@@ -4,9 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.ArrayList;
-
-import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import java.util.List;
 
 public class DatabaseAPI {
 
@@ -65,7 +63,7 @@ public class DatabaseAPI {
                                           int quota,
                                           int is_public,
                                           String keywords,
-                                          ArrayList<String> viewers){
+                                          List<String> viewers){
 
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -86,7 +84,7 @@ public class DatabaseAPI {
     }
 
 
-    public static boolean addUsersToWorkspace(AirDeskDbHelper dbHelper, ArrayList<String> viewers, String wsname){
+    public static boolean addUsersToWorkspace(AirDeskDbHelper dbHelper, List<String> viewers, String wsname){
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 

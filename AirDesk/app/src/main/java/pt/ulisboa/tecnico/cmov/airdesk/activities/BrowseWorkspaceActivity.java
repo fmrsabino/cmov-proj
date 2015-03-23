@@ -11,10 +11,8 @@ import android.view.MenuItem;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
@@ -25,11 +23,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 public class BrowseWorkspaceActivity extends ActionBarActivity
         implements CreateFileDialogFragment.CreateFileDialogListener {
 
-    public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
-
-    private TextView tv;
-    private GridView gv;
-    private String ws_name;
+    private GridView gridView;
+    private String workspaceName;
     private List<String> files = new ArrayList<>();
     private ArrayAdapter<String> gridAdapter;
     private FileManagerLocal fileManager = null;
@@ -41,21 +36,19 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
         fileManager = new FileManagerLocal(getApplicationContext());
 
-        tv = (TextView) findViewById(R.id.workspace_name);
         Intent intent = getIntent();
+        workspaceName = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
+        getSupportActionBar().setTitle(workspaceName);
 
-        ws_name = intent.getStringExtra(WorkspaceListActivity.workspace_name);
-        tv.setText(ws_name);
-
-        files.addAll(Arrays.asList(fileManager.getFilesNames()));
-        gv = (GridView) findViewById(R.id.workspace_files);
+        files.addAll(fileManager.getFilesNames(workspaceName));
+        gridView = (GridView) findViewById(R.id.workspace_files);
         gridAdapter = new ArrayAdapter<>(this,
                 R.layout.activity_browse_workspace_grid_item, R.id.text1, files);
 
-        gv.setAdapter(gridAdapter);
+        gridView.setAdapter(gridAdapter);
 
-        gv.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
-        gv.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+        gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+        gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             }
@@ -87,13 +80,14 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             }
 
             @Override
-            public void onDestroyActionMode(ActionMode mode) {}
+            public void onDestroyActionMode(ActionMode mode) {
+            }
         });
         refreshFilesList();
     }
 
     private void deleteSelectedItems() {
-        gv.getCheckedItemPositions();
+        gridView.getCheckedItemPositions();
     }
 
     @Override
@@ -120,7 +114,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
         if (id == R.id.action_viewers){
             Intent intent = new Intent(this, ViewersActivity.class);
-            intent.putExtra(workspace_name, this.ws_name);
+            intent.putExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY, this.workspaceName);
             startActivity(intent);
             return true;
         }
@@ -134,13 +128,13 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
     private void refreshFilesList() {
         files.clear();
-        files.addAll(Arrays.asList(fileManager.getFilesNames()));
+        files.addAll(fileManager.getFilesNames(workspaceName));
         gridAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName());
+        fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName(), workspaceName);
         refreshFilesList();
     }
 

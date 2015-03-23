@@ -12,23 +12,26 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class CreateWorkspaceActivity extends ActionBarActivity {
 
-    public final static String workspace_name = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
-    ListView listView ;
-    EditText name;
-    EditText quota;
-    CheckBox checkbox;
-    EditText viewer;
-    EditText keywords;
-    ArrayList<String> viewers;
-    Workspace ws;
-    WorkspaceManager wsManager;
+    public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
+
+    private ListView listView;
+    private EditText name;
+    private EditText quota;
+    private CheckBox checkbox;
+    private EditText viewer;
+    private EditText keywords;
+    private List<String> viewers;
+    private Workspace ws;
+    private WorkspaceManager wsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         viewer = (EditText) findViewById(R.id.viewer);
         keywords = (EditText) findViewById(R.id.keywords);
 
-        viewers = new ArrayList<String>();
+        viewers = new ArrayList<>();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
@@ -79,9 +82,12 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
         wsManager.addWorkspace();
 
+        FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
+        fileManagerLocal.createFolder(workspace);
+
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
-        intent.putExtra(workspace_name, workspace);
+        intent.putExtra(WORKSPACE_NAME_KEY, workspace);
         startActivity(intent);
     }
 
@@ -91,7 +97,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
         viewers.add(v);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
 
         adapter.notifyDataSetChanged();

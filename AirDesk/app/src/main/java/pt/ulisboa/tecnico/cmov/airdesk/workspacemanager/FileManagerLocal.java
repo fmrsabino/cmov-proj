@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class FileManagerLocal {
 
@@ -17,35 +19,23 @@ public class FileManagerLocal {
         mContext = context;
     }
 
-    public boolean createFile(String name) {
-        File file = new File(mContext.getFilesDir(), name);
+    public boolean createFile(String name, String workspaceId) {
+        Log.d(TAG, mContext.getFilesDir() + File.separator + workspaceId);
+        File file = new File(mContext.getFilesDir() + File.separator + workspaceId, name);
 
         boolean success = false;
-        if (!file.exists()) {
-            FileOutputStream fos  = null;
-            try {
-                fos = mContext.openFileOutput(name, Context.MODE_PRIVATE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                        success = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } else {
-            Log.e(TAG, "File already exists!");
+        try {
+            success = file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return success;
     }
 
+    //Only creates folder at the application root directory
     public boolean createFolder(String name) {
-        File folder = new File(name);
+        File folder = new File(mContext.getFilesDir() + File.separator + name);
 
         boolean success = false;
         if (!folder.exists()) {
@@ -55,8 +45,8 @@ public class FileManagerLocal {
         return success;
     }
 
-    public boolean removeFile(String name) {
-        File file = new File(mContext.getFilesDir(), name);
+    public boolean removeFile(String name, String directory) {
+        File file = new File(mContext.getFilesDir() + File.separator + directory, name);
         boolean success = false;
         if (file.exists()) {
             success = file.delete();
@@ -67,14 +57,38 @@ public class FileManagerLocal {
         return success;
     }
 
-    public void formatWorkspace() {
-        for (String file : getFilesNames()) {
-            removeFile(file);
+    public boolean removeDirectory(String directory) {
+        boolean success = false;
+
+        File file = new File(mContext.getFilesDir(), directory);
+
+        if (file.isDirectory()) {
+            formatDirectory(directory);
+            success = file.delete();
+        }
+
+        return success;
+    }
+
+    public void formatDirectory(String directory) {
+        for (String file : getFilesNames(directory)) {
+            removeFile(file, directory);
         }
     }
 
-    public String[] getFilesNames() {
-        File file = new File(mContext.getFilesDir(), "");
-        return file.list();
+    //Returns files and directory names in directory
+    public List<String> getFilesNames(String directory) {
+        File file = new File(mContext.getFilesDir() + File.separator + directory, "");
+        String[] files = file.list();
+        List<String> result = new ArrayList<>();
+        if (files != null) {
+            result.addAll(Arrays.asList(files));
+        }
+        return result;
+    }
+
+    //Returns files and directory names in root
+    public List<String> getWorkspaces() {
+        return getFilesNames("");
     }
 }

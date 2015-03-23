@@ -29,12 +29,4 @@
         android:id="@+id/workspace_list"
         android:layout_weight="1"/>
 
-    <Button
-        android:onClick = "addWorkspace"
-        android:id="@+id/add_workspace"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="end"
-        android:text="@string/plus"/>
-
 </LinearLayout>

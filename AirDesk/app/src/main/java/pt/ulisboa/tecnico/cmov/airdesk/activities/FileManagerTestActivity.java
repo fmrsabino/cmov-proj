@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -13,7 +13,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
@@ -25,7 +24,9 @@ public class FileManagerTestActivity extends ActionBarActivity {
     private FileManagerLocal fileManagerLocal;
     private List<String> files = new ArrayList<>();
     private ListView listView;
-    ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> adapter;
+
+    private static final String WORKSPACEID = "TEST";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,11 @@ public class FileManagerTestActivity extends ActionBarActivity {
         setContentView(R.layout.activity_file_manager_test);
 
         fileManagerLocal = new FileManagerLocal(getApplicationContext());
+        if (fileManagerLocal.createFolder(WORKSPACEID)) {
+            Log.i("TEST", "DIRECTORY CREATED");
+        } else {
+            Log.e("TEST", "FAILED DIRECTORY CREATION");
+        }
         listView = (ListView) findViewById(R.id.filesList);
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, files);
         listView.setAdapter(adapter);
@@ -67,7 +73,7 @@ public class FileManagerTestActivity extends ActionBarActivity {
         EditText et = (EditText) findViewById(R.id.addFile);
         String text = et.getText().toString();
         if (!TextUtils.isEmpty(text)) {
-            if (fileManagerLocal.createFile(text)) {
+            if (fileManagerLocal.createFile(text, WORKSPACEID)) {
                 Toast.makeText(this, "File created", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Error: couldn't create file", Toast.LENGTH_SHORT).show();
@@ -83,7 +89,7 @@ public class FileManagerTestActivity extends ActionBarActivity {
         EditText et = (EditText) findViewById(R.id.removeFile);
         String text = et.getText().toString();
         if (!TextUtils.isEmpty(text)) {
-            if (fileManagerLocal.removeFile(text)) {
+            if (fileManagerLocal.removeFile(text, WORKSPACEID)) {
                 Toast.makeText(this, "File removed", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Error: couldn't remove file", Toast.LENGTH_SHORT).show();
@@ -96,12 +102,12 @@ public class FileManagerTestActivity extends ActionBarActivity {
 
     public void refreshListFiles() {
         files.clear();
-        files.addAll(Arrays.asList(fileManagerLocal.getFilesNames()));
+        files.addAll(fileManagerLocal.getFilesNames(WORKSPACEID));
         adapter.notifyDataSetChanged();
     }
 
     public void format(View view) {
-        fileManagerLocal.formatWorkspace();
+        fileManagerLocal.formatDirectory(WORKSPACEID);
         refreshListFiles();
     }
 }

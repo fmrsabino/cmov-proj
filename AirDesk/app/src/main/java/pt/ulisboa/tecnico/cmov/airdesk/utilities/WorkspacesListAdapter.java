@@ -1,18 +1,18 @@
 package pt.ulisboa.tecnico.cmov.airdesk.utilities;
 
-        import java.util.ArrayList;
-        import java.util.HashMap;
-        import android.app.Activity;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.BaseAdapter;
-        import android.widget.TextView;
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
 
-        import pt.ulisboa.tecnico.cmov.airdesk.R;
+import java.util.List;
+
+import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 
-public class listViewMulticolAdapter extends BaseAdapter
+public class WorkspacesListAdapter extends BaseAdapter
 {
     public static class Content {
         private String ws_name;
@@ -41,10 +41,10 @@ public class listViewMulticolAdapter extends BaseAdapter
         }
     }
 
-    Activity activity;
-    ArrayList<Content> list;
+    private Activity activity;
+    private List<Content> list;
 
-    public listViewMulticolAdapter(Activity activity, ArrayList<Content> list) {
+    public WorkspacesListAdapter(Activity activity, List<Content> list) {
         super();
         this.activity = activity;
         this.list = list;
