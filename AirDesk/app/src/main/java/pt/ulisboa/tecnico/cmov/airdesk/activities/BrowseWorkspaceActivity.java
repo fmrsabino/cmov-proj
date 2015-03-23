@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,7 +88,13 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     }
 
     private void deleteSelectedItems() {
-        gridView.getCheckedItemPositions();
+        SparseBooleanArray checked = gridView.getCheckedItemPositions();
+        for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
+            if (checked.get(i)) {
+                fileManager.removeFile(gridAdapter.getItem(i), workspaceName);
+            }
+        }
+        refreshFilesList();
     }
 
     @Override
