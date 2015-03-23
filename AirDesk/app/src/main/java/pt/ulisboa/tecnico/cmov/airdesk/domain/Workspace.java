@@ -20,13 +20,6 @@ public class Workspace {
         this.users = users;
     }
 
-    public Workspace(String name, int quota, int isPublic) {
-        this.name = name;
-        this.quota = quota;
-        this.isPublic = isPublic;
-        this.users = new ArrayList<>();
-    }
-
     public String getName() {
         return name;
     }

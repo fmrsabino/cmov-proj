@@ -12,10 +12,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
 public class WorkspaceListActivity extends ActionBarActivity {
@@ -27,6 +28,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private WorkspacesListAdapter listAdapter;
     private String selectedWorkspace;
     private FileManagerLocal fileManagerLocal;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +47,32 @@ public class WorkspaceListActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 TextView textView = (TextView) view.findViewById(R.id.workspace);
-                if (textView != null) {
-                    selectedWorkspace = textView.getText().toString();
 
-                    //Transfer control to BrowseWorkspace
-                    Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
-                    String message = selectedWorkspace;
-                    intent.putExtra(WORKSPACE_NAME_KEY, message);
-                    startActivity(intent);
-                }
-            }
-        });
+        if (textView != null) {
+                selectedWorkspace = textView.getText().toString();
+
+                //Transfer control to BrowseWorkspace
+        Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
+        String message = selectedWorkspace;
+        intent.putExtra(WORKSPACE_NAME_KEY, message);
+        startActivity(intent);
+            }}});
+
+        populateWorkspaceList();
+    }
+
+    private void populateWorkspaceList() {
+        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
+        List<Workspace> wsList = wsManager.retrieveWorkspaces();
+
+        for(Workspace w:wsList){
+            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota())));
+        }
+
+        WorkspacesListAdapter adapter = new WorkspacesListAdapter(this, directories);
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+
     }
 
     @Override

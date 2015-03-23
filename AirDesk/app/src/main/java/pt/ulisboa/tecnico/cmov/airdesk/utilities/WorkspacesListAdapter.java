@@ -1,14 +1,13 @@
 package pt.ulisboa.tecnico.cmov.airdesk.utilities;
 
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import java.util.List;
-
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 
@@ -20,7 +19,7 @@ public class WorkspacesListAdapter extends BaseAdapter
 
         public Content(String ws_name, String quota) {
             this.ws_name = ws_name;
-            this.quota = quota;
+            this.quota = quota + "%";
         }
 
 

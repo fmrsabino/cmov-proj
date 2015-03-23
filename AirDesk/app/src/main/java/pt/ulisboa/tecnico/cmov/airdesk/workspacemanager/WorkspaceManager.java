@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.cmov.airdesk.workspacemanager;
 
 import android.content.Context;
 
+import java.util.List;
+
 import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
@@ -18,6 +20,9 @@ public class WorkspaceManager {
         this.context = context;
     }
 
+    public WorkspaceManager(Context context) {
+        this.context = context;
+    }
     //Adds or updates a workspace in a DB
     public void addWorkspace() {
         dbHelper = new AirDeskDbHelper(context);
@@ -28,6 +33,20 @@ public class WorkspaceManager {
         String loggedUser ="nick";
 
         dbAPI.createWorkspace(dbHelper, workspace.getName(), loggedUser, workspace.getQuota(), workspace.isPublic(), workspace.getKeywords(), workspace.getUsers());
+    }
+
+    public List<Workspace> retrieveWorkspaces(){
+        dbHelper = new AirDeskDbHelper(context);
+        dbAPI = new DatabaseAPI();
+
+        return dbAPI.getWorkspaces(dbHelper);
+    }
+
+    public Workspace retrieveWorkspace(String ws_name){
+        dbHelper = new AirDeskDbHelper(context);
+        dbAPI = new DatabaseAPI();
+
+        return dbAPI.getWorkspace(dbHelper, ws_name);
     }
 
     public Workspace getWorkspace() {

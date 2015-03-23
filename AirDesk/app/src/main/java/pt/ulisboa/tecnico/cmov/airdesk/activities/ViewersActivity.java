@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
 public class ViewersActivity extends ActionBarActivity {
@@ -35,11 +37,15 @@ public class ViewersActivity extends ActionBarActivity {
         tv = (TextView) findViewById(R.id.workspace_name);
 
         viewers = new ArrayList<String>();
-        //TODO: Populate viewers according to database
+        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
         ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         tv.setText(ws_name + " Viewers");
+
+        Workspace ws = wsManager.retrieveWorkspace(ws_name);
+
+        viewers = new ArrayList<>(ws.getUsers());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
