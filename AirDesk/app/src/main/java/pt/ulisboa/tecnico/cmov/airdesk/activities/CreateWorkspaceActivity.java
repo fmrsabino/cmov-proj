@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -112,15 +113,20 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
 
     public void inviteUser(View view) {
-        String v = viewer.getText().toString();
+        if(viewer != null) {
 
-        viewers.add(v);
+            String v = viewer.getText().toString();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
+            if(!TextUtils.isEmpty(v)) {
+                viewers.add(v);
 
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                        android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
+
+                adapter.notifyDataSetChanged();
+                listView.setAdapter(adapter);
+            }
+        }
     }
 
 

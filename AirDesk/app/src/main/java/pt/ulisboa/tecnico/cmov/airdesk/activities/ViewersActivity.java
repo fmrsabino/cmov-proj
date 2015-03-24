@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,19 +77,23 @@ public class ViewersActivity extends ActionBarActivity {
     }
 
     public void inviteUser(View view) {
-        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
-        Intent intent = getIntent();
-        ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
-        String v = viewer.getText().toString();
+        if(viewer != null) {
+            WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
+            Intent intent = getIntent();
+            ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
+            String v = viewer.getText().toString();
 
-        viewers.add(v);
+            if(!TextUtils.isEmpty(v)) {
+                viewers.add(v);
 
-        wsManager.addViewer(v, ws_name);
+                wsManager.addViewer(v, ws_name);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                        android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
 
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                listView.setAdapter(adapter);
+            }
+        }
     }
 }
