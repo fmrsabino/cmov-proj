@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
@@ -22,9 +23,10 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class WorkspaceListActivity extends ActionBarActivity {
 
+    private static final String TAG = "WorkspaceListActivity";
+
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
-    Intent intent;
-    String repo;
+    private String repo;
     private ListView listView;
     private List<WorkspacesListAdapter.Content> directories = new ArrayList<>();
     private WorkspacesListAdapter listAdapter;
@@ -38,12 +40,12 @@ public class WorkspaceListActivity extends ActionBarActivity {
         setContentView(R.layout.activity_workspace_list);
 
         fileManagerLocal = new FileManagerLocal(this);
-        intent = getIntent();
+        Intent intent = getIntent();
         repo = intent.getStringExtra(WelcomeActivity.WORKSPACE_ACCESS_KEY);
         listView = (ListView) findViewById(R.id.workspace_list);
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
-       // refreshDirectoryListing();
+        // refreshDirectoryListing();
 
         populateWorkspaceList();
 
@@ -52,19 +54,25 @@ public class WorkspaceListActivity extends ActionBarActivity {
                                     int position, long id) {
                 TextView textView = (TextView) view.findViewById(R.id.workspace);
 
-        if (textView != null) {
-                selectedWorkspace = textView.getText().toString();
+                if (textView != null) {
+                    selectedWorkspace = textView.getText().toString();
 
-                //Transfer control to BrowseWorkspace
-        Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
-        String message = selectedWorkspace;
-        intent.putExtra(WORKSPACE_NAME_KEY, message);
-        startActivity(intent);
-            }}});
+                    //Transfer control to BrowseWorkspace
+                    Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
+                    String message = selectedWorkspace;
+                    intent.putExtra(WORKSPACE_NAME_KEY, message);
+                    startActivity(intent);
+                }}});
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        populateWorkspaceList();
     }
 
     private void populateWorkspaceList() {
-
+        directories.clear();
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
         List<Workspace> wsList = new ArrayList<>();
 
@@ -73,13 +81,13 @@ public class WorkspaceListActivity extends ActionBarActivity {
         else if(TextUtils.equals(repo, "foreign"))
             wsList= wsManager.retrieveForeignWorkspaces();
 
-            for (Workspace w : wsList) {
-                directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota())));
-            }
+        for (Workspace w : wsList) {
+            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota())));
+        }
 
-            WorkspacesListAdapter adapter = new WorkspacesListAdapter(this, directories);
-            adapter.notifyDataSetChanged();
-            listView.setAdapter(adapter);
+        //WorkspacesListAdapter adapter = new WorkspacesListAdapter(this, directories);
+        listAdapter.notifyDataSetChanged();
+        //listView.setAdapter(adapter);
 
     }
 
@@ -104,10 +112,6 @@ public class WorkspaceListActivity extends ActionBarActivity {
                 Intent intent = new Intent(this, CreateWorkspaceActivity.class);
                 startActivity(intent);
                 return true;
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
 
         return super.onOptionsItemSelected(item);

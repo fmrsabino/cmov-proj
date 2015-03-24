@@ -12,27 +12,27 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activities.WorkspaceListActivity"
             android:label="@string/title_activity_workspace_list"
-            android:parentActivityName=".activities.WelcomeActivity" >
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
+                android:value=".activities.WelcomeActivity" />
         </activity>
         <activity
             android:name=".activities.CreateWorkspaceActivity"
-            android:label="@string/title_activity_create_workspace"
-            android:parentActivityName=".activities.WorkspaceListActivity" >
+            android:label="@string/title_activity_create_workspace" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.WorkspaceListActivity" />
         </activity>
         <activity
             android:name=".activities.BrowseWorkspaceActivity"
             android:label="@string/title_activity_browse_workspace"
-            android:parentActivityName=".activities.WorkspaceListActivity"
             android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -40,13 +40,14 @@
         </activity>
         <activity
             android:name=".activities.FileManagerTestActivity"
-            android:label="@string/title_activity_file_manager_test"
-            android:parentActivityName=".activities.MainActivity" >
+            android:label="@string/title_activity_file_manager_test" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.ViewersActivity"
-            android:label="@string/title_activity_viewers"
-            android:parentActivityName=".activities.BrowseWorkspaceActivity" >
+            android:label="@string/title_activity_viewers" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.BrowseWorkspaceActivity" />
