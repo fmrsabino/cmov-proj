@@ -45,13 +45,19 @@ public class WorkspaceManager {
         dbAPI.addUserToWorkspace(dbHelper, viewer, ws_name );
     }
 
-    public List<Workspace> retrieveWorkspaces(){
+    public List<Workspace> retrieveOwnedWorkspaces(){
         dbHelper = new AirDeskDbHelper(context);
         dbAPI = new DatabaseAPI();
 
-        return dbAPI.getWorkspaces(dbHelper);
+        return dbAPI.getOwnedWorkspaces(dbHelper);
     }
 
+    public List<Workspace> retrieveForeignWorkspaces() {
+        dbHelper = new AirDeskDbHelper(context);
+        dbAPI = new DatabaseAPI();
+
+        return dbAPI.getForeignWorkspaces(dbHelper);
+    }
     public Workspace retrieveWorkspace(String ws_name){
         dbHelper = new AirDeskDbHelper(context);
         dbAPI = new DatabaseAPI();
@@ -71,6 +77,5 @@ public class WorkspaceManager {
             incompleteFields=true;
         return incompleteFields;
     }
-
 
 }

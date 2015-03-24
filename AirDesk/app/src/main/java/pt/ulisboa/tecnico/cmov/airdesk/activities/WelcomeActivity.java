@@ -16,6 +16,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
 
 public class WelcomeActivity extends ActionBarActivity {
 
+    public final static String WORKSPACE_ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSACCESS";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +62,7 @@ public class WelcomeActivity extends ActionBarActivity {
 
     public void listWorkspaces(View view){
         Intent intent = new Intent(this, WorkspaceListActivity.class);
-        intent.putExtra("key", view.getTag().toString());
+        intent.putExtra(WORKSPACE_ACCESS_KEY, view.getTag().toString());
         startActivity(intent);
     }
 }

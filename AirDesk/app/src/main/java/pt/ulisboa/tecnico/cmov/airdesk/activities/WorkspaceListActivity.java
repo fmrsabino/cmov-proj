@@ -22,7 +22,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 public class WorkspaceListActivity extends ActionBarActivity {
 
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
-
+    Intent intent;
+    String repo;
     private ListView listView;
     private List<WorkspacesListAdapter.Content> directories = new ArrayList<>();
     private WorkspacesListAdapter listAdapter;
@@ -36,7 +37,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
         setContentView(R.layout.activity_workspace_list);
 
         fileManagerLocal = new FileManagerLocal(this);
-
+        intent = getIntent();
+        repo = intent.getStringExtra(WelcomeActivity.WORKSPACE_ACCESS_KEY);
         listView = (ListView) findViewById(R.id.workspace_list);
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
@@ -61,16 +63,22 @@ public class WorkspaceListActivity extends ActionBarActivity {
     }
 
     private void populateWorkspaceList() {
+
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
-        List<Workspace> wsList = wsManager.retrieveWorkspaces();
+        List<Workspace> wsList;
 
-        for(Workspace w:wsList){
-            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota())));
-        }
+        if(repo.equals("owned"))
+            wsList = wsManager.retrieveOwnedWorkspaces();
+        else
+            wsList= wsManager.retrieveForeignWorkspaces();
 
-        WorkspacesListAdapter adapter = new WorkspacesListAdapter(this, directories);
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
+            for (Workspace w : wsList) {
+                directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota())));
+            }
+
+            WorkspacesListAdapter adapter = new WorkspacesListAdapter(this, directories);
+            adapter.notifyDataSetChanged();
+            listView.setAdapter(adapter);
 
     }
 

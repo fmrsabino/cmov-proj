@@ -183,7 +183,7 @@ public class DatabaseAPI {
     return smoothInsert;
     }
 
-    public static List<Workspace> getWorkspaces(AirDeskDbHelper dbHelper){
+    public static List<Workspace> getOwnedWorkspaces(AirDeskDbHelper dbHelper){
         db = dbHelper.getReadableDatabase();
         List<String> viewers;
         List<Workspace> wsList= new ArrayList<Workspace>();
@@ -195,14 +195,16 @@ public class DatabaseAPI {
                 AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC,
                 AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS};
 
+        String[] selectionArgs = { getLoggedUser(dbHelper) };
+
         String ws_sortOrder =
                 AirDeskContract.Workspaces.COLUMN_NAME_NAME + " DESC";
 
         Cursor c = db.query(
                 AirDeskContract.Workspaces.TABLE_NAME,  // The table to query
                 ws_projection,                               // The columns to return
-                null,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
+                AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " LIKE ?",  // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
                 ws_sortOrder                                 // The sort order
@@ -222,13 +224,13 @@ public class DatabaseAPI {
             do { //get viewers from specific workspace
                 viewers = new ArrayList<>();
 
-                String[] selectionArgs = { c.getString(0) };
+                String[] selectionArgs2 = { c.getString(0) };
 
                 Cursor c2 = db.query(
                         AirDeskContract.Viewers.TABLE_NAME,  // The table to query
                         v_projection,
                         AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
-                        selectionArgs,
+                        selectionArgs2,
                         null,                                     // don't group the rows
                         null,                                     // don't filter by row groups
                         v_sortOrder                                 // The sort order
@@ -243,6 +245,10 @@ public class DatabaseAPI {
         } while(c.moveToNext());
 
        return wsList;
+    }
+
+    public List<Workspace> getForeignWorkspaces(AirDeskDbHelper dbHelper) {
+        return new ArrayList<Workspace>();
     }
 
     public static Workspace getWorkspace(AirDeskDbHelper dbHelper, String ws_name){

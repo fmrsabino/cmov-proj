@@ -24,6 +24,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 public class BrowseWorkspaceActivity extends ActionBarActivity
         implements CreateFileDialogFragment.CreateFileDialogListener {
 
+
     private GridView gridView;
     private String workspaceName;
     private List<String> files = new ArrayList<>();
@@ -125,6 +126,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             startActivity(intent);
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
