@@ -34,26 +34,27 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
 
             <TextView
+                android:id="@+id/quota_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:text="Quota:"/>
+                android:text="Quota: 0"/>
 
-            <EditText
+            <SeekBar
                 android:id="@+id/quota"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:textSize="14sp"
-                android:singleLine="true"/>
+                android:layout_height="wrap_content" />
+
 
         </LinearLayout>
-        
+
+
         <View
             android:layout_marginTop="15dp"
             android:background="@color/material_blue_grey_950"
