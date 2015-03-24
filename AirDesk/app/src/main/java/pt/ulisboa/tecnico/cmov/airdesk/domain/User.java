@@ -8,4 +8,12 @@ public class User {
         this.nick = nick;
         this.email = email;
     }
+
+    public String getNick(){
+        return nick;
+    }
+
+    public String getEmail(){
+        return email;
+    }
 }

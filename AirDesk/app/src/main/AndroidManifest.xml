@@ -19,7 +19,7 @@
         <activity
             android:name=".activities.WorkspaceListActivity"
             android:label="@string/title_activity_workspace_list"
-            android:parentActivityName=".activities.MainActivity" >
+            android:parentActivityName=".activities.WelcomeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -41,7 +41,7 @@
         <activity
             android:name=".activities.FileManagerTestActivity"
             android:label="@string/title_activity_file_manager_test"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity" >
         </activity>
         <activity
             android:name=".activities.ViewersActivity"
@@ -50,6 +50,10 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.BrowseWorkspaceActivity" />
+        </activity>
+        <activity
+            android:name=".activities.WelcomeActivity"
+            android:label="@string/title_activity_welcome">
         </activity>
     </application>
 

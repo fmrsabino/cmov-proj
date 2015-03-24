@@ -1,0 +1,54 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome!"
+        android:textSize="40sp"
+        android:layout_margin="20dp"
+        android:id="@+id/welcome" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:text ="email@email.com"
+        android:id="@+id/emailView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
+        android:text ="cool_nick"
+        android:id="@+id/nickView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My Workspaces"
+        android:id="@+id/myWorkspacesButton"
+        android:tag="owned"
+        android:onClick="listWorkspaces"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Foreign Workspaces"
+        android:id="@+id/foreignWorkspacesButton"
+        android:tag="foreign"
+        android:onClick="listWorkspaces"
+        android:layout_gravity="center_horizontal" />
+
+
+</LinearLayout>

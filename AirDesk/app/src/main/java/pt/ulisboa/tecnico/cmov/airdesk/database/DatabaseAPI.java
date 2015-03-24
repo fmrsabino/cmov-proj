@@ -7,6 +7,7 @@ import android.util.Log;
 import java.util.List;
 import java.util.ArrayList;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.*;
 
 public class DatabaseAPI {
 
@@ -39,6 +40,24 @@ public class DatabaseAPI {
         }
     }
 
+    public static boolean signOut(AirDeskDbHelper dbHelper){
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 0);
+
+        String selection = AirDeskContract.Users.COLUMN_NAME_LOGGED + " = ?";
+        String[] selectionArgs = { "1" };
+
+        int count = db.update(
+                AirDeskContract.Users.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        if(count != 0)
+            return true;
+        else return false;
+    }
+
     public static String getLoggedUser(AirDeskDbHelper dbHelper){
         db = dbHelper.getReadableDatabase();
 
@@ -62,6 +81,34 @@ public class DatabaseAPI {
             return c.getString(0);
         else
         return null;
+    }
+
+    public static User getLoggedDomainUser(AirDeskDbHelper dbHelper){
+        db = dbHelper.getReadableDatabase();
+        String nick = null;
+        String email = null;
+
+        String[] projection = {AirDeskContract.Users.COLUMN_NAME_EMAIL,
+                               AirDeskContract.Users.COLUMN_NAME_NICK};
+
+        String[] selectionArgs = {"1"};
+
+        Cursor c = db.query(
+                AirDeskContract.Users.TABLE_NAME,
+                projection,
+                AirDeskContract.Users.COLUMN_NAME_LOGGED + " = ?",
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        while(c.moveToNext()){
+            email = c.getString(0);
+            nick = c.getString(1);
+        }
+
+        return new User(nick,email);
     }
 
     public static boolean register(AirDeskDbHelper dbHelper, String nick, String email){

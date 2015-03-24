@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void signIn(View view){
-        Intent intent = new Intent(this, WorkspaceListActivity.class);
+        Intent intent = new Intent(this, WelcomeActivity.class);
         EditText nick = (EditText) findViewById(R.id.userIn);
         if(!nick.getText().toString().isEmpty()) {
             if (DatabaseAPI.login(new AirDeskDbHelper(this), nick.getText().toString())) {
@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void register(View view){
-        Intent intent = new Intent(this, WorkspaceListActivity.class);
+        Intent intent = new Intent(this, WelcomeActivity.class);
         EditText nick = (EditText) findViewById(R.id.userNick);
         EditText email = (EditText) findViewById(R.id.userEmail);
         if(!nick.getText().toString().isEmpty() && !email.getText().toString().isEmpty()) {
