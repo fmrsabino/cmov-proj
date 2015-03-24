@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,11 +66,11 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private void populateWorkspaceList() {
 
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
-        List<Workspace> wsList;
+        List<Workspace> wsList = new ArrayList<>();
 
-        if(repo.equals("owned"))
+        if(TextUtils.equals(repo, "owned"))
             wsList = wsManager.retrieveOwnedWorkspaces();
-        else
+        else if(TextUtils.equals(repo, "foreign"))
             wsList= wsManager.retrieveForeignWorkspaces();
 
             for (Workspace w : wsList) {

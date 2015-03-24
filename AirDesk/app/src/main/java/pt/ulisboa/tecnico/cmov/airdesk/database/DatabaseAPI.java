@@ -247,8 +247,70 @@ public class DatabaseAPI {
        return wsList;
     }
 
+    //TODO: This is grabbing every workspace not owned by the currently logged in user, despite of being a viewer or not
+
     public List<Workspace> getForeignWorkspaces(AirDeskDbHelper dbHelper) {
-        return new ArrayList<Workspace>();
+        db = dbHelper.getReadableDatabase();
+        List<String> viewers;
+        List<Workspace> wsList= new ArrayList<Workspace>();
+
+        String[] ws_projection = {
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME,
+                AirDeskContract.Workspaces.COLUMN_NAME_OWNER,
+                AirDeskContract.Workspaces.COLUMN_NAME_QUOTA,
+                AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC,
+                AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS};
+
+        String[] selectionArgs = { getLoggedUser(dbHelper) };
+
+        String ws_sortOrder =
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " DESC";
+
+        Cursor c = db.query(
+                AirDeskContract.Workspaces.TABLE_NAME,  // The table to query
+                ws_projection,                               // The columns to return
+                AirDeskContract.Workspaces.COLUMN_NAME_OWNER + "NOT LIKE ?",  // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                ws_sortOrder                                 // The sort order
+        );
+
+
+        String[] v_projection = {
+                AirDeskContract.Viewers.COLUMN_NAME_NICK};
+
+        String v_sortOrder =
+                AirDeskContract.Viewers.COLUMN_NAME_NICK + " ASC";
+
+
+
+
+        if (c.moveToFirst())
+            do { //get viewers from specific workspace
+                viewers = new ArrayList<>();
+
+                String[] selectionArgs2 = { c.getString(0) };
+
+                Cursor c2 = db.query(
+                        AirDeskContract.Viewers.TABLE_NAME,  // The table to query
+                        v_projection,
+                        AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
+                        selectionArgs2,
+                        null,                                     // don't group the rows
+                        null,                                     // don't filter by row groups
+                        v_sortOrder                                 // The sort order
+                );
+
+                if (c2.moveToFirst())
+                    do { //add such viewers to a list
+                        viewers.add(c2.getString(0));
+                    } while(c2.moveToNext());
+
+                wsList.add(new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers));
+            } while(c.moveToNext());
+
+        return wsList;
     }
 
     public static Workspace getWorkspace(AirDeskDbHelper dbHelper, String ws_name){
