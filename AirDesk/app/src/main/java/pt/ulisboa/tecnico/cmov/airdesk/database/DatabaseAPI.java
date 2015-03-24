@@ -3,11 +3,12 @@ package pt.ulisboa.tecnico.cmov.airdesk.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
+
+import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
-import pt.ulisboa.tecnico.cmov.airdesk.domain.*;
 
 public class DatabaseAPI {
 
@@ -17,11 +18,12 @@ public class DatabaseAPI {
         db = dbHelper.getReadableDatabase();
         String query = "Select * from " + AirDeskContract.Users.TABLE_NAME +
                 " where " + AirDeskContract.Users.COLUMN_NAME_NICK + " = '" + nick + "'";
+
         Cursor cursor = db.rawQuery(query, null);
-        if(cursor.getCount() <= 0){
+        if (cursor.getCount() <= 0) {
+            cursor.close();
             return false;
-        }
-        else{
+        } else{
             ContentValues values = new ContentValues();
             values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 1);
 
@@ -33,10 +35,8 @@ public class DatabaseAPI {
                     values,
                     selection,
                     selectionArgs);
-
-            if(count != 0)
-                return true;
-            else return false;
+            cursor.close();
+            return count != 0;
         }
     }
 
@@ -53,9 +53,7 @@ public class DatabaseAPI {
                 selection,
                 selectionArgs);
 
-        if(count != 0)
-            return true;
-        else return false;
+        return count != 0;
     }
 
     public static String getLoggedUser(AirDeskDbHelper dbHelper){
@@ -77,10 +75,14 @@ public class DatabaseAPI {
         );
 
 
-        if(c.moveToFirst())
-            return c.getString(0);
-        else
-        return null;
+        if(c.moveToFirst()) {
+            String result = c.getString(0);
+            c.close();
+            return result;
+        } else {
+            c.close();
+            return null;
+        }
     }
 
     public static User getLoggedDomainUser(AirDeskDbHelper dbHelper){
@@ -89,7 +91,7 @@ public class DatabaseAPI {
         String email = null;
 
         String[] projection = {AirDeskContract.Users.COLUMN_NAME_EMAIL,
-                               AirDeskContract.Users.COLUMN_NAME_NICK};
+                AirDeskContract.Users.COLUMN_NAME_NICK};
 
         String[] selectionArgs = {"1"};
 
@@ -108,11 +110,11 @@ public class DatabaseAPI {
             nick = c.getString(1);
         }
 
+        c.close();
         return new User(nick,email);
     }
 
     public static boolean register(AirDeskDbHelper dbHelper, String nick, String email){
-
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -121,9 +123,7 @@ public class DatabaseAPI {
         values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 1);
 
         long row = db.insert(AirDeskContract.Users.TABLE_NAME, null,values);
-        if(row!= -1)
-            return true;
-        else return false;
+        return row != -1;
     }
 
     public static boolean createWorkspace(AirDeskDbHelper dbHelper,
@@ -147,9 +147,7 @@ public class DatabaseAPI {
 
 
         long row = db.insert(AirDeskContract.Workspaces.TABLE_NAME, null,values);
-        if(row!= -1)
-            return true;
-        else return false;
+        return row != -1;
     }
 
 
@@ -158,11 +156,11 @@ public class DatabaseAPI {
         ContentValues values = new ContentValues();
         boolean smoothInsert = true;
 
-            values.put(AirDeskContract.Viewers.COLUMN_NAME_NICK, viewer);
-            values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
-            long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
-            if(row == -1)
-                smoothInsert = false;
+        values.put(AirDeskContract.Viewers.COLUMN_NAME_NICK, viewer);
+        values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
+        long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
+        if(row == -1)
+            smoothInsert = false;
 
         return smoothInsert;
     }
@@ -172,7 +170,7 @@ public class DatabaseAPI {
         ContentValues values = new ContentValues();
         boolean smoothInsert = true;
 
-        for(String v : viewers){
+        for (String v : viewers) {
             values.put(AirDeskContract.Viewers.COLUMN_NAME_NICK, v);
             values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
             long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
@@ -180,13 +178,13 @@ public class DatabaseAPI {
                 smoothInsert = false;
         }
 
-    return smoothInsert;
+        return smoothInsert;
     }
 
     public static List<Workspace> getOwnedWorkspaces(AirDeskDbHelper dbHelper){
         db = dbHelper.getReadableDatabase();
         List<String> viewers;
-        List<Workspace> wsList= new ArrayList<Workspace>();
+        List<Workspace> wsList= new ArrayList<>();
 
         String[] ws_projection = {
                 AirDeskContract.Workspaces.COLUMN_NAME_NAME,
@@ -217,41 +215,37 @@ public class DatabaseAPI {
         String v_sortOrder =
                 AirDeskContract.Viewers.COLUMN_NAME_NICK + " ASC";
 
+        while (c.moveToNext()) {
+            viewers = new ArrayList<>();
 
+            String[] selectionArgs2 = { c.getString(0) };
 
+            Cursor c2 = db.query(
+                    AirDeskContract.Viewers.TABLE_NAME,  // The table to query
+                    v_projection,
+                    AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
+                    selectionArgs2,
+                    null,                                     // don't group the rows
+                    null,                                     // don't filter by row groups
+                    v_sortOrder                                 // The sort order
+            );
 
-        if (c.moveToFirst())
-            do { //get viewers from specific workspace
-                viewers = new ArrayList<>();
-
-                String[] selectionArgs2 = { c.getString(0) };
-
-                Cursor c2 = db.query(
-                        AirDeskContract.Viewers.TABLE_NAME,  // The table to query
-                        v_projection,
-                        AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
-                        selectionArgs2,
-                        null,                                     // don't group the rows
-                        null,                                     // don't filter by row groups
-                        v_sortOrder                                 // The sort order
-                );
-
-                if (c2.moveToFirst())
-                    do { //add such viewers to a list
-                    viewers.add(c2.getString(0));
-                    } while(c2.moveToNext());
+            while (c2.moveToNext()) {
+                viewers.add(c2.getString(0));
+            }
+            c2.close();
 
             wsList.add(new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers));
-        } while(c.moveToNext());
-
-       return wsList;
+        }
+        c.close();
+        return wsList;
     }
 
     public List<Workspace> getForeignWorkspaces(AirDeskDbHelper dbHelper) {
         db = dbHelper.getReadableDatabase();
         List<String> workspaces = new ArrayList<>();
         List<String> viewers;
-        List<Workspace> wsList= new ArrayList<Workspace>();
+        List<Workspace> wsList= new ArrayList<>();
 
 
         String[] v_projection = {
@@ -272,13 +266,11 @@ public class DatabaseAPI {
                 v_sortOrder                                 // The sort order
         );
 
-        if(c.moveToFirst())
-            do {
-                workspaces.add(c.getString(0));
-            } while (c.moveToNext());
 
-
-
+        while (c.moveToNext()) {
+            workspaces.add(c.getString(0));
+        }
+        c.close();
 
         String[] ws_projection = {
                 AirDeskContract.Workspaces.COLUMN_NAME_NAME,
@@ -303,30 +295,29 @@ public class DatabaseAPI {
                     ws_sortOrder                                 // The sort order
             );
 
+            while (c2.moveToNext()) {
+                viewers = new ArrayList<>();
 
-            if (c2.moveToFirst())
-                do { //get viewers from specific workspace
-                    viewers = new ArrayList<>();
+                String[] selectionArgs2 = {c2.getString(0)};
 
-                    String[] selectionArgs2 = {c2.getString(0)};
+                Cursor c3 = db.query(
+                        AirDeskContract.Viewers.TABLE_NAME,  // The table to query
+                        v_projection,
+                        AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
+                        selectionArgs2,
+                        null,                                     // don't group the rows
+                        null,                                     // don't filter by row groups
+                        v_sortOrder                                 // The sort order
+                );
 
-                    Cursor c3 = db.query(
-                            AirDeskContract.Viewers.TABLE_NAME,  // The table to query
-                            v_projection,
-                            AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
-                            selectionArgs2,
-                            null,                                     // don't group the rows
-                            null,                                     // don't filter by row groups
-                            v_sortOrder                                 // The sort order
-                    );
+                while(c3.moveToNext()) {
+                    viewers.add(c3.getString(0));
+                }
+                c3.close();
 
-                    if (c3.moveToFirst())
-                        do { //add such viewers to a list
-                            viewers.add(c3.getString(0));
-                        } while (c3.moveToNext());
-
-                    wsList.add(new Workspace(c2.getString(0), c2.getInt(2), c2.getInt(3), c2.getString(4), viewers));
-                } while (c2.moveToNext());
+                wsList.add(new Workspace(c2.getString(0), c2.getInt(2), c2.getInt(3), c2.getString(4), viewers));
+            }
+            c2.close();
         }
         return wsList;
     }
@@ -365,24 +356,24 @@ public class DatabaseAPI {
 
         c.moveToFirst();
 
-
         Cursor c2 = db.query(
-                        AirDeskContract.Viewers.TABLE_NAME,  // The table to query
-                        v_projection,
-                        AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
-                        selectionArgs,
-                        null,                                     // don't group the rows
-                        null,                                     // don't filter by row groups
-                        v_sortOrder                                 // The sort order
-                );
+                AirDeskContract.Viewers.TABLE_NAME,  // The table to query
+                v_projection,
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
+                selectionArgs,
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                v_sortOrder                                 // The sort order
+        );
 
-        if (c2.moveToFirst())
-            do { //add such viewers to a list
-                 viewers.add(c2.getString(0));
-            } while(c2.moveToNext());
-
+        while (c2.moveToNext()) {
+            viewers.add(c2.getString(0));
+        }
+        
         ws = new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers);
 
+        c.close();
+        c2.close();
         return ws;
     }
 }
