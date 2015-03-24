@@ -32,7 +32,8 @@
         <activity
             android:name=".activities.BrowseWorkspaceActivity"
             android:label="@string/title_activity_browse_workspace"
-            android:parentActivityName=".activities.WorkspaceListActivity" >
+            android:parentActivityName=".activities.WorkspaceListActivity"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.WorkspaceListActivity" />

@@ -51,6 +51,7 @@
                 android:padding="5dp"
                 android:textSize="14sp"
                 android:singleLine="true"/>
+
         </LinearLayout>
         
         <View
