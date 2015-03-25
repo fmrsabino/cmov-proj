@@ -147,10 +147,19 @@ public class DatabaseAPI {
         values.put(AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC, is_public);
         values.put(AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS, keywords);
 
-        addUsersToWorkspace(dbHelper, viewers, name);
+        //start transaction
+        db.beginTransaction();
+            //first insert
+            long row = db.insert(AirDeskContract.Workspaces.TABLE_NAME, null,values);
+            //second insert
+            boolean status = addUsersToWorkspace(dbHelper, viewers, name);
+            //check status and decide on commit or rollback
+            if(status && (row != -1))
+                //this means -> commit transaction
+                db.setTransactionSuccessful();
+        //close transaction
+        db.endTransaction();
 
-
-        long row = db.insert(AirDeskContract.Workspaces.TABLE_NAME, null,values);
         return row != -1;
     }
 
