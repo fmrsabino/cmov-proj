@@ -12,7 +12,6 @@ public class WorkspaceManager {
 
     private Workspace workspace;
     private Context context;
-    private DatabaseAPI dbAPI;
     AirDeskDbHelper dbHelper;
 
     public WorkspaceManager(Workspace workspace, Context context) {
@@ -31,38 +30,33 @@ public class WorkspaceManager {
 
     public void addWorkspace() {
         dbHelper = new AirDeskDbHelper(context);
-        dbAPI = new DatabaseAPI();
 
-        String loggedUser = dbAPI.getLoggedUser(dbHelper);
+        String loggedUser = DatabaseAPI.getLoggedUser(dbHelper);
 
-        dbAPI.createWorkspace(dbHelper, workspace.getName(), loggedUser, workspace.getQuota(), workspace.isPublic(), workspace.getKeywords(), workspace.getUsers());
+        DatabaseAPI.createWorkspace(dbHelper, workspace.getName(), loggedUser, workspace.getQuota(), workspace.isPublic(), workspace.getKeywords(), workspace.getUsers());
     }
 
     public void addViewer(String viewer, String ws_name) {
         dbHelper = new AirDeskDbHelper(context);
-        dbAPI = new DatabaseAPI();
 
-        dbAPI.addUserToWorkspace(dbHelper, viewer, ws_name );
+        DatabaseAPI.addUserToWorkspace(dbHelper, viewer, ws_name );
     }
 
     public List<Workspace> retrieveOwnedWorkspaces(){
         dbHelper = new AirDeskDbHelper(context);
-        dbAPI = new DatabaseAPI();
 
-        return dbAPI.getOwnedWorkspaces(dbHelper);
+        return DatabaseAPI.getOwnedWorkspaces(dbHelper);
     }
 
     public List<Workspace> retrieveForeignWorkspaces() {
         dbHelper = new AirDeskDbHelper(context);
-        dbAPI = new DatabaseAPI();
 
-        return dbAPI.getForeignWorkspaces(dbHelper);
+        return DatabaseAPI.getForeignWorkspaces(dbHelper);
     }
     public Workspace retrieveWorkspace(String ws_name){
         dbHelper = new AirDeskDbHelper(context);
-        dbAPI = new DatabaseAPI();
 
-        return dbAPI.getWorkspace(dbHelper, ws_name);
+        return DatabaseAPI.getWorkspace(dbHelper, ws_name);
     }
 
     public boolean sanitizeBlankInputs(){

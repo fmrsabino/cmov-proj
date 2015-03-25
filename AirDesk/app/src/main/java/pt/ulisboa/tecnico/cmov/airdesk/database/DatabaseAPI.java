@@ -245,7 +245,7 @@ public class DatabaseAPI {
         return wsList;
     }
 
-    public List<Workspace> getForeignWorkspaces(AirDeskDbHelper dbHelper) {
+    public static List<Workspace> getForeignWorkspaces(AirDeskDbHelper dbHelper) {
         db = dbHelper.getReadableDatabase();
         List<String> workspaces = new ArrayList<>();
         List<String> viewers;
