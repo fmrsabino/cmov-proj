@@ -19,9 +19,8 @@ public class WorkspacesListAdapter extends BaseAdapter
 
         public Content(String ws_name, String quota) {
             this.ws_name = ws_name;
-            this.quota = quota + "%";
+            this.quota = quota + " Mb";
         }
-
 
         public String getQuota() {
             return quota;

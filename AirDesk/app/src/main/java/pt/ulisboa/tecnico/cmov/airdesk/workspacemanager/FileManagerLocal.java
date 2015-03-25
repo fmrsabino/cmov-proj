@@ -1,6 +1,9 @@
 package pt.ulisboa.tecnico.cmov.airdesk.workspacemanager;
 
 import android.content.Context;
+import android.os.Environment;
+import android.os.StatFs;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import java.io.File;
@@ -90,5 +93,16 @@ public class FileManagerLocal {
     //Returns files and directory names in root
     public List<String> getWorkspaces() {
         return getFilesNames("");
+    }
+
+    public String getSystemAvailableSpace() {
+        File path = Environment.getDataDirectory();
+        StatFs statFs = new StatFs(path.getPath());
+
+        //Methods are deprecated as of API 18 but min support is API 14
+        long blockSize = statFs.getBlockSize();
+        long availableBlocks = statFs.getAvailableBlocks();
+
+        return Formatter.formatFileSize(mContext, availableBlocks * blockSize);
     }
 }
