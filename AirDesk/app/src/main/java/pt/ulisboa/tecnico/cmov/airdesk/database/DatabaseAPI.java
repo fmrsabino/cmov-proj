@@ -416,4 +416,48 @@ public class DatabaseAPI {
         return smoothDelete;
     }
 
+    public static boolean deleteFile(AirDeskDbHelper dbHelper, String workspace, int fileSize) {
+        double currentQuota = getCurrentQuota(dbHelper, workspace);
+
+        db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, currentQuota + fileSize);
+
+        db.update(
+                AirDeskContract.Workspaces.TABLE_NAME,
+                values,
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
+                new String[]{workspace}
+        );
+
+        return true;
+    }
+
+    // Returns the current quota value in bytes for workspace
+    private static int getCurrentQuota(AirDeskDbHelper dbHelper, String workspace) {
+        db = dbHelper.getReadableDatabase();
+
+        int workspaceQuota = 0;
+        String[] projection = {
+                AirDeskContract.Workspaces.COLUMN_NAME_QUOTA
+        };
+
+        Cursor c = db.query(
+                AirDeskContract.Workspaces.TABLE_NAME,
+                projection,
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
+                new String[]{workspace},
+                null,
+                null,
+                null
+        );
+
+        if (c.moveToFirst()) {
+            workspaceQuota = c.getInt(0);
+        }
+
+        return workspaceQuota;
+    }
+
 }
