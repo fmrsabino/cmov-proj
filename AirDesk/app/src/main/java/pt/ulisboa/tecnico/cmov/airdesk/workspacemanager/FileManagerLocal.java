@@ -6,7 +6,11 @@ import android.os.StatFs;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +62,37 @@ public class FileManagerLocal {
         }
 
         return success;
+    }
+
+    public String getFileContents(String name, String directory){
+        File file = new File(mContext.getFilesDir() + File.separator + directory, name);
+        String line = null;
+        StringBuffer stringBuffer = new StringBuffer();
+        try{
+            FileReader reader = new FileReader(file);
+            BufferedReader buf = new BufferedReader(reader);
+            while ((line = buf.readLine()) != null) {
+                stringBuffer.append(line + "\n" );
+            }
+
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+        return stringBuffer.toString();
+    }
+
+    public void saveFileContents(String name, String directory, String contents){
+        File file = new File(mContext.getFilesDir() + File.separator + directory, name);
+        try{
+            FileWriter writer = new FileWriter(file);
+            writer.write(contents);
+            writer.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean removeDirectory(String directory) {

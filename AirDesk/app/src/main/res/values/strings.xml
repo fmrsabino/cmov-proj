@@ -23,5 +23,6 @@
     <string name="title_activity_viewers">ViewersActivity</string>
     <string name="title_activity_create_workspace">CreateWorkspace</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_file_editor">FileEditorActivity</string>
 
 </resources>

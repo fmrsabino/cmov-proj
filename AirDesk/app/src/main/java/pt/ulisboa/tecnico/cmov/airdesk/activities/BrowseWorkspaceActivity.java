@@ -9,7 +9,9 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
@@ -48,6 +50,17 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
                 R.layout.activity_browse_workspace_grid_item, R.id.text1, files);
 
         gridView.setAdapter(gridAdapter);
+
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                Intent intent = new Intent(BrowseWorkspaceActivity.this, FileEditorActivity.class);
+                intent.putExtra("file_name", gridAdapter.getItem(position).toString());
+                intent.putExtra("workspace_name", workspaceName);
+                startActivity(intent);
+            }
+        });
 
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {

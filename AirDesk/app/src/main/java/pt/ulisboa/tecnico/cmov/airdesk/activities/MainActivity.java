@@ -74,9 +74,4 @@ public class MainActivity extends ActionBarActivity {
             } else Toast.makeText(this,"Registration Failed",Toast.LENGTH_SHORT).show();
         } else Toast.makeText(this,"Name and Email are Required",Toast.LENGTH_SHORT).show();
     }
-
-    public void fileManager(View view) {
-        Intent intent = new Intent(this, FileManagerTestActivity.class);
-        startActivity(intent);
-    }
 }
