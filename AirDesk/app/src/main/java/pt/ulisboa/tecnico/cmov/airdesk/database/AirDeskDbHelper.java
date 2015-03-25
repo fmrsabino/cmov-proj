@@ -17,7 +17,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_VIEWERS_TABLE =
             "CREATE TABLE " + AirDeskContract.Viewers.TABLE_NAME + " (" +
                     AirDeskContract.Viewers.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    AirDeskContract.Viewers.COLUMN_NAME_NICK + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Viewers.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
                     AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE+ TEXT_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE+ ")" +
                     " REFERENCES "+AirDeskContract.Workspaces.TABLE_NAME + " ("+
@@ -41,9 +41,9 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS + TEXT_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Workspaces.COLUMN_NAME_OWNER+ ")" +
                     " REFERENCES "+AirDeskContract.Users.TABLE_NAME + " ("+
-                    AirDeskContract.Users.COLUMN_NAME_NICK + "));";
+                    AirDeskContract.Users.COLUMN_NAME_EMAIL + "));";
 
-    private static final String SQL_CREATE_FILES_TABLE =
+    /*private static final String SQL_CREATE_FILES_TABLE =
             "CREATE TABLE " + AirDeskContract.Files.TABLE_NAME + " (" +
                     AirDeskContract.Files.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Files.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
@@ -51,7 +51,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Files.COLUMN_NAME_OWNER + INTEGER_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Files.COLUMN_NAME_OWNER+ ")" +
                     " REFERENCES "+AirDeskContract.Workspaces.TABLE_NAME + " ("+
-                    AirDeskContract.Workspaces.COLUMN_NAME_ID + "));";
+                    AirDeskContract.Workspaces.COLUMN_NAME_ID + "));"; */
 
     private static final String SQL_DELETE_OWNER_TABLE =
             "DROP TABLE IF EXISTS " + AirDeskContract.Users.TABLE_NAME;
@@ -62,8 +62,8 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_WORKSPACES_TABLE =
             "DROP TABLE IF EXISTS " + AirDeskContract.Workspaces.TABLE_NAME;
 
-    private static final String SQL_DELETE_FILES_TABLE =
-            "DROP TABLE IF EXISTS " + AirDeskContract.Files.TABLE_NAME;
+   // private static final String SQL_DELETE_FILES_TABLE =
+   //         "DROP TABLE IF EXISTS " + AirDeskContract.Files.TABLE_NAME;
 
     public AirDeskDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -73,14 +73,14 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_USERS_TABLE);
         db.execSQL(SQL_CREATE_VIEWERS_TABLE);
         db.execSQL(SQL_CREATE_WORKSPACES_TABLE);
-        db.execSQL(SQL_CREATE_FILES_TABLE);
+        //db.execSQL(SQL_CREATE_FILES_TABLE);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(SQL_DELETE_OWNER_TABLE);
         db.execSQL(SQL_DELETE_USERS_TABLE);
         db.execSQL(SQL_DELETE_WORKSPACES_TABLE);
-        db.execSQL(SQL_DELETE_FILES_TABLE);
+        //db.execSQL(SQL_DELETE_FILES_TABLE);
         onCreate(db);
     }
 

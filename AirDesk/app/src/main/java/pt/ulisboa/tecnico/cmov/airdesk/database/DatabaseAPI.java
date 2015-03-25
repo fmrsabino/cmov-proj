@@ -168,7 +168,7 @@ public class DatabaseAPI {
         ContentValues values = new ContentValues();
         boolean smoothInsert = true;
 
-        values.put(AirDeskContract.Viewers.COLUMN_NAME_NICK, viewer);
+        values.put(AirDeskContract.Viewers.COLUMN_NAME_EMAIL, viewer);
         values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
         long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
         if(row == -1)
@@ -183,7 +183,7 @@ public class DatabaseAPI {
         boolean smoothInsert = true;
 
         for (String v : viewers) {
-            values.put(AirDeskContract.Viewers.COLUMN_NAME_NICK, v);
+            values.put(AirDeskContract.Viewers.COLUMN_NAME_EMAIL, v);
             values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
             long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
             if(row == -1)
@@ -222,10 +222,10 @@ public class DatabaseAPI {
 
 
         String[] v_projection = {
-                AirDeskContract.Viewers.COLUMN_NAME_NICK};
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL};
 
         String v_sortOrder =
-                AirDeskContract.Viewers.COLUMN_NAME_NICK + " ASC";
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL + " ASC";
 
         while (c.moveToNext()) {
             viewers = new ArrayList<>();
@@ -271,7 +271,7 @@ public class DatabaseAPI {
         Cursor c = db.query(
                 AirDeskContract.Viewers.TABLE_NAME,  // The table to query
                 v_projection,                               // The columns to return
-                AirDeskContract.Viewers.COLUMN_NAME_NICK + " LIKE ?",  // The columns for the WHERE clause
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL + " LIKE ?",  // The columns for the WHERE clause
                 v_selectionArgs,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
@@ -360,10 +360,10 @@ public class DatabaseAPI {
 
 
         String[] v_projection = {
-                AirDeskContract.Viewers.COLUMN_NAME_NICK};
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL};
 
         String v_sortOrder =
-                AirDeskContract.Viewers.COLUMN_NAME_NICK + " ASC";
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL + " ASC";
 
 
         c.moveToFirst();

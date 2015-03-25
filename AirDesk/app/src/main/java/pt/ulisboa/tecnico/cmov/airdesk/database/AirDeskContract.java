@@ -9,7 +9,7 @@ public final class AirDeskContract {
     public static abstract class Viewers implements BaseColumns {
         public static final String TABLE_NAME = "viewer";
         public static final String COLUMN_NAME_ID = "id";
-        public static final String COLUMN_NAME_NICK = "nick";
+        public static final String COLUMN_NAME_EMAIL = "email";
         public static final String COLUMN_NAME_WORKSPACE = "workspace";
     }
 
