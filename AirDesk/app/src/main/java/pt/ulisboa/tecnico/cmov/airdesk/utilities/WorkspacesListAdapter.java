@@ -54,7 +54,7 @@ public class WorkspacesListAdapter extends BaseAdapter
     }
 
     @Override
-    public Object getItem(int position) {
+    public Content getItem(int position) {
         return list.get(position);
     }
 

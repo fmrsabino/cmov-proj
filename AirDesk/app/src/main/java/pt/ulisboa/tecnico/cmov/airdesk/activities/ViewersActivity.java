@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,13 +28,13 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class ViewersActivity extends ActionBarActivity {
 
-    private TextView tv;
     private String ws_name;
     private ListView listView ;
     private EditText viewer;
     private List<String> viewers;
     private ArrayAdapter<String> adapter;
     private Workspace ws;
+    WorkspaceManager wsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +43,9 @@ public class ViewersActivity extends ActionBarActivity {
 
         listView = (ListView) findViewById(R.id.viewers_list);
         viewer = (EditText) findViewById(R.id.viewer);
-        tv = (TextView) findViewById(R.id.workspace_name);
+        TextView tv = (TextView) findViewById(R.id.workspace_name);
 
-        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
+        wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
         ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
@@ -56,12 +55,12 @@ public class ViewersActivity extends ActionBarActivity {
 
         viewers = new ArrayList<>(ws.getUsers());
 
-        adapter = new ArrayAdapter<String>(this,
+        adapter = new ArrayAdapter<>(this,
                 R.layout.activity_viewers_list_item, R.id.selected_item, viewers);
 
         listView.setAdapter(adapter);
 
-        listView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -100,15 +99,17 @@ public class ViewersActivity extends ActionBarActivity {
     }
 
     private void deleteSelectedItems() {
+        AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
         SparseBooleanArray checked = listView.getCheckedItemPositions();
+
         for (int i = 0; i < listView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
-                AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
                 DatabaseAPI.deleteViewer(dbHelper, adapter.getItem(i), ws_name);
             }
         }
 
         viewers.clear();
+        ws = wsManager.retrieveWorkspace(ws_name);
         viewers.addAll(ws.getUsers());
         adapter.notifyDataSetChanged();
     }
@@ -148,6 +149,7 @@ public class ViewersActivity extends ActionBarActivity {
                 wsManager.addViewer(v, ws_name);
 
                 adapter.notifyDataSetChanged();
+                viewer.setText(null);
             }
         }
     }

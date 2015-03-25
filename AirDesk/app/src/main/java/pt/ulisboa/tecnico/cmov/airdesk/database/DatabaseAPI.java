@@ -400,4 +400,20 @@ public class DatabaseAPI {
         return ws;
     }
 
+    public static boolean deleteLocalWorkspace(AirDeskDbHelper dbHelper, String ws_name) {
+        db = dbHelper.getWritableDatabase();
+        boolean smoothDelete = true;
+
+        String owner_email = getLoggedUser(dbHelper);
+
+        if(db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + "= \'" + ws_name + "\'" , null) < 0)
+            smoothDelete = false;
+
+        if(db.delete(AirDeskContract.Workspaces.TABLE_NAME, AirDeskContract.Workspaces.COLUMN_NAME_NAME + "= \'" + ws_name + "\' AND " +
+                AirDeskContract.Workspaces.COLUMN_NAME_OWNER + "= \'" + owner_email +"\'", null) < 0)
+            smoothDelete = false;
+
+        return smoothDelete;
+    }
+
 }
