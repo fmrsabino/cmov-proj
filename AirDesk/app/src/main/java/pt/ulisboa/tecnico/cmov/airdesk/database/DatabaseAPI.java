@@ -62,7 +62,7 @@ public class DatabaseAPI {
         db = dbHelper.getReadableDatabase();
 
         String[] projection = {
-                AirDeskContract.Users.COLUMN_NAME_NICK};
+                AirDeskContract.Users.COLUMN_NAME_EMAIL};
 
         String[] selectionArgs = { "1" };
 
@@ -177,6 +177,7 @@ public class DatabaseAPI {
         return smoothInsert;
     }
 
+
     public static boolean addUsersToWorkspace(AirDeskDbHelper dbHelper, List<String> viewers, String wsname){
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -192,6 +193,16 @@ public class DatabaseAPI {
 
         return smoothInsert;
     }
+
+    public static void deleteViewer(AirDeskDbHelper dbHelper, String v_email, String ws_name) {
+        db = dbHelper.getWritableDatabase();
+
+        //db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= ?", new String[] { v_email });
+        db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + v_email + "\' AND " +
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + "= \'" + ws_name +"\'", null);
+
+    }
+
 
     public static List<Workspace> getOwnedWorkspaces(AirDeskDbHelper dbHelper){
         db = dbHelper.getReadableDatabase();
@@ -388,4 +399,5 @@ public class DatabaseAPI {
         c2.close();
         return ws;
     }
+
 }
