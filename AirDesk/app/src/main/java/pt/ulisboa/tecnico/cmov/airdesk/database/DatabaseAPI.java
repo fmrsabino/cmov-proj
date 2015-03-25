@@ -457,6 +457,7 @@ public class DatabaseAPI {
             workspaceQuota = c.getInt(0);
         }
 
+        c.close();
         return workspaceQuota;
     }
 
