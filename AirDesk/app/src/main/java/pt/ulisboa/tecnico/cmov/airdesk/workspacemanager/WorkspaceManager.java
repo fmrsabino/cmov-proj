@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.workspacemanager;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.util.List;
 
@@ -62,12 +63,11 @@ public class WorkspaceManager {
     public boolean sanitizeBlankInputs(){
         boolean incompleteFields = false;
 
-        //sanitize inputs
-        if(workspace.getName().equals(""))
+        if(TextUtils.isEmpty(workspace.getName()))
             incompleteFields=true;
         else if(workspace.getQuota() < 0)
             incompleteFields=true;
-        else if(workspace.getKeywords().equals(""))
+        else if(TextUtils.isEmpty(workspace.getKeywords()))
             incompleteFields=true;
         return incompleteFields;
     }

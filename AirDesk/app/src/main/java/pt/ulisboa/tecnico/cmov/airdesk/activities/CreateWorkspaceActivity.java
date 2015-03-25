@@ -88,7 +88,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         ws = new Workspace(workspace, ws_quota, isPublic, tags, viewers);
         wsManager = new WorkspaceManager(ws, getApplicationContext());
 
-        //result of sanitization
+
         if(wsManager.sanitizeBlankInputs()){
             new AlertDialog.Builder(this)
                     .setTitle("Blank fields")
@@ -100,7 +100,16 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
             return;
         }
 
-        wsManager.addWorkspace();
+        if(!wsManager.addWorkspace()){
+            new AlertDialog.Builder(this)
+                    .setTitle("Database Error")
+                    .setMessage("Please try again")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).show();
+            return;
+        }
 
         FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
         fileManagerLocal.createFolder(workspace);
