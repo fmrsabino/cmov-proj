@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class DatabaseAPI {
     }
 
     public static boolean signOut(AirDeskDbHelper dbHelper){
+        db = dbHelper.getReadableDatabase();
         ContentValues values = new ContentValues();
         values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 0);
 
@@ -111,7 +113,9 @@ public class DatabaseAPI {
         }
 
         c.close();
-        return new User(nick,email);
+        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(nick)){
+            return null;
+        } else return new User(nick,email);
     }
 
     public static boolean register(AirDeskDbHelper dbHelper, String nick, String email){
