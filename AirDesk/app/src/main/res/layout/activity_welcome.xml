@@ -9,32 +9,27 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome!"
-        android:textSize="40sp"
+        android:text="Welcome"
+        android:textSize="30sp"
         android:layout_margin="20dp"
-        android:id="@+id/welcome" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="20dp"
-        android:text ="email@email.com"
-        android:id="@+id/emailView" />
+        android:id="@+id/nickView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:layout_marginTop="15dp"
         android:layout_marginLeft="20dp"
-        android:text ="cool_nick"
-        android:id="@+id/nickView" />
+        android:layout_marginBottom="30dp"
+        android:id="@+id/emailView" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp"
+        android:layout_marginBottom="60dp"
         android:text="My Workspaces"
         android:id="@+id/myWorkspacesButton"
         android:tag="owned"
@@ -44,6 +39,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="40dp"
         android:text="Foreign Workspaces"
         android:id="@+id/foreignWorkspacesButton"
         android:tag="foreign"

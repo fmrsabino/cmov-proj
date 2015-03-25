@@ -128,6 +128,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
                 adapter.notifyDataSetChanged();
                 listView.setAdapter(adapter);
+                viewer.setText(null);
             }
         }
     }

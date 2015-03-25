@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,6 +42,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private WorkspacesListAdapter listAdapter;
     private String selectedWorkspace;
     private FileManagerLocal fileManagerLocal;
+    private EditText tagTxt;
 
 
     @Override
@@ -176,8 +178,24 @@ public class WorkspaceListActivity extends ActionBarActivity {
             case R.id.action_settings:
                 return true;
             case R.id.action_add_workspace:
-                Intent intent = new Intent(this, CreateWorkspaceActivity.class);
-                startActivity(intent);
+                if(TextUtils.equals(repo, "owned")) {
+                    Intent intent = new Intent(this, CreateWorkspaceActivity.class);
+                    startActivity(intent);
+                }
+                else if(TextUtils.equals(repo, "foreign")){
+                   tagTxt = new EditText(this);
+                    tagTxt.setHint("Tag1, Tag2, ...");
+                    new AlertDialog.Builder(this)
+                            .setTitle("Subscribe")
+                            .setMessage("Please enter workspace tags, separated by a comma")
+                            .setView(tagTxt)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String tags = tagTxt.getText().toString();
+                                    //TODO: subscribeWorkspaces(tags);
+                                }
+                            }).show();
+                }
                 return true;
         }
 

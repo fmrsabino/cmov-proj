@@ -29,7 +29,7 @@ public class WelcomeActivity extends ActionBarActivity {
         email.setText(loggedUser.getEmail());
 
         TextView nick = (TextView) findViewById(R.id.nickView);
-        nick.setText(loggedUser.getNick());
+        nick.setText("Welcome " + loggedUser.getNick() + "!");
     }
 
 
