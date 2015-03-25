@@ -160,9 +160,8 @@ public class DatabaseAPI {
         //close transaction
         db.endTransaction();
 
-        return row != -1;
+        return (row != -1 && status);
     }
-
 
     public static boolean addUserToWorkspace(AirDeskDbHelper dbHelper, String viewer, String wsname){
         db = dbHelper.getWritableDatabase();

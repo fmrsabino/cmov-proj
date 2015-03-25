@@ -28,12 +28,12 @@ public class WorkspaceManager {
     }
 
 
-    public void addWorkspace() {
+    public boolean addWorkspace() {
         dbHelper = new AirDeskDbHelper(context);
 
         String loggedUser = DatabaseAPI.getLoggedUser(dbHelper);
 
-        DatabaseAPI.createWorkspace(dbHelper, workspace.getName(), loggedUser, workspace.getQuota(), workspace.isPublic(), workspace.getKeywords(), workspace.getUsers());
+        return DatabaseAPI.createWorkspace(dbHelper, workspace.getName(), loggedUser, workspace.getQuota(), workspace.isPublic(), workspace.getKeywords(), workspace.getUsers());
     }
 
     public void addViewer(String viewer, String ws_name) {
