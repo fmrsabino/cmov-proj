@@ -27,13 +27,10 @@ import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
-import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
 public class WorkspaceListActivity extends ActionBarActivity {
-
-    private static final String TAG = "WorkspaceListActivity";
 
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     public final static String ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.ACCESS";
@@ -42,7 +39,6 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private List<WorkspacesListAdapter.Content> directories = new ArrayList<>();
     private WorkspacesListAdapter listAdapter;
     private String selectedWorkspace;
-    private FileManagerLocal fileManagerLocal;
     private EditText tagTxt;
 
 
@@ -51,7 +47,6 @@ public class WorkspaceListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workspace_list);
 
-        fileManagerLocal = new FileManagerLocal(this);
         Intent intent = getIntent();
         repo = intent.getStringExtra(WelcomeActivity.WORKSPACE_ACCESS_KEY);
         listView = (ListView) findViewById(R.id.workspace_list);
@@ -196,7 +191,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     String tags = tagTxt.getText().toString();
-                                    //TODO: subscribeWorkspaces(tags);
+                                    subscribeWorkspaces(tags);
                                 }
                             }).show();
                 }
@@ -206,11 +201,11 @@ public class WorkspaceListActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void refreshDirectoryListing() {
-        directories.clear();
-        for (String name : fileManagerLocal.getWorkspaces()) {
-            directories.add(new WorkspacesListAdapter.Content(name, "42%"));
-        }
-        listAdapter.notifyDataSetChanged();
+    private void subscribeWorkspaces(String tags) {
+        String[] tokens = tags.split("\\,");
+        for(String s : tokens)
+        Log.d("TOKENS", s);
     }
+
+
 }

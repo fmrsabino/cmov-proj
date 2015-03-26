@@ -8,11 +8,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,8 +37,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     private EditText viewer;
     private EditText keywords;
     private List<String> viewers;
-    private Workspace ws;
-    private WorkspaceManager wsManager;
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +55,8 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
         viewers = new ArrayList<>();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
+        adapter = new ArrayAdapter<>(this,
+                R.layout.activity_viewers_list_item, R.id.selected_item, viewers);
 
         listView.setAdapter(adapter);
     }
@@ -79,9 +79,14 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         String tags = keywords.getText().toString();
         int isPublic = (is_public) ? 1 : 0;
 
-        ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers);
-        wsManager = new WorkspaceManager(ws, getApplicationContext());
+        Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers);
+        WorkspaceManager wsManager = new WorkspaceManager(ws, getApplicationContext());
+        List<Workspace> wsList = wsManager.retrieveOwnedWorkspaces();
+        List<String> wsNameList = new ArrayList<>();
 
+        for (Workspace w : wsList) {
+            wsNameList.add(w.getName());
+        }
 
         if(wsManager.sanitizeBlankInputs()){
             new AlertDialog.Builder(this)
@@ -93,6 +98,18 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
                     }).show();
             return;
         }
+
+        if(wsNameList.contains(ws.getName())) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Duplicate name")
+                    .setMessage("Please choose another name for your workspace")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).show();
+            return;
+        }
+
 
         if(!wsManager.addWorkspace()){
             new AlertDialog.Builder(this)
@@ -121,17 +138,53 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
             String v = viewer.getText().toString();
 
             if(!TextUtils.isEmpty(v)) {
+
+                if(viewers.contains(v)){
+                    Toast.makeText(this, "User already invited", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
                 viewers.add(v);
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                        android.R.layout.simple_list_item_1, android.R.id.text1, viewers);
-
                 adapter.notifyDataSetChanged();
-                listView.setAdapter(adapter);
+                setListViewHeight(listView);
                 viewer.setText(null);
             }
         }
     }
 
+    public static boolean setListViewHeight(ListView listView) {
+
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter != null) {
+
+            int numberOfItems = listAdapter.getCount();
+
+            // Get total height of all items.
+            int totalItemsHeight = 0;
+            for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
+                View item = listAdapter.getView(itemPos, null, listView);
+                item.measure(0, 0);
+                totalItemsHeight += item.getMeasuredHeight();
+            }
+
+            // Get total height of all item dividers.
+            int totalDividersHeight = listView.getDividerHeight() *
+                    (numberOfItems - 1);
+
+            // Set list height.
+            ViewGroup.LayoutParams params = listView.getLayoutParams();
+            params.height = totalItemsHeight + totalDividersHeight;
+            listView.setLayoutParams(params);
+            listView.requestLayout();
+
+            return true;
+
+        } else {
+            return false;
+        }
+
+    }
 
 }

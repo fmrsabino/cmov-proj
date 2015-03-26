@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -17,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +31,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 public class ViewersActivity extends ActionBarActivity {
 
     private String ws_name;
-    private String access;
     private ListView listView ;
-    private LinearLayout invite_layout;
     private EditText viewer;
     private List<String> viewers;
     private ArrayAdapter<String> adapter;
@@ -48,12 +46,12 @@ public class ViewersActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.viewers_list);
         viewer = (EditText) findViewById(R.id.viewer);
         TextView tv = (TextView) findViewById(R.id.workspace_name);
-        invite_layout= (LinearLayout) findViewById(R.id.invite_option);
+        LinearLayout invite_layout = (LinearLayout) findViewById(R.id.invite_option);
 
         wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
-        access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
+        String access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
         ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
 
         tv.setText(ws_name + " Viewers");
@@ -154,6 +152,12 @@ public class ViewersActivity extends ActionBarActivity {
             String v = viewer.getText().toString();
 
             if(!TextUtils.isEmpty(v)) {
+
+                if(viewers.contains(v)){
+                    Toast.makeText(this, "User already invited", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 viewers.add(v);
 
                 wsManager.addViewer(v, ws_name);
