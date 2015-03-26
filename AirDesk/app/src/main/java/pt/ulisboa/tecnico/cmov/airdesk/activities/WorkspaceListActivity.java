@@ -27,6 +27,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
@@ -118,7 +119,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
 
         for (int i = 0; i < listView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
-                if(!DatabaseAPI.deleteLocalWorkspace(dbHelper, listAdapter.getItem(i).getWs_name())){
+                String workspaceName = listAdapter.getItem(i).getWs_name();
+                if(!DatabaseAPI.deleteLocalWorkspace(dbHelper, workspaceName)){
                     new AlertDialog.Builder(this)
                             .setTitle("Database Error")
                             .setMessage("Please try again")
@@ -128,6 +130,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                             }).show();
                     return;
                 }
+                new FileManagerLocal(this).deleteDirectory(workspaceName);
             }
         }
 

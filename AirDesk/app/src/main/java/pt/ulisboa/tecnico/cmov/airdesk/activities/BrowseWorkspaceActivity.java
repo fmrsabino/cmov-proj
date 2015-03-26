@@ -111,7 +111,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         SparseBooleanArray checked = gridView.getCheckedItemPositions();
         for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
-                fileManager.removeFile(gridAdapter.getItem(i), workspaceName);
+                fileManager.deleteFile(gridAdapter.getItem(i), workspaceName);
             }
         }
         refreshFilesList();

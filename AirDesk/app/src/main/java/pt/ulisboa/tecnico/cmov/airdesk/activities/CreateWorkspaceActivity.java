@@ -128,6 +128,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
         intent.putExtra(WORKSPACE_NAME_KEY, workspace);
+        intent.putExtra(WorkspaceListActivity.ACCESS_KEY, "owned");
         startActivity(intent);
     }
 
@@ -138,13 +139,10 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
             String v = viewer.getText().toString();
 
             if(!TextUtils.isEmpty(v)) {
-
-                if(viewers.contains(v)){
+                if(viewers.contains(v)) {
                     Toast.makeText(this, "User already invited", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-
                 viewers.add(v);
 
                 adapter.notifyDataSetChanged();
@@ -158,7 +156,6 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
 
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter != null) {
-
             int numberOfItems = listAdapter.getCount();
 
             // Get total height of all items.

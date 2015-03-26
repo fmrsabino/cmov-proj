@@ -52,7 +52,7 @@ public class FileManagerLocal {
         return success;
     }
 
-    public boolean removeFile(String name, String directory) {
+    public boolean deleteFile(String name, String directory) {
         File file = new File(mContext.getFilesDir() + File.separator + directory, name);
         boolean success = false;
         if (file.exists()) {
@@ -95,7 +95,7 @@ public class FileManagerLocal {
         }
     }
 
-    public boolean removeDirectory(String directory) {
+    public boolean deleteDirectory(String directory) {
         boolean success = false;
 
         File file = new File(mContext.getFilesDir(), directory);
@@ -110,7 +110,7 @@ public class FileManagerLocal {
 
     public void formatDirectory(String directory) {
         for (String file : getFilesNames(directory)) {
-            removeFile(file, directory);
+            deleteFile(file, directory);
         }
     }
 
