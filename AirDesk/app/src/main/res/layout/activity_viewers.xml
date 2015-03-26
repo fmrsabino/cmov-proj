@@ -21,6 +21,8 @@
         android:layout_height="260dp"/>
 
     <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/invite_option"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"

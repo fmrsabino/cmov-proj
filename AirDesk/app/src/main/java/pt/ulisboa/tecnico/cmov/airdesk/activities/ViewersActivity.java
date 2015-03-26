@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,7 +31,9 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 public class ViewersActivity extends ActionBarActivity {
 
     private String ws_name;
+    private String access;
     private ListView listView ;
+    private LinearLayout invite_layout;
     private EditText viewer;
     private List<String> viewers;
     private ArrayAdapter<String> adapter;
@@ -44,11 +48,14 @@ public class ViewersActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.viewers_list);
         viewer = (EditText) findViewById(R.id.viewer);
         TextView tv = (TextView) findViewById(R.id.workspace_name);
+        invite_layout= (LinearLayout) findViewById(R.id.invite_option);
 
         wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
+        access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
         ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
+
         tv.setText(ws_name + " Viewers");
 
         ws = wsManager.retrieveWorkspace(ws_name);
@@ -60,42 +67,45 @@ public class ViewersActivity extends ActionBarActivity {
 
         listView.setAdapter(adapter);
 
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            }
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // Inflate the menu for the CAB
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.menu_browse_workspace_context, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                // Respond to clicks on the actions in the CAB
-                switch (item.getItemId()) {
-                    case R.id.action_delete:
-                        deleteSelectedItems();
-                        mode.finish(); // Action picked, so close the CAB
-                        return true;
-                    default:
-                        return false;
+        if(TextUtils.equals(access, "owned")) {
+            invite_layout.setVisibility(LinearLayout.VISIBLE);
+            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+            listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+                @Override
+                public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 }
-            }
 
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    // Inflate the menu for the CAB
+                    MenuInflater inflater = mode.getMenuInflater();
+                    inflater.inflate(R.menu.menu_browse_workspace_context, menu);
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    // Respond to clicks on the actions in the CAB
+                    switch (item.getItemId()) {
+                        case R.id.action_delete:
+                            deleteSelectedItems();
+                            mode.finish(); // Action picked, so close the CAB
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                }
+            });
+        }
     }
 
     private void deleteSelectedItems() {

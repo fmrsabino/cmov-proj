@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -29,6 +30,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
     private GridView gridView;
     private String workspaceName;
+    private String access;
     private List<String> files = new ArrayList<>();
     private ArrayAdapter<String> gridAdapter;
     private FileManagerLocal fileManager = null;
@@ -41,6 +43,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         fileManager = new FileManagerLocal(getApplicationContext());
 
         Intent intent = getIntent();
+        access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
         workspaceName = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         getSupportActionBar().setTitle(workspaceName);
 
@@ -56,49 +59,52 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 Intent intent = new Intent(BrowseWorkspaceActivity.this, FileEditorActivity.class);
-                intent.putExtra("file_name", gridAdapter.getItem(position).toString());
+                intent.putExtra("file_name", gridAdapter.getItem(position));
                 intent.putExtra("workspace_name", workspaceName);
                 startActivity(intent);
             }
         });
 
-        gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
-        gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            }
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // Inflate the menu for the CAB
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.menu_browse_workspace_context, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                // Respond to clicks on the actions in the CAB
-                switch (item.getItemId()) {
-                    case R.id.action_delete:
-                        deleteSelectedItems();
-                        mode.finish(); // Action picked, so close the CAB
-                        return true;
-                    default:
-                        return false;
+        if(TextUtils.equals(access, "owned")) {
+            gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+            gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+                @Override
+                public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 }
-            }
 
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    // Inflate the menu for the CAB
+                    MenuInflater inflater = mode.getMenuInflater();
+                    inflater.inflate(R.menu.menu_browse_workspace_context, menu);
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    // Respond to clicks on the actions in the CAB
+                    switch (item.getItemId()) {
+                        case R.id.action_delete:
+                            deleteSelectedItems();
+                            mode.finish(); // Action picked, so close the CAB
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                }
+            });
+        }
         refreshFilesList();
+
     }
 
     private void deleteSelectedItems() {
@@ -135,6 +141,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
         if (id == R.id.action_viewers){
             Intent intent = new Intent(this, ViewersActivity.class);
+            intent.putExtra(WorkspaceListActivity.ACCESS_KEY, this.access);
             intent.putExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY, this.workspaceName);
             startActivity(intent);
             return true;

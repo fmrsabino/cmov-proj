@@ -36,6 +36,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private static final String TAG = "WorkspaceListActivity";
 
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
+    public final static String ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.ACCESS";
     private String repo;
     private ListView listView;
     private List<WorkspacesListAdapter.Content> directories = new ArrayList<>();
@@ -70,8 +71,11 @@ public class WorkspaceListActivity extends ActionBarActivity {
 
                     //Transfer control to BrowseWorkspace
                     Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
+                    String access = repo;
                     String message = selectedWorkspace;
+                    intent.putExtra(ACCESS_KEY, access);
                     intent.putExtra(WORKSPACE_NAME_KEY, message);
+
                     startActivity(intent);
                 }}});
 
