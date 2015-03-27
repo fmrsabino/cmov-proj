@@ -436,10 +436,10 @@ public class DatabaseAPI {
     }
 
     // Returns the current quota value in bytes for workspace
-    private static int getCurrentQuota(AirDeskDbHelper dbHelper, String workspace) {
+    public static long getCurrentQuota(AirDeskDbHelper dbHelper, String workspace) {
         db = dbHelper.getReadableDatabase();
 
-        int workspaceQuota = 0;
+        long workspaceQuota = 0;
         String[] projection = {
                 AirDeskContract.Workspaces.COLUMN_NAME_QUOTA
         };
@@ -455,7 +455,7 @@ public class DatabaseAPI {
         );
 
         if (c.moveToFirst()) {
-            workspaceQuota = c.getInt(0);
+            workspaceQuota = c.getLong(0);
         }
 
         c.close();

@@ -26,9 +26,9 @@ public class FileManagerLocal {
         mContext = context;
     }
 
-    public boolean createFile(String name, String workspaceId) {
-        Log.d(TAG, mContext.getFilesDir() + File.separator + workspaceId);
-        File file = new File(mContext.getFilesDir() + File.separator + workspaceId, name);
+    public boolean createFile(String name, String workspace) {
+        Log.d(TAG, mContext.getFilesDir() + File.separator + workspace);
+        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
 
         boolean success = false;
         try {
@@ -52,8 +52,8 @@ public class FileManagerLocal {
         return success;
     }
 
-    public boolean deleteFile(String name, String directory) {
-        File file = new File(mContext.getFilesDir() + File.separator + directory, name);
+    public boolean deleteFile(String name, String workspace) {
+        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
         boolean success = false;
         if (file.exists()) {
             success = file.delete();
@@ -64,12 +64,12 @@ public class FileManagerLocal {
         return success;
     }
 
-    public long getFileSize(String name, String directory) {
-        return new File(mContext.getFilesDir() + File.separator + directory, name).length();
+    public long getFileSize(String name, String workspace) {
+        return new File(mContext.getFilesDir() + File.separator + workspace, name).length();
     }
 
-    public String getFileContents(String name, String directory){
-        File file = new File(mContext.getFilesDir() + File.separator + directory, name);
+    public String getFileContents(String name, String workspace){
+        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
         String line;
         StringBuilder stringBuilder = new StringBuilder();
         try {
@@ -88,8 +88,8 @@ public class FileManagerLocal {
         return stringBuilder.toString();
     }
 
-    public void saveFileContents(String name, String directory, String contents){
-        File file = new File(mContext.getFilesDir() + File.separator + directory, name);
+    public void saveFileContents(String name, String workspace, String contents){
+        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
         try {
             FileWriter writer = new FileWriter(file);
             writer.write(contents);

@@ -69,6 +69,13 @@ public class FileEditorActivity extends ActionBarActivity {
 
                 long updatedBytes = finalFileSize - initialFileSize;
                 AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
+                long currentQuota = DatabaseAPI.getCurrentQuota(dbHelper, workspace_name);
+
+                if (currentQuota - updatedBytes < 0) {
+                    Toast.makeText(this, "Quota Exceeded: Couldn't save file", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+
                 DatabaseAPI.updateWorkspaceQuota(dbHelper, workspace_name, -updatedBytes);
 
                 fileManagerLocal.saveFileContents(file_name, workspace_name, fileView.getText().toString());
