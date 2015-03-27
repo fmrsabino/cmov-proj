@@ -416,13 +416,14 @@ public class DatabaseAPI {
         return smoothDelete;
     }
 
-    public static boolean deleteFile(AirDeskDbHelper dbHelper, String workspace, int fileSize) {
+    // Updates the quota of the workspace with the remaining files
+    public static boolean updateWorkspaceQuota(AirDeskDbHelper dbHelper, String workspace, long bytes) {
         double currentQuota = getCurrentQuota(dbHelper, workspace);
 
         db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, currentQuota + fileSize);
+        values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, currentQuota + bytes);
 
         db.update(
                 AirDeskContract.Workspaces.TABLE_NAME,

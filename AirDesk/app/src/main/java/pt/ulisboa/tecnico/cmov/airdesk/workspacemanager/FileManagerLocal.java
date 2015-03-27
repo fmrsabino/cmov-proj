@@ -64,6 +64,10 @@ public class FileManagerLocal {
         return success;
     }
 
+    public long getFileSize(String name, String directory) {
+        return new File(mContext.getFilesDir() + File.separator + directory, name).length();
+    }
+
     public String getFileContents(String name, String directory){
         File file = new File(mContext.getFilesDir() + File.separator + directory, name);
         String line;
@@ -86,11 +90,11 @@ public class FileManagerLocal {
 
     public void saveFileContents(String name, String directory, String contents){
         File file = new File(mContext.getFilesDir() + File.separator + directory, name);
-        try{
+        try {
             FileWriter writer = new FileWriter(file);
             writer.write(contents);
             writer.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

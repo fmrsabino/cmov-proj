@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
@@ -111,7 +113,12 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         SparseBooleanArray checked = gridView.getCheckedItemPositions();
         for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
-                fileManager.deleteFile(gridAdapter.getItem(i), workspaceName);
+                String fileName = gridAdapter.getItem(i);
+                DatabaseAPI.updateWorkspaceQuota(
+                        new AirDeskDbHelper(getApplicationContext()),
+                        workspaceName,
+                        fileManager.getFileSize(fileName, workspaceName));
+                fileManager.deleteFile(fileName, workspaceName);
             }
         }
         refreshFilesList();

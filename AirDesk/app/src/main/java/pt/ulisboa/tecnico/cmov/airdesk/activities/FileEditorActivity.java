@@ -8,13 +8,20 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
 public class FileEditorActivity extends ActionBarActivity {
 
+    private FileManagerLocal fileManagerLocal;
     private String file_name = null;
     private String workspace_name = null;
+
+    private long initialFileSize = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +34,13 @@ public class FileEditorActivity extends ActionBarActivity {
 
         getSupportActionBar().setTitle(file_name);
 
-        FileManagerLocal manager = new FileManagerLocal(this);
-        String fileContents = manager.getFileContents(file_name, workspace_name);
+        fileManagerLocal = new FileManagerLocal(this);
 
+        initialFileSize = fileManagerLocal.getFileSize(file_name, workspace_name);
+
+        String fileContents = fileManagerLocal.getFileContents(file_name, workspace_name);
         EditText fileView = (EditText) findViewById(R.id.fileContents);
         fileView.setText(fileContents);
-
     }
 
 
@@ -53,13 +61,25 @@ public class FileEditorActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.save_file) {
             EditText fileView = (EditText) findViewById(R.id.fileContents);
-            FileManagerLocal manager = new FileManagerLocal(this);
-            manager.saveFileContents(file_name, workspace_name, fileView.getText().toString());
-            Toast.makeText(this, "Saved File", Toast.LENGTH_SHORT).show();
-            finish();
-            return true;
-        }
 
+            byte[] fileBytes;
+            try {
+                fileBytes = fileView.getText().toString().getBytes("UTF-8");
+                long finalFileSize = fileBytes.length;
+
+                long updatedBytes = finalFileSize - initialFileSize;
+                AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
+                DatabaseAPI.updateWorkspaceQuota(dbHelper, workspace_name, -updatedBytes);
+
+                fileManagerLocal.saveFileContents(file_name, workspace_name, fileView.getText().toString());
+                Toast.makeText(this, "Saved File", Toast.LENGTH_SHORT).show();
+                finish();
+                return true;
+
+            } catch (UnsupportedEncodingException e) {
+
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 }
