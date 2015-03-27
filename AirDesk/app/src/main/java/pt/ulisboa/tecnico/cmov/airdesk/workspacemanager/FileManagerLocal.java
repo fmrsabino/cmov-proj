@@ -66,22 +66,22 @@ public class FileManagerLocal {
 
     public String getFileContents(String name, String directory){
         File file = new File(mContext.getFilesDir() + File.separator + directory, name);
-        String line = null;
-        StringBuffer stringBuffer = new StringBuffer();
-        try{
+        String line;
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
             FileReader reader = new FileReader(file);
             BufferedReader buf = new BufferedReader(reader);
             while ((line = buf.readLine()) != null) {
-                stringBuffer.append(line + "\n" );
+                stringBuilder.append(line);
+                stringBuilder.append("\n");
             }
-
-        }catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }catch(IOException e){
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     public void saveFileContents(String name, String directory, String contents){

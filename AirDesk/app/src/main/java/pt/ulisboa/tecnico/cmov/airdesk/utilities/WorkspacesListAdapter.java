@@ -21,7 +21,7 @@ public class WorkspacesListAdapter extends BaseAdapter
 
         public Content(String ws_name, String quota) {
             this.ws_name = ws_name;
-            this.quota = quota + " Mb";
+            this.quota = quota + " bytes";
         }
 
         public String getQuota() {
@@ -75,23 +75,18 @@ public class WorkspacesListAdapter extends BaseAdapter
         ViewHolder holder;
         LayoutInflater inflater =  activity.getLayoutInflater();
 
-        if (convertView == null)
-        {
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.listview_multicol, null);
             holder = new ViewHolder();
             holder.First = (TextView) convertView.findViewById(R.id.workspace);
             holder.Second = (TextView) convertView.findViewById(R.id.quota);
             convertView.setTag(holder);
-        }
-        else
-        {
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-
         holder.First.setText(list.get(position).getWs_name());
         holder.Second.setText(list.get(position).getQuota());
-
 
         return convertView;
     }

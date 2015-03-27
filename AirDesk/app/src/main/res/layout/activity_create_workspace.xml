@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:text="Quota (in Mb): "/>
+                android:text="Quota (in bytes): "/>
 
             <EditText
                 android:id="@+id/activity_create_workspace_quota"
