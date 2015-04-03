@@ -4,8 +4,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
@@ -477,4 +479,46 @@ public class DatabaseAPI {
         return workspaceQuota;
     }
 
+
+
+
+    public static void subscribeWorkspaces(AirDeskDbHelper dbHelper, List<String> ws_keywords){
+        db = dbHelper.getReadableDatabase();
+        String loggedInUser = getLoggedUser(dbHelper);
+        List<String> ws_tags = new ArrayList<>();
+        boolean contains;
+
+        String[] ws_projection = {
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME,
+                AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS};
+
+        Cursor c = db.query(
+                AirDeskContract.Workspaces.TABLE_NAME,
+                ws_projection,
+                AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC + " = 1",
+                null,
+                null,
+                null,
+                null
+        );
+
+        while (c.moveToNext()) {
+            ws_tags.clear();
+            contains = false;
+
+            ws_tags = new ArrayList<String>(Arrays.asList(c.getString(1).split("\\s*,\\s*")));
+
+            for(String k : ws_keywords) {
+                if (ws_tags.contains(k)) {
+                    contains = true;
+                    Log.d("BREAK", k);
+                    break;
+                }
+            }
+            if(contains)
+                addUserToWorkspace(dbHelper, loggedInUser, c.getString(0));
+        }
+
+        c.close();
+    }
 }

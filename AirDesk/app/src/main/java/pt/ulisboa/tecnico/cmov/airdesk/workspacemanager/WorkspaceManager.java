@@ -71,7 +71,7 @@ public class WorkspaceManager {
             incompleteFields=true;
         else if(workspace.getQuota() < 0)
             incompleteFields=true;
-        else if(TextUtils.isEmpty(workspace.getKeywords()))
+        else if(TextUtils.isEmpty(workspace.getKeywords()) && (workspace.isPublic() == 1))
             incompleteFields=true;
         return incompleteFields;
     }
@@ -94,5 +94,11 @@ public class WorkspaceManager {
 
         String loggedInUser = DatabaseAPI.getLoggedUser(dbHelper);
         DatabaseAPI.deleteViewer(dbHelper, loggedInUser, ws_name);
+    }
+
+    public void subscribeWorkspaces(List<String> tags){
+        dbHelper = new AirDeskDbHelper(context);
+
+        DatabaseAPI.subscribeWorkspaces(dbHelper, tags);
     }
 }

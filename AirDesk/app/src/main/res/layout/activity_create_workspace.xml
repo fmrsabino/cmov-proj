@@ -128,6 +128,14 @@
             android:layout_width="match_parent"
             android:layout_height="20dp"/>
 
+    <LinearLayout
+        android:id="@+id/keyHolder"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center">
         <TextView
             android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
@@ -143,6 +151,7 @@
             android:textSize="12sp"
             android:singleLine="true"
             android:hint="Enter workspace tags, separated by a comma"/>
+    </LinearLayout>
 
         <Button
             android:layout_margin="20dp"
