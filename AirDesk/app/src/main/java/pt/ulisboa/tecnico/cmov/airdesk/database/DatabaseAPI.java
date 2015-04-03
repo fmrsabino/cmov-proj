@@ -435,6 +435,22 @@ public class DatabaseAPI {
         return true;
     }
 
+    public static boolean setWorkspaceQuota(AirDeskDbHelper dbHelper, String workspace, long bytes) {
+        db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, bytes);
+
+        db.update(
+                AirDeskContract.Workspaces.TABLE_NAME,
+                values,
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
+                new String[]{workspace}
+        );
+
+        return true;
+    }
+
     // Returns the current quota value in bytes for workspace
     public static long getCurrentQuota(AirDeskDbHelper dbHelper, String workspace) {
         db = dbHelper.getReadableDatabase();

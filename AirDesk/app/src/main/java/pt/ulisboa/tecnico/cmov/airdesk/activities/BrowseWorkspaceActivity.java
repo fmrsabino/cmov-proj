@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +25,12 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
+import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageQuotaDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
 
 public class BrowseWorkspaceActivity extends ActionBarActivity
-        implements CreateFileDialogFragment.CreateFileDialogListener {
+        implements CreateFileDialogFragment.CreateFileDialogListener, ManageQuotaDialogFragment.ManageQuotaDialogListener {
 
 
     private GridView gridView;
@@ -144,6 +147,9 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             case (R.id.action_add_file):
                 showCreateFileDialog();
                 return true;
+            case(R.id.action_manage_quota):
+                showManageQuotaDialog();
+                return true;
         }
 
         if (id == R.id.action_viewers){
@@ -162,6 +168,11 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         dialog.show(getFragmentManager(), "CreateFileDialogFragment");
     }
 
+    private void showManageQuotaDialog() {
+        ManageQuotaDialogFragment dialog = new ManageQuotaDialogFragment();
+        dialog.show(getFragmentManager(), "ManageQuotaDialogFragment");
+    }
+
     private void refreshFilesList() {
         files.clear();
         files.addAll(fileManager.getFilesNames(workspaceName));
@@ -176,4 +187,24 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {}
+
+    @Override
+    public void onQuotaDialogPositiveClick(DialogFragment dialog) {
+        AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
+        List<String> files = fileManager.getFilesNames(workspaceName);
+        long updatedQuota = Long.parseLong(((ManageQuotaDialogFragment)dialog).getUpdatedQuota());
+        long workspaceSize = 0;
+        for(String file : files){
+            workspaceSize += fileManager.getFileSize(file, workspaceName);
+        }
+        if(updatedQuota >= workspaceSize){
+            DatabaseAPI.setWorkspaceQuota(dbHelper, workspaceName, (updatedQuota - workspaceSize));
+            Toast.makeText(this, "Quota updated successfully", Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(this, "New quota must be greater than current workspace size", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onQuotaDialogNegativeClick(DialogFragment dialog) {
+      // do nothing
+    }
 }
