@@ -18,10 +18,4 @@
         android:title="@string/manage_quota"
         android:orderInCategory="100"
         app:showAsAction="never" />
-
-    <item android:id="@+id/action_leave_delete"
-        android:title="@string/leave_delete"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-
 </menu>
