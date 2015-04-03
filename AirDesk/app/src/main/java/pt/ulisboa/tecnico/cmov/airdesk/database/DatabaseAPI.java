@@ -197,7 +197,6 @@ public class DatabaseAPI {
     public static void deleteViewer(AirDeskDbHelper dbHelper, String v_email, String ws_name) {
         db = dbHelper.getWritableDatabase();
 
-        //db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= ?", new String[] { v_email });
         db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + v_email + "\' AND " +
                 AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + "= \'" + ws_name +"\'", null);
 

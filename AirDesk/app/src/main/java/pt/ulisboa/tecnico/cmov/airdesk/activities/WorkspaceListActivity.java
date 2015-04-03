@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -55,7 +53,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.workspace_list);
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
-        // refreshDirectoryListing();
+
 
         populateWorkspaceList();
 
@@ -116,24 +114,34 @@ public class WorkspaceListActivity extends ActionBarActivity {
     }
 
     private void deleteSelectedItems() {
-        AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
         SparseBooleanArray checked = listView.getCheckedItemPositions();
 
-        for (int i = 0; i < listView.getAdapter().getCount(); i++) {
-            if (checked.get(i)) {
-                String workspaceName = listAdapter.getItem(i).getWs_name();
+        if(TextUtils.equals(repo, "owned")) {
+            for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+                if (checked.get(i)) {
+                    String workspaceName = listAdapter.getItem(i).getWs_name();
 
-                if(!wsManager.deleteOwnedWorkspace(workspaceName)){
-                    new AlertDialog.Builder(this)
-                            .setTitle("Database Error")
-                            .setMessage("Please try again")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            }).show();
-                    return;
+                    if (!wsManager.deleteOwnedWorkspace(workspaceName)) {
+                        new AlertDialog.Builder(this)
+                                .setTitle("Database Error")
+                                .setMessage("Please try again")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                }).show();
+                        return;
+                    }
+                    new FileManagerLocal(this).deleteDirectory(workspaceName);
                 }
-                new FileManagerLocal(this).deleteDirectory(workspaceName);
+            }
+        }
+        else if(TextUtils.equals(repo, "foreign")){
+            for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+                if (checked.get(i)) {
+                    String workspaceName = listAdapter.getItem(i).getWs_name();
+
+                    wsManager.unregisterForeignWorkspace(workspaceName);
+                }
             }
         }
 
