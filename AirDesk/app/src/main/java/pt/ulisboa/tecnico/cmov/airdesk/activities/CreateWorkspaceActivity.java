@@ -80,7 +80,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         int isPublic = (is_public) ? 1 : 0;
 
         Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers);
-        WorkspaceManager wsManager = new WorkspaceManager(ws, getApplicationContext());
+        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
         List<Workspace> wsList = wsManager.retrieveOwnedWorkspaces();
         List<String> wsNameList = new ArrayList<>();
 
@@ -88,7 +88,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
             wsNameList.add(w.getName());
         }
 
-        if(wsManager.sanitizeBlankInputs()){
+        if(wsManager.sanitizeBlankInputs(ws)){
             new AlertDialog.Builder(this)
                     .setTitle("Blank fields")
                     .setMessage("Please fill all fields")
@@ -111,7 +111,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         }
 
 
-        if(!wsManager.addWorkspace()){
+        if(!wsManager.addWorkspace(ws)){
             new AlertDialog.Builder(this)
                     .setTitle("Database Error")
                     .setMessage("Please try again")

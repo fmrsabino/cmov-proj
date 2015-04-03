@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
@@ -107,12 +105,11 @@ public class ViewersActivity extends ActionBarActivity {
     }
 
     private void deleteSelectedItems() {
-        AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
         SparseBooleanArray checked = listView.getCheckedItemPositions();
 
         for (int i = 0; i < listView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
-                DatabaseAPI.deleteViewer(dbHelper, adapter.getItem(i), ws_name);
+                wsManager.deleteWorkspaceViewer(adapter.getItem(i), ws_name);
             }
         }
 

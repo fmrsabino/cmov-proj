@@ -20,10 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
 public class BrowseWorkspaceActivity extends ActionBarActivity
@@ -36,6 +35,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     private List<String> files = new ArrayList<>();
     private ArrayAdapter<String> gridAdapter;
     private FileManagerLocal fileManager = null;
+    private WorkspaceManager wsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         setContentView(R.layout.activity_browse_workspace);
 
         fileManager = new FileManagerLocal(getApplicationContext());
+        wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
         access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
@@ -114,10 +115,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
                 String fileName = gridAdapter.getItem(i);
-                DatabaseAPI.updateWorkspaceQuota(
-                        new AirDeskDbHelper(getApplicationContext()),
-                        workspaceName,
-                        fileManager.getFileSize(fileName, workspaceName));
+                wsManager.updateWorkspaceQuota(workspaceName, fileManager.getFileSize(fileName, workspaceName));
                 fileManager.deleteFile(fileName, workspaceName);
             }
         }

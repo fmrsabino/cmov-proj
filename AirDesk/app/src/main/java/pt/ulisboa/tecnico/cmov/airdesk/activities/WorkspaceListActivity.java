@@ -41,6 +41,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private WorkspacesListAdapter listAdapter;
     private String selectedWorkspace;
     private EditText tagTxt;
+    private WorkspaceManager wsManager;
 
 
     @Override
@@ -50,6 +51,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         repo = intent.getStringExtra(WelcomeActivity.WORKSPACE_ACCESS_KEY);
+        wsManager = new WorkspaceManager(getApplicationContext());
         listView = (ListView) findViewById(R.id.workspace_list);
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
@@ -120,7 +122,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
         for (int i = 0; i < listView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
                 String workspaceName = listAdapter.getItem(i).getWs_name();
-                if(!DatabaseAPI.deleteLocalWorkspace(dbHelper, workspaceName)){
+
+                if(!wsManager.deleteOwnedWorkspace(workspaceName)){
                     new AlertDialog.Builder(this)
                             .setTitle("Database Error")
                             .setMessage("Please try again")
