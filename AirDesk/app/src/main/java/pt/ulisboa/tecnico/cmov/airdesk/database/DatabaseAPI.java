@@ -15,10 +15,10 @@ public class DatabaseAPI {
 
     private static SQLiteDatabase db;
 
-    public static boolean login(AirDeskDbHelper dbHelper, String nick){
+    public static boolean login(AirDeskDbHelper dbHelper, String email){
         db = dbHelper.getReadableDatabase();
         String query = "Select * from " + AirDeskContract.Users.TABLE_NAME +
-                " where " + AirDeskContract.Users.COLUMN_NAME_NICK + " = '" + nick + "'";
+                " where " + AirDeskContract.Users.COLUMN_NAME_EMAIL + " = '" + email + "'";
 
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.getCount() <= 0) {
@@ -28,8 +28,8 @@ public class DatabaseAPI {
             ContentValues values = new ContentValues();
             values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 1);
 
-            String selection = AirDeskContract.Users.COLUMN_NAME_NICK + " = ?";
-            String[] selectionArgs = { nick };
+            String selection = AirDeskContract.Users.COLUMN_NAME_EMAIL + " = ?";
+            String[] selectionArgs = { email };
 
             int count = db.update(
                     AirDeskContract.Users.TABLE_NAME,

@@ -53,9 +53,9 @@ public class MainActivity extends ActionBarActivity {
 
     public void signIn(View view){
         Intent intent = new Intent(this, WelcomeActivity.class);
-        EditText nick = (EditText) findViewById(R.id.userIn);
-        if(!nick.getText().toString().isEmpty()) {
-            if (DatabaseAPI.login(new AirDeskDbHelper(this), nick.getText().toString())) {
+        EditText email = (EditText) findViewById(R.id.userIn);
+        if(!email.getText().toString().isEmpty()) {
+            if (DatabaseAPI.login(new AirDeskDbHelper(this), email.getText().toString())) {
                 Toast.makeText(this, "Successful Login", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             } else Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
