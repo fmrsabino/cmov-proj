@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     private ListView listView;
     private TextView quota;
     private EditText name;
+    private LinearLayout keyHolder;
     private CheckBox checkbox;
     private EditText viewer;
     private EditText keywords;
@@ -47,7 +49,8 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.invitation_list);
         quota = (TextView) findViewById(R.id.activity_create_workspace_quota);
         name = (EditText) findViewById(R.id.name);
-        checkbox = (CheckBox)findViewById(R.id.is_public);
+        keyHolder = (LinearLayout) findViewById(R.id.keyHolder);
+        checkbox = (CheckBox) findViewById(R.id.is_public);
         viewer = (EditText) findViewById(R.id.viewer);
         keywords = (EditText) findViewById(R.id.keywords);
         TextView availableStorage = (TextView) findViewById(R.id.activity_create_workspace_available_space);
@@ -59,6 +62,15 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
                 R.layout.activity_viewers_list_item, R.id.selected_item, viewers);
 
         listView.setAdapter(adapter);
+
+        checkbox.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked())
+                    keyHolder.setVisibility(LinearLayout.VISIBLE);
+                else
+                    keyHolder.setVisibility(LinearLayout.GONE);
+            }
+        });
     }
 
 

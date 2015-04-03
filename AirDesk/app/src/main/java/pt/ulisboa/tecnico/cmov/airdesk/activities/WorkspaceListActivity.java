@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
@@ -56,6 +57,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
 
 
         populateWorkspaceList();
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -206,6 +208,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     String tags = tagTxt.getText().toString();
                                     subscribeWorkspaces(tags);
+                                    populateWorkspaceList();
                                 }
                             }).show();
                 }
@@ -216,9 +219,17 @@ public class WorkspaceListActivity extends ActionBarActivity {
     }
 
     private void subscribeWorkspaces(String tags) {
+       /* List<String> ws_tags = new ArrayList<>();
+
         String[] tokens = tags.split("\\,");
-        for(String s : tokens)
-        Log.d("TOKENS", s);
+        for(String t : tokens)
+            ws_tags.add(t);*/
+
+        List<String> items = new ArrayList<String>(Arrays.asList(tags.split("\\s*,\\s*")));
+
+        for(String i : items)
+            Log.d("KEY", i);
+        wsManager.subscribeWorkspaces(items);
     }
 
 
