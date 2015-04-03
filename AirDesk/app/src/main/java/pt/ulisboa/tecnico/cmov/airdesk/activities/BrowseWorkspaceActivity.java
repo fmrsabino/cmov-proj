@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageQuotaDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
