@@ -11,15 +11,15 @@ import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class FileEditorActivity extends ActionBarActivity {
 
     private FileManagerLocal fileManagerLocal;
     private String file_name = null;
     private String workspace_name = null;
+    private WorkspaceManager wsManager;
 
     private long initialFileSize = 0;
 
@@ -35,6 +35,7 @@ public class FileEditorActivity extends ActionBarActivity {
         getSupportActionBar().setTitle(file_name);
 
         fileManagerLocal = new FileManagerLocal(this);
+        wsManager = new WorkspaceManager(getApplicationContext());
 
         initialFileSize = fileManagerLocal.getFileSize(file_name, workspace_name);
 
@@ -68,17 +69,16 @@ public class FileEditorActivity extends ActionBarActivity {
                 long finalFileSize = fileBytes.length;
 
                 long updatedBytes = finalFileSize - initialFileSize;
-                AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
-                long currentQuota = DatabaseAPI.getCurrentQuota(dbHelper, workspace_name);
+                long currentQuota = wsManager.getCurrentWorkspaceQuota(workspace_name);
 
                 if (currentQuota - updatedBytes < 0) {
                     Toast.makeText(this, "Quota Exceeded: Couldn't save file", Toast.LENGTH_LONG).show();
                     return true;
                 }
 
-                DatabaseAPI.updateWorkspaceQuota(dbHelper, workspace_name, -updatedBytes);
-
+                wsManager.updateWorkspaceQuota(workspace_name, -updatedBytes);
                 fileManagerLocal.saveFileContents(file_name, workspace_name, fileView.getText().toString());
+
                 Toast.makeText(this, "Saved File", Toast.LENGTH_SHORT).show();
                 finish();
                 return true;

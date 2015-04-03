@@ -11,25 +11,15 @@ import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 
 public class WorkspaceManager {
 
-    private Workspace workspace;
     private Context context;
     AirDeskDbHelper dbHelper;
-
-    public WorkspaceManager(Workspace workspace, Context context) {
-        this.workspace = workspace;
-        this.context = context;
-    }
-
-    public Workspace getWorkspace() {
-        return workspace;
-    }
 
     public WorkspaceManager(Context context) {
         this.context = context;
     }
 
 
-    public boolean addWorkspace() {
+    public boolean addWorkspace(Workspace workspace) {
         dbHelper = new AirDeskDbHelper(context);
 
         String loggedUser = DatabaseAPI.getLoggedUser(dbHelper);
@@ -54,13 +44,27 @@ public class WorkspaceManager {
 
         return DatabaseAPI.getForeignWorkspaces(dbHelper);
     }
+
     public Workspace retrieveWorkspace(String ws_name){
         dbHelper = new AirDeskDbHelper(context);
 
         return DatabaseAPI.getWorkspace(dbHelper, ws_name);
     }
 
-    public boolean sanitizeBlankInputs(){
+
+    public long getCurrentWorkspaceQuota(String ws_name) {
+        dbHelper = new AirDeskDbHelper(context);
+
+        return DatabaseAPI.getCurrentQuota(dbHelper, ws_name);
+    }
+
+    public void updateWorkspaceQuota(String ws_name, long fileSize){
+        dbHelper = new AirDeskDbHelper(context);
+
+        DatabaseAPI.updateWorkspaceQuota(dbHelper, ws_name, fileSize);
+    }
+
+    public boolean sanitizeBlankInputs(Workspace workspace){
         boolean incompleteFields = false;
 
         if(TextUtils.isEmpty(workspace.getName()))
@@ -72,4 +76,23 @@ public class WorkspaceManager {
         return incompleteFields;
     }
 
+    public void deleteWorkspaceViewer(String viewerID, String ws_name) {
+        dbHelper = new AirDeskDbHelper(context);
+
+        DatabaseAPI.deleteViewer(dbHelper, viewerID, ws_name);
+
+    }
+
+    public boolean deleteOwnedWorkspace(String ws_name) {
+        dbHelper = new AirDeskDbHelper(context);
+
+        return DatabaseAPI.deleteLocalWorkspace(dbHelper, ws_name);
+    }
+
+    public void unregisterForeignWorkspace(String ws_name) {
+        dbHelper = new AirDeskDbHelper(context);
+
+        String loggedInUser = DatabaseAPI.getLoggedUser(dbHelper);
+        DatabaseAPI.deleteViewer(dbHelper, loggedInUser, ws_name);
+    }
 }
