@@ -143,7 +143,6 @@ public class ViewersActivity extends ActionBarActivity {
 
     public void inviteUser(View view) {
         if(viewer != null) {
-            WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
             Intent intent = getIntent();
             ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
             String v = viewer.getText().toString();
