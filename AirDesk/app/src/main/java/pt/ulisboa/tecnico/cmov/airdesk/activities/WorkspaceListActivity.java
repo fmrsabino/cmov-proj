@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -199,7 +201,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
                 }
                 else if(TextUtils.equals(repo, "foreign")){
                    tagTxt = new EditText(this);
-                    tagTxt.setHint("Tag1, Tag2, ...");
+                    AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
+                    tagTxt.setHint(DatabaseAPI.getLoggedUserSubscription(dbHelper));
                     new AlertDialog.Builder(this)
                             .setTitle("Subscribe")
                             .setMessage("Please enter workspace tags, separated by a comma")
@@ -207,6 +210,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     String tags = tagTxt.getText().toString();
+                                    AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
+                                    DatabaseAPI.clearSubscribedWorkspaces(dbHelper);
                                     subscribeWorkspaces(tags);
                                     populateWorkspaceList();
                                 }
@@ -219,16 +224,9 @@ public class WorkspaceListActivity extends ActionBarActivity {
     }
 
     private void subscribeWorkspaces(String tags) {
-       /* List<String> ws_tags = new ArrayList<>();
-
-        String[] tokens = tags.split("\\,");
-        for(String t : tokens)
-            ws_tags.add(t);*/
-
-        List<String> items = new ArrayList<String>(Arrays.asList(tags.split("\\s*,\\s*")));
-
-        for(String i : items)
-            Log.d("KEY", i);
+        List<String> items = new ArrayList<>(Arrays.asList(tags.split("\\s*,\\s*")));
+        AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
+        DatabaseAPI.setLoggedUserSubscription(dbHelper, tags);
         wsManager.subscribeWorkspaces(items);
     }
 

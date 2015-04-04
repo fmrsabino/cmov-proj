@@ -27,6 +27,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + AirDeskContract.Users.TABLE_NAME + " (" +
                     AirDeskContract.Users.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Users.COLUMN_NAME_NICK + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Users.COLUMN_NAME_SUBSCRIPTION + TEXT_TYPE + COMMA_SEP +
                     AirDeskContract.Users.COLUMN_NAME_LOGGED + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Users.COLUMN_NAME_EMAIL + TEXT_TYPE +
             " )";

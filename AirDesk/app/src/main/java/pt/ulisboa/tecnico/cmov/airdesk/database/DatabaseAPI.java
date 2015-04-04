@@ -60,19 +60,35 @@ public class DatabaseAPI {
         return count != 0;
     }
 
+
+    public static boolean setLoggedUserSubscription(AirDeskDbHelper dbHelper, String keywords){
+        db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Users.COLUMN_NAME_SUBSCRIPTION, keywords);
+
+        String selection = AirDeskContract.Users.COLUMN_NAME_LOGGED + " = ?";
+        String[] selectionArgs = { "1" };
+
+        int count = db.update(
+                AirDeskContract.Users.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        return count != 0;
+    }
+
     public static String getLoggedUser(AirDeskDbHelper dbHelper){
         db = dbHelper.getReadableDatabase();
 
         String[] projection = {
                 AirDeskContract.Users.COLUMN_NAME_EMAIL};
 
-        String[] selectionArgs = { "1" };
-
         Cursor c = db.query(
                 AirDeskContract.Users.TABLE_NAME,
                 projection,
-                AirDeskContract.Users.COLUMN_NAME_LOGGED + " = ?",
-                selectionArgs,
+                AirDeskContract.Users.COLUMN_NAME_LOGGED + " = 1",
+                null,
                 null,
                 null,
                 null
@@ -118,6 +134,33 @@ public class DatabaseAPI {
         if(TextUtils.isEmpty(email) || TextUtils.isEmpty(nick)){
             return null;
         } else return new User(nick,email);
+    }
+
+    public static String getLoggedUserSubscription(AirDeskDbHelper dbHelper){
+        db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                AirDeskContract.Users.COLUMN_NAME_SUBSCRIPTION};
+
+        Cursor c = db.query(
+                AirDeskContract.Users.TABLE_NAME,
+                projection,
+                AirDeskContract.Users.COLUMN_NAME_LOGGED + " = 1",
+                null,
+                null,
+                null,
+                null
+        );
+
+
+        if(c.moveToFirst()) {
+            String result = c.getString(0);
+            c.close();
+            return result;
+        } else {
+            c.close();
+            return null;
+        }
     }
 
     public static boolean register(AirDeskDbHelper dbHelper, String nick, String email){
@@ -506,12 +549,11 @@ public class DatabaseAPI {
             ws_tags.clear();
             contains = false;
 
-            ws_tags = new ArrayList<String>(Arrays.asList(c.getString(1).split("\\s*,\\s*")));
+            ws_tags = new ArrayList<>(Arrays.asList(c.getString(1).split("\\s*,\\s*")));
 
             for(String k : ws_keywords) {
                 if (ws_tags.contains(k)) {
                     contains = true;
-                    Log.d("BREAK", k);
                     break;
                 }
             }
@@ -521,4 +563,16 @@ public class DatabaseAPI {
 
         c.close();
     }
+
+    public static void clearSubscribedWorkspaces(AirDeskDbHelper dbHelper) {
+        db = dbHelper.getWritableDatabase();
+
+        String loggedUser = getLoggedUser(dbHelper);
+
+        db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE +" in (SELECT "+
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " FROM " + AirDeskContract.Workspaces.TABLE_NAME +
+                " WHERE "+ AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC+ "= 1)" + "AND "+ AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + loggedUser +"\'",null);
+    }
+
 }
+
