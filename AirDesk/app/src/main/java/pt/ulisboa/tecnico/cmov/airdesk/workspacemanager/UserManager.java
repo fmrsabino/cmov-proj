@@ -12,7 +12,7 @@ public class UserManager {
     private AirDeskDbHelper dbHelper;
 
     public UserManager(Context context) {
-        this.dbHelper = new AirDeskDbHelper(context);
+        this.dbHelper = AirDeskDbHelper.getInstance(context);
     }
 
 

@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class AirDeskDbHelper extends SQLiteOpenHelper {
 
+    private static AirDeskDbHelper dbHelper = null;
+
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "AirDesk.db";
@@ -13,6 +15,11 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
     private static final String COMMA_SEP = ",";
+
+
+    private AirDeskDbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
 
     private static final String SQL_CREATE_VIEWERS_TABLE =
             "CREATE TABLE " + AirDeskContract.Viewers.TABLE_NAME + " (" +
@@ -53,9 +60,6 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_WORKSPACES_TABLE =
             "DROP TABLE IF EXISTS " + AirDeskContract.Workspaces.TABLE_NAME;
 
-    public AirDeskDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-    }
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_USERS_TABLE);
@@ -72,5 +76,13 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
+    }
+
+    public static AirDeskDbHelper getInstance(Context context) {
+
+        if (dbHelper == null) {
+            dbHelper = new AirDeskDbHelper(context.getApplicationContext());
+        }
+        return dbHelper;
     }
 }

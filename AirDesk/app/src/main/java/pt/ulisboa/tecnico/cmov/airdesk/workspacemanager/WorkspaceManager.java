@@ -13,7 +13,7 @@ public class WorkspaceManager {
     private AirDeskDbHelper dbHelper;
 
     public WorkspaceManager(Context context) {
-        this.dbHelper = new AirDeskDbHelper(context);
+        this.dbHelper = AirDeskDbHelper.getInstance(context);
     }
 
 
