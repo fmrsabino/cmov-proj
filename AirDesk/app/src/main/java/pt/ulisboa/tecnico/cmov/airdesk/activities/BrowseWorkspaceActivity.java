@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -22,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageQuotaDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -190,7 +187,6 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
     @Override
     public void onQuotaDialogPositiveClick(DialogFragment dialog) {
-        AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
         List<String> files = fileManager.getFilesNames(workspaceName);
         long updatedQuota = Long.parseLong(((ManageQuotaDialogFragment)dialog).getUpdatedQuota());
         long workspaceSize = 0;
@@ -198,7 +194,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             workspaceSize += fileManager.getFileSize(file, workspaceName);
         }
         if(updatedQuota >= workspaceSize){
-            DatabaseAPI.setWorkspaceQuota(dbHelper, workspaceName, (updatedQuota - workspaceSize));
+            wsManager.setWorkspaceQuota(workspaceName, (updatedQuota - workspaceSize));
             Toast.makeText(this, "Quota updated successfully", Toast.LENGTH_SHORT).show();
         } else Toast.makeText(this, "New quota must be greater than current workspace size", Toast.LENGTH_SHORT).show();
     }

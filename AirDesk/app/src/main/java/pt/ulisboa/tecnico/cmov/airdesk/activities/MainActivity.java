@@ -10,16 +10,20 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 
 public class MainActivity extends ActionBarActivity {
 
+    private UserManager userManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(DatabaseAPI.getLoggedDomainUser(new AirDeskDbHelper(this))!=null){
+
+        userManager = new UserManager(getApplicationContext());
+
+        if(userManager.getLoggedDomainUser()!=null){
             Intent intent = new Intent(this, WelcomeActivity.class);
             startActivity(intent);
             finish();
@@ -55,7 +59,7 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(this, WelcomeActivity.class);
         EditText email = (EditText) findViewById(R.id.userIn);
         if(!email.getText().toString().isEmpty()) {
-            if (DatabaseAPI.login(new AirDeskDbHelper(this), email.getText().toString())) {
+            if (userManager.userLogin( email.getText().toString())) {
                 Toast.makeText(this, "Successful Login", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             } else Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
@@ -67,8 +71,7 @@ public class MainActivity extends ActionBarActivity {
         EditText nick = (EditText) findViewById(R.id.userNick);
         EditText email = (EditText) findViewById(R.id.userEmail);
         if(!nick.getText().toString().isEmpty() && !email.getText().toString().isEmpty()) {
-            if (DatabaseAPI.register(new AirDeskDbHelper(this),
-                    nick.getText().toString(), email.getText().toString())) {
+            if (userManager.registerUser(nick.getText().toString(), email.getText().toString())) {
                 Toast.makeText(this, "Successful Registration", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             } else Toast.makeText(this,"Registration Failed",Toast.LENGTH_SHORT).show();

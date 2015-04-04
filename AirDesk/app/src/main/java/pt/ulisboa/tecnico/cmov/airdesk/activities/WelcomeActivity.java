@@ -10,20 +10,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 public class WelcomeActivity extends ActionBarActivity {
 
     public final static String WORKSPACE_ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSACCESS";
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        userManager = new UserManager(getApplicationContext());
 
-        User loggedUser = DatabaseAPI.getLoggedDomainUser(new AirDeskDbHelper(this));
+        User loggedUser = userManager.getLoggedDomainUser();
 
         TextView email = (TextView) findViewById(R.id.emailView);
         email.setText(loggedUser.getEmail());
@@ -49,7 +50,7 @@ public class WelcomeActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.logoff) {
-            if(DatabaseAPI.signOut(new AirDeskDbHelper(this))){
+            if(userManager.signOut()){
                 Toast.makeText(this, "Successful LogOut", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);

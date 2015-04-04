@@ -12,7 +12,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 public class WorkspaceManager {
 
     private Context context;
-    AirDeskDbHelper dbHelper;
+    private AirDeskDbHelper dbHelper;
 
     public WorkspaceManager(Context context) {
         this.context = context;
@@ -101,4 +101,11 @@ public class WorkspaceManager {
 
         DatabaseAPI.subscribeWorkspaces(dbHelper, tags);
     }
+
+    public void setWorkspaceQuota(String ws_name, long bytes) {
+        dbHelper = new AirDeskDbHelper(context);
+
+        DatabaseAPI.setWorkspaceQuota(dbHelper, ws_name, bytes);
+    }
+
 }

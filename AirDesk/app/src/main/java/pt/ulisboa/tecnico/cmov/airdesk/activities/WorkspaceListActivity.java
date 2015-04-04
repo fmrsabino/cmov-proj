@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -24,11 +23,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
@@ -43,6 +41,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private String selectedWorkspace;
     private EditText tagTxt;
     private WorkspaceManager wsManager;
+    private UserManager userManager;
 
 
     @Override
@@ -53,6 +52,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
         Intent intent = getIntent();
         repo = intent.getStringExtra(WelcomeActivity.WORKSPACE_ACCESS_KEY);
         wsManager = new WorkspaceManager(getApplicationContext());
+        userManager = new UserManager(getApplicationContext());
         listView = (ListView) findViewById(R.id.workspace_list);
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
@@ -201,8 +201,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                 }
                 else if(TextUtils.equals(repo, "foreign")){
                    tagTxt = new EditText(this);
-                    AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
-                    tagTxt.setHint(DatabaseAPI.getLoggedUserSubscription(dbHelper));
+                    tagTxt.setHint(userManager.getLoggedUserSubscription());
                     new AlertDialog.Builder(this)
                             .setTitle("Subscribe")
                             .setMessage("Please enter workspace tags, separated by a comma")
@@ -210,8 +209,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     String tags = tagTxt.getText().toString();
-                                    AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
-                                    DatabaseAPI.clearSubscribedWorkspaces(dbHelper);
+                                    userManager.clearSubscribedWorkspaces();
                                     subscribeWorkspaces(tags);
                                     populateWorkspaceList();
                                 }
@@ -223,10 +221,10 @@ public class WorkspaceListActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     private void subscribeWorkspaces(String tags) {
         List<String> items = new ArrayList<>(Arrays.asList(tags.split("\\s*,\\s*")));
-        AirDeskDbHelper dbHelper = new AirDeskDbHelper(getApplicationContext());
-        DatabaseAPI.setLoggedUserSubscription(dbHelper, tags);
+        userManager.setLoggedUserSubscription(tags);
         wsManager.subscribeWorkspaces(items);
     }
 
