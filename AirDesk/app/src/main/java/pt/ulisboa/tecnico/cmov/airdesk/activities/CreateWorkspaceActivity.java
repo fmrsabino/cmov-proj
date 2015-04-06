@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
@@ -39,13 +41,15 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     private EditText viewer;
     private EditText keywords;
     private List<String> viewers;
-    ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> adapter;
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_workspace);
 
+        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
         listView = (ListView) findViewById(R.id.invitation_list);
         quota = (TextView) findViewById(R.id.activity_create_workspace_quota);
         name = (EditText) findViewById(R.id.name);
@@ -135,7 +139,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         }
 
         FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
-        fileManagerLocal.createFolder(workspace);
+        fileManagerLocal.createWorkspace(workspace, user);
 
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);

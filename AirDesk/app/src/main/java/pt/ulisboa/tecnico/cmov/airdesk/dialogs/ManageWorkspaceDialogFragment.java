@@ -24,6 +24,7 @@ public class ManageWorkspaceDialogFragment extends DialogFragment {
     private CheckBox visibilityCheckBox;
     private LinearLayout keyHolder;
     private EditText keyWords;
+    private String user;
 
     public interface ManageQuotaDialogListener {
         public void onWorkspaceSettingsDialogPositiveClick(DialogFragment dialog);
@@ -59,10 +60,11 @@ public class ManageWorkspaceDialogFragment extends DialogFragment {
         String workspaceName = getArguments().getString("workspace");
 
         WorkspaceManager manager = new WorkspaceManager(getActivity());
-        Workspace workspace = manager.retrieveWorkspace(workspaceName);
+        Workspace workspace = manager.retrieveWorkspace(workspaceName, user);
 
-        long workspaceSize = fileManager.getWorkspaceSize(workspaceName);
-        workspaceSize += DatabaseAPI.getCurrentQuota(dbHelper,workspaceName);
+        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(getActivity()));
+        long workspaceSize = fileManager.getWorkspaceSize(workspaceName, user);
+        workspaceSize += DatabaseAPI.getCurrentQuota(dbHelper,workspaceName, user);
 
         keyWords = (EditText) keyHolder.findViewById(R.id.keywords);
         keyWords.setText(workspace.getKeywords());

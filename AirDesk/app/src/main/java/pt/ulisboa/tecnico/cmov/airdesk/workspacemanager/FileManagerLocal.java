@@ -26,9 +26,9 @@ public class FileManagerLocal {
         mContext = context;
     }
 
-    public boolean createFile(String name, String workspace) {
+    public boolean createFile(String name, String workspace, String user) {
         Log.d(TAG, mContext.getFilesDir() + File.separator + workspace);
-        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
+        File file = new File(mContext.getFilesDir() + File.separator + user + File.separator + workspace, name);
 
         boolean success = false;
         try {
@@ -41,19 +41,20 @@ public class FileManagerLocal {
     }
 
     //Only creates folder at the application root directory
-    public boolean createFolder(String name) {
-        File folder = new File(mContext.getFilesDir() + File.separator + name);
+    public boolean createWorkspace(String name, String user) {
+        File folder = new File(mContext.getFilesDir() + File.separator
+                + user + File.separator + name);
 
         boolean success = false;
         if (!folder.exists()) {
-            success = folder.mkdir();
+            success = folder.mkdirs();
         }
 
         return success;
     }
 
-    public boolean deleteFile(String name, String workspace) {
-        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
+    public boolean deleteFile(String name, String workspace, String user) {
+        File file = new File(mContext.getFilesDir() + File.separator + user + File.separator + workspace, name);
         boolean success = false;
         if (file.exists()) {
             success = file.delete();
@@ -64,21 +65,23 @@ public class FileManagerLocal {
         return success;
     }
 
-    public long getWorkspaceSize(String workspace){
-        List<String> files = getFilesNames(workspace);
+    public long getWorkspaceSize(String workspace, String user){
+        List<String> files = getFilesNames(workspace, user);
         long workspaceSize = 0;
         for (String file : files) {
-            workspaceSize += getFileSize(file, workspace);
+            workspaceSize += getFileSize(file, workspace, user);
         }
         return workspaceSize;
     }
 
-    public long getFileSize(String name, String workspace) {
-        return new File(mContext.getFilesDir() + File.separator + workspace, name).length();
+    public long getFileSize(String name, String workspace, String user) {
+        return new File(mContext.getFilesDir() + File.separator +
+                user + File.separator +
+                workspace, name).length();
     }
 
-    public String getFileContents(String name, String workspace){
-        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
+    public String getFileContents(String name, String workspace, String user) {
+        File file = new File(mContext.getFilesDir() + File.separator + user + File.separator + workspace, name);
         String line;
         StringBuilder stringBuilder = new StringBuilder();
         try {
@@ -97,8 +100,8 @@ public class FileManagerLocal {
         return stringBuilder.toString();
     }
 
-    public void saveFileContents(String name, String workspace, String contents){
-        File file = new File(mContext.getFilesDir() + File.separator + workspace, name);
+    public void saveFileContents(String name, String workspace, String user, String contents) {
+        File file = new File(mContext.getFilesDir() + File.separator + user + File.separator + workspace, name);
         try {
             FileWriter writer = new FileWriter(file);
             writer.write(contents);
@@ -108,39 +111,34 @@ public class FileManagerLocal {
         }
     }
 
-    public boolean deleteDirectory(String directory) {
+    public boolean deleteWorkspace(String workspace, String user) {
         boolean success = false;
 
-        File file = new File(mContext.getFilesDir(), directory);
+        File file = new File(mContext.getFilesDir() + File.separator + user, workspace);
 
         if (file.isDirectory()) {
-            formatDirectory(directory);
+            formatWorkspace(workspace, user);
             success = file.delete();
         }
 
         return success;
     }
 
-    public void formatDirectory(String directory) {
-        for (String file : getFilesNames(directory)) {
-            deleteFile(file, directory);
+    public void formatWorkspace(String workspace, String user) {
+        for (String file : getFilesNames(workspace, user)) {
+            deleteFile(file, workspace, user);
         }
     }
 
     //Returns files and directory names in directory
-    public List<String> getFilesNames(String directory) {
-        File file = new File(mContext.getFilesDir() + File.separator + directory, "");
+    public List<String> getFilesNames(String workspace, String user) {
+        File file = new File(mContext.getFilesDir() + File.separator + user + File.separator + workspace, "");
         String[] files = file.list();
         List<String> result = new ArrayList<>();
         if (files != null) {
             result.addAll(Arrays.asList(files));
         }
         return result;
-    }
-
-    //Returns files and directory names in root
-    public List<String> getWorkspaces() {
-        return getFilesNames("");
     }
 
     public String getSystemAvailableSpace() {

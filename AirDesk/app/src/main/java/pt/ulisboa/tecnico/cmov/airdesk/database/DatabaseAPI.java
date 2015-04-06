@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -195,7 +197,7 @@ public class DatabaseAPI {
             //first insert
             long row = db.insert(AirDeskContract.Workspaces.TABLE_NAME, null,values);
             //second insert
-            boolean status = addUsersToWorkspace(dbHelper, viewers, name);
+            boolean status = addUsersToWorkspace(dbHelper, viewers, name, owner);
             //check status and decide on commit or rollback
             if(status && (row != -1))
                 //this means -> commit transaction
@@ -206,13 +208,14 @@ public class DatabaseAPI {
         return (row != -1 && status);
     }
 
-    public static boolean addUserToWorkspace(AirDeskDbHelper dbHelper, String viewer, String wsname){
+    public static boolean addUserToWorkspace(AirDeskDbHelper dbHelper, String viewer, String wsname, String user){
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         boolean smoothInsert = true;
 
         values.put(AirDeskContract.Viewers.COLUMN_NAME_EMAIL, viewer);
         values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
+        values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER, user);
         long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
         if(row == -1)
             smoothInsert = false;
@@ -221,7 +224,7 @@ public class DatabaseAPI {
     }
 
 
-    public static boolean addUsersToWorkspace(AirDeskDbHelper dbHelper, List<String> viewers, String wsname){
+    public static boolean addUsersToWorkspace(AirDeskDbHelper dbHelper, List<String> viewers, String wsname, String user){
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         boolean smoothInsert = true;
@@ -229,6 +232,7 @@ public class DatabaseAPI {
         for (String v : viewers) {
             values.put(AirDeskContract.Viewers.COLUMN_NAME_EMAIL, v);
             values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, wsname);
+            values.put(AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER, user);
             long row = db.insert(AirDeskContract.Viewers.TABLE_NAME, null,values);
             if(row == -1)
                 smoothInsert = false;
@@ -237,11 +241,15 @@ public class DatabaseAPI {
         return smoothInsert;
     }
 
-    public static void deleteViewer(AirDeskDbHelper dbHelper, String v_email, String ws_name) {
+    public static void deleteViewer(AirDeskDbHelper dbHelper, String v_email, String ws_name, String owner) {
         db = dbHelper.getWritableDatabase();
 
-        db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + v_email + "\' AND " +
-                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + "= \'" + ws_name +"\'", null);
+        db.delete(
+                AirDeskContract.Viewers.TABLE_NAME,
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + v_email + "\' AND " +
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + "= \'" + ws_name +"\' AND " +
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER + " = " + owner,
+                null);
 
     }
 
@@ -387,7 +395,7 @@ public class DatabaseAPI {
         return wsList;
     }
 
-    public static Workspace getWorkspace(AirDeskDbHelper dbHelper, String ws_name){
+    public static Workspace getWorkspace(AirDeskDbHelper dbHelper, String ws_name, String user){
         db = dbHelper.getReadableDatabase();
         List<String> viewers = new ArrayList<>();
         Workspace ws;
@@ -399,12 +407,12 @@ public class DatabaseAPI {
                 AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC,
                 AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS};
 
-        String[] selectionArgs = { ws_name };
+        String[] selectionArgs = { ws_name, user };
 
         Cursor c = db.query(
                 AirDeskContract.Workspaces.TABLE_NAME,
                 ws_projection,
-                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " LIKE ?",
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " LIKE ? AND " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
                 selectionArgs,
                 null,
                 null,
@@ -424,7 +432,7 @@ public class DatabaseAPI {
         Cursor c2 = db.query(
                 AirDeskContract.Viewers.TABLE_NAME,  // The table to query
                 v_projection,
-                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ?",
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ? AND " + AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER + " = ?",
                 selectionArgs,
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
@@ -459,8 +467,8 @@ public class DatabaseAPI {
     }
 
     // Updates the quota of the workspace with the remaining files
-    public static boolean updateWorkspaceQuota(AirDeskDbHelper dbHelper, String workspace, long bytes) {
-        double currentQuota = getCurrentQuota(dbHelper, workspace);
+    public static boolean updateWorkspaceQuota(AirDeskDbHelper dbHelper, String workspace, long bytes, String user) {
+        double currentQuota = getCurrentQuota(dbHelper, workspace, user);
 
         db = dbHelper.getWritableDatabase();
 
@@ -470,14 +478,14 @@ public class DatabaseAPI {
         db.update(
                 AirDeskContract.Workspaces.TABLE_NAME,
                 values,
-                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
-                new String[]{workspace}
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ? AND " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
+                new String[]{workspace, user}
         );
 
         return true;
     }
 
-    public static boolean setWorkspaceQuota(AirDeskDbHelper dbHelper, String workspace, long bytes) {
+    public static boolean setWorkspaceQuota(AirDeskDbHelper dbHelper, String workspace, long bytes, String user) {
         db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -486,14 +494,14 @@ public class DatabaseAPI {
         db.update(
                 AirDeskContract.Workspaces.TABLE_NAME,
                 values,
-                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
-                new String[]{workspace}
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ? AND " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
+                new String[]{workspace, user}
         );
 
         return true;
     }
 
-    public static boolean setWorkspaceVisibility(AirDeskDbHelper dbHelper, String workspace, int visibility){
+    public static boolean setWorkspaceVisibility(AirDeskDbHelper dbHelper, String workspace, int visibility, String user){
         db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -502,14 +510,14 @@ public class DatabaseAPI {
         db.update(
                 AirDeskContract.Workspaces.TABLE_NAME,
                 values,
-                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
-                new String[]{workspace}
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ? AND " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
+                new String[]{workspace, user}
         );
 
         return true;
     }
 
-    public static boolean setWorkspaceKeywords(AirDeskDbHelper dbHelper, String workspace, String keywords){
+    public static boolean setWorkspaceKeywords(AirDeskDbHelper dbHelper, String workspace, String keywords, String user){
         db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -518,31 +526,33 @@ public class DatabaseAPI {
         db.update(
                 AirDeskContract.Workspaces.TABLE_NAME,
                 values,
-                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
-                new String[]{workspace}
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ? AND " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
+                new String[]{workspace, user}
         );
 
         return true;
     }
 
     // Returns the current quota value in bytes for workspace
-    public static long getCurrentQuota(AirDeskDbHelper dbHelper, String workspace) {
+    public static long getCurrentQuota(AirDeskDbHelper dbHelper, String workspace, String user) {
         db = dbHelper.getReadableDatabase();
 
         long workspaceQuota = 0;
         String[] projection = {
-                AirDeskContract.Workspaces.COLUMN_NAME_QUOTA
+                AirDeskContract.Workspaces.COLUMN_NAME_QUOTA, AirDeskContract.Workspaces.COLUMN_NAME_OWNER
         };
 
         Cursor c = db.query(
                 AirDeskContract.Workspaces.TABLE_NAME,
                 projection,
-                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ?",
-                new String[]{workspace},
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ? AND " +  AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
+                new String[]{workspace, user},
                 null,
                 null,
                 null
         );
+
+        Log.d("DB", "OWNER IS: " + user);
 
         if (c.moveToFirst()) {
             workspaceQuota = c.getLong(0);
@@ -563,7 +573,8 @@ public class DatabaseAPI {
 
         String[] ws_projection = {
                 AirDeskContract.Workspaces.COLUMN_NAME_NAME,
-                AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS};
+                AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS,
+                AirDeskContract.Workspaces.COLUMN_NAME_OWNER};
 
         Cursor c = db.query(
                 AirDeskContract.Workspaces.TABLE_NAME,
@@ -588,7 +599,7 @@ public class DatabaseAPI {
                 }
             }
             if(contains)
-                addUserToWorkspace(dbHelper, loggedInUser, c.getString(0));
+                addUserToWorkspace(dbHelper, loggedInUser, c.getString(0), c.getString(2));
         }
 
         c.close();

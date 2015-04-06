@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -42,7 +44,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private EditText tagTxt;
     private WorkspaceManager wsManager;
     private UserManager userManager;
-
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +59,9 @@ public class WorkspaceListActivity extends ActionBarActivity {
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
 
+        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
 
         populateWorkspaceList();
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -135,7 +137,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                                 }).show();
                         return;
                     }
-                    new FileManagerLocal(this).deleteDirectory(workspaceName);
+                    new FileManagerLocal(this).deleteWorkspace(workspaceName, user);
                 }
             }
         }
@@ -144,7 +146,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                 if (checked.get(i)) {
                     String workspaceName = listAdapter.getItem(i).getWs_name();
 
-                    wsManager.unregisterForeignWorkspace(workspaceName);
+                    wsManager.unregisterForeignWorkspace(workspaceName, user);
                 }
             }
         }

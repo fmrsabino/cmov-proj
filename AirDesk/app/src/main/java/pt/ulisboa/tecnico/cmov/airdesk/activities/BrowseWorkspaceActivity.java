@@ -40,6 +40,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     private ArrayAdapter<String> gridAdapter;
     private FileManagerLocal fileManager = null;
     private WorkspaceManager wsManager;
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,8 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         workspaceName = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         getSupportActionBar().setTitle(workspaceName);
 
-        files.addAll(fileManager.getFilesNames(workspaceName));
+        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
+        files.addAll(fileManager.getFilesNames(workspaceName, user));
         gridView = (GridView) findViewById(R.id.workspace_files);
         gridAdapter = new ArrayAdapter<>(this,
                 R.layout.activity_browse_workspace_grid_item, R.id.text1, files);
@@ -118,8 +120,8 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
                 String fileName = gridAdapter.getItem(i);
-                wsManager.updateWorkspaceQuota(workspaceName, fileManager.getFileSize(fileName, workspaceName));
-                fileManager.deleteFile(fileName, workspaceName);
+                wsManager.updateWorkspaceQuota(workspaceName, fileManager.getFileSize(fileName, workspaceName, user), user);
+                fileManager.deleteFile(fileName, workspaceName, user);
             }
         }
         refreshFilesList();
@@ -177,13 +179,13 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
     private void refreshFilesList() {
         files.clear();
-        files.addAll(fileManager.getFilesNames(workspaceName));
+        files.addAll(fileManager.getFilesNames(workspaceName, user));
         gridAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName(), workspaceName);
+        fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName(), workspaceName, user);
         refreshFilesList();
     }
 
@@ -196,20 +198,20 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         String newQuota = ((ManageWorkspaceDialogFragment)dialog).getUpdatedQuota();
         if(newQuota != null) {
             long updatedQuota = Long.parseLong(newQuota);
-            long workspaceSize = fileManager.getWorkspaceSize(workspaceName);
+            long workspaceSize = fileManager.getWorkspaceSize(workspaceName, user);
 
             if (updatedQuota >= workspaceSize) {
-                DatabaseAPI.setWorkspaceQuota(dbHelper, workspaceName, (updatedQuota - workspaceSize));
+                DatabaseAPI.setWorkspaceQuota(dbHelper, workspaceName, (updatedQuota - workspaceSize), user);
             } else
                 Toast.makeText(this, "New quota must be greater than current workspace size", Toast.LENGTH_SHORT).show();
         }
 
         boolean newVisibility = ((ManageWorkspaceDialogFragment)dialog).getWorkspaceVisibility();
         int visibility = (newVisibility)? 1: 0;
-        DatabaseAPI.setWorkspaceVisibility(dbHelper, workspaceName, visibility);
+        DatabaseAPI.setWorkspaceVisibility(dbHelper, workspaceName, visibility, user);
 
         String keywords = ((ManageWorkspaceDialogFragment)dialog).getWorkspaceKeywords();
-        DatabaseAPI.setWorkspaceKeywords(dbHelper, workspaceName, keywords);
+        DatabaseAPI.setWorkspaceKeywords(dbHelper, workspaceName, keywords, user);
     }
 
     @Override
