@@ -14,13 +14,9 @@
         android:orderInCategory="100"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_manage_quota"
-        android:title="@string/manage_quota"
+    <item android:id="@+id/action_manage_settings"
+        android:title="@string/manage_settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
 
-    <item android:id="@+id/action_manage_visibility"
-        android:title="@string/manage_visibility"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
 </menu>

@@ -21,14 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
-import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageQuotaDialogFragment;
+import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageWorkspaceDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
 public class BrowseWorkspaceActivity extends ActionBarActivity
-        implements CreateFileDialogFragment.CreateFileDialogListener, ManageQuotaDialogFragment.ManageQuotaDialogListener {
+        implements CreateFileDialogFragment.CreateFileDialogListener, ManageWorkspaceDialogFragment.ManageQuotaDialogListener {
 
 
     private GridView gridView;
@@ -58,7 +60,6 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
                 R.layout.activity_browse_workspace_grid_item, R.id.text1, files);
 
         gridView.setAdapter(gridAdapter);
-
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -144,8 +145,8 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             case (R.id.action_add_file):
                 showCreateFileDialog();
                 return true;
-            case(R.id.action_manage_quota):
-                showManageQuotaDialog();
+            case(R.id.action_manage_settings):
+                showManageWorkspaceSettingsDialog();
                 return true;
         }
 
@@ -165,9 +166,13 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         dialog.show(getFragmentManager(), "CreateFileDialogFragment");
     }
 
-    private void showManageQuotaDialog() {
-        ManageQuotaDialogFragment dialog = new ManageQuotaDialogFragment();
-        dialog.show(getFragmentManager(), "ManageQuotaDialogFragment");
+    private void showManageWorkspaceSettingsDialog() {
+        Bundle args = new Bundle();
+        args.putString("workspace", workspaceName);
+
+        ManageWorkspaceDialogFragment dialog = new ManageWorkspaceDialogFragment();
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "ManageWorkspaceDialogFragment");
     }
 
     private void refreshFilesList() {
@@ -186,21 +191,29 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     public void onDialogNegativeClick(DialogFragment dialog) {}
 
     @Override
-    public void onQuotaDialogPositiveClick(DialogFragment dialog) {
-        List<String> files = fileManager.getFilesNames(workspaceName);
-        long updatedQuota = Long.parseLong(((ManageQuotaDialogFragment)dialog).getUpdatedQuota());
-        long workspaceSize = 0;
-        for(String file : files){
-            workspaceSize += fileManager.getFileSize(file, workspaceName);
+    public void onWorkspaceSettingsDialogPositiveClick(DialogFragment dialog) {
+        AirDeskDbHelper dbHelper = AirDeskDbHelper.getInstance(getApplicationContext());
+        String newQuota = ((ManageWorkspaceDialogFragment)dialog).getUpdatedQuota();
+        if(newQuota != null) {
+            long updatedQuota = Long.parseLong(newQuota);
+            long workspaceSize = fileManager.getWorkspaceSize(workspaceName);
+
+            if (updatedQuota >= workspaceSize) {
+                DatabaseAPI.setWorkspaceQuota(dbHelper, workspaceName, (updatedQuota - workspaceSize));
+            } else
+                Toast.makeText(this, "New quota must be greater than current workspace size", Toast.LENGTH_SHORT).show();
         }
-        if(updatedQuota >= workspaceSize){
-            wsManager.setWorkspaceQuota(workspaceName, (updatedQuota - workspaceSize));
-            Toast.makeText(this, "Quota updated successfully", Toast.LENGTH_SHORT).show();
-        } else Toast.makeText(this, "New quota must be greater than current workspace size", Toast.LENGTH_SHORT).show();
+
+        boolean newVisibility = ((ManageWorkspaceDialogFragment)dialog).getWorkspaceVisibility();
+        int visibility = (newVisibility)? 1: 0;
+        DatabaseAPI.setWorkspaceVisibility(dbHelper, workspaceName, visibility);
+
+        String keywords = ((ManageWorkspaceDialogFragment)dialog).getWorkspaceKeywords();
+        DatabaseAPI.setWorkspaceKeywords(dbHelper, workspaceName, keywords);
     }
 
     @Override
-    public void onQuotaDialogNegativeClick(DialogFragment dialog) {
+    public void onWorkspaceSettingsDialogNegativeClick(DialogFragment dialog) {
       // do nothing
     }
 }

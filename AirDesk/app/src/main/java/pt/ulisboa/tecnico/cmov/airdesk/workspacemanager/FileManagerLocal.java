@@ -64,6 +64,15 @@ public class FileManagerLocal {
         return success;
     }
 
+    public long getWorkspaceSize(String workspace){
+        List<String> files = getFilesNames(workspace);
+        long workspaceSize = 0;
+        for (String file : files) {
+            workspaceSize += getFileSize(file, workspace);
+        }
+        return workspaceSize;
+    }
+
     public long getFileSize(String name, String workspace) {
         return new File(mContext.getFilesDir() + File.separator + workspace, name).length();
     }
