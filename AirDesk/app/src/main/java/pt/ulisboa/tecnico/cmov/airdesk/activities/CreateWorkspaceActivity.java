@@ -95,7 +95,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         String tags = keywords.getText().toString();
         int isPublic = (is_public) ? 1 : 0;
 
-        Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers);
+        Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers, user);
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
         List<Workspace> wsList = wsManager.retrieveOwnedWorkspaces();
         List<String> wsNameList = new ArrayList<>();

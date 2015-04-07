@@ -55,7 +55,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         workspaceName = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         getSupportActionBar().setTitle(workspaceName);
 
-        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
+        user = intent.getStringExtra(WorkspaceListActivity.OWNER_KEY);
         files.addAll(fileManager.getFilesNames(workspaceName, user));
         gridView = (GridView) findViewById(R.id.workspace_files);
         gridAdapter = new ArrayAdapter<>(this,

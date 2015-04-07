@@ -36,6 +36,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
 
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     public final static String ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.ACCESS";
+    public final static String OWNER_KEY = "owner";
+
     private String repo;
     private ListView listView;
     private List<WorkspacesListAdapter.Content> directories = new ArrayList<>();
@@ -75,8 +77,10 @@ public class WorkspaceListActivity extends ActionBarActivity {
                     Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
                     String access = repo;
                     String message = selectedWorkspace;
+                    String owner = listAdapter.getItem(position).getOwner();
                     intent.putExtra(ACCESS_KEY, access);
                     intent.putExtra(WORKSPACE_NAME_KEY, message);
+                    intent.putExtra(OWNER_KEY, owner);
 
                     startActivity(intent);
                 }}});
@@ -171,7 +175,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
             wsList= wsManager.retrieveForeignWorkspaces();
 
         for (Workspace w : wsList) {
-            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota())));
+            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner()));
         }
 
         listAdapter.notifyDataSetChanged();

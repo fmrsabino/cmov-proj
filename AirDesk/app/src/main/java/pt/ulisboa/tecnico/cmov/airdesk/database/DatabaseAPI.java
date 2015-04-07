@@ -266,7 +266,8 @@ public class DatabaseAPI {
                 AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC,
                 AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS};
 
-        String[] selectionArgs = { getLoggedUser(dbHelper) };
+        String user = getLoggedUser(dbHelper);
+        String[] selectionArgs = { user };
 
         String ws_sortOrder =
                 AirDeskContract.Workspaces.COLUMN_NAME_NAME + " DESC";
@@ -308,7 +309,7 @@ public class DatabaseAPI {
             }
             c2.close();
 
-            wsList.add(new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers));
+            wsList.add(new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers, user));
         }
         c.close();
         return wsList;
@@ -316,13 +317,13 @@ public class DatabaseAPI {
 
     public static List<Workspace> getForeignWorkspaces(AirDeskDbHelper dbHelper) {
         db = dbHelper.getReadableDatabase();
-        List<String> workspaces = new ArrayList<>();
+        List<Workspace> workspaces = new ArrayList<>();
         List<String> viewers;
         List<Workspace> wsList= new ArrayList<>();
 
 
         String[] v_projection = {
-                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE};
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE, AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER};
 
         String[] v_selectionArgs = { getLoggedUser(dbHelper) };
 
@@ -341,7 +342,7 @@ public class DatabaseAPI {
 
 
         while (c.moveToNext()) {
-            workspaces.add(c.getString(0));
+            workspaces.add(new Workspace(c.getString(0), -1, -1, null, null, c.getString(1)));
         }
         c.close();
 
@@ -352,8 +353,8 @@ public class DatabaseAPI {
                 AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC,
                 AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS};
 
-        for(String ws : workspaces) {
-            String[] selectionArgs = {ws};
+        for(Workspace ws : workspaces) {
+            String[] selectionArgs = {ws.getName(), ws.getOwner()};
 
             String ws_sortOrder =
                     AirDeskContract.Workspaces.COLUMN_NAME_NAME + " DESC";
@@ -361,7 +362,7 @@ public class DatabaseAPI {
             Cursor c2 = db.query(
                     AirDeskContract.Workspaces.TABLE_NAME,  // The table to query
                     ws_projection,                               // The columns to return
-                    AirDeskContract.Workspaces.COLUMN_NAME_NAME + " LIKE ?",  // The columns for the WHERE clause
+                    AirDeskContract.Workspaces.COLUMN_NAME_NAME + " LIKE ? AND " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",  // The columns for the WHERE clause
                     selectionArgs,                            // The values for the WHERE clause
                     null,                                     // don't group the rows
                     null,                                     // don't filter by row groups
@@ -388,7 +389,7 @@ public class DatabaseAPI {
                 }
                 c3.close();
 
-                wsList.add(new Workspace(c2.getString(0), c2.getInt(2), c2.getInt(3), c2.getString(4), viewers));
+                wsList.add(new Workspace(c2.getString(0), c2.getInt(2), c2.getInt(3), c2.getString(4), viewers, c2.getString(1)));
             }
             c2.close();
         }
@@ -443,7 +444,7 @@ public class DatabaseAPI {
             viewers.add(c2.getString(0));
         }
         
-        ws = new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers);
+        ws = new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers, c.getString(1));
 
         c.close();
         c2.close();
