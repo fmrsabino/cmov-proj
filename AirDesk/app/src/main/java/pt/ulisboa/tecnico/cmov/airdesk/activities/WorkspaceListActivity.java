@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -34,6 +36,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
 
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     public final static String ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.ACCESS";
+    public final static String OWNER_KEY = "owner";
+
     private String repo;
     private ListView listView;
     private List<WorkspacesListAdapter.Content> directories = new ArrayList<>();
@@ -42,7 +46,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private EditText tagTxt;
     private WorkspaceManager wsManager;
     private UserManager userManager;
-
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +61,9 @@ public class WorkspaceListActivity extends ActionBarActivity {
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
 
+        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
 
         populateWorkspaceList();
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -73,8 +77,10 @@ public class WorkspaceListActivity extends ActionBarActivity {
                     Intent intent = new Intent(WorkspaceListActivity.this, BrowseWorkspaceActivity.class);
                     String access = repo;
                     String message = selectedWorkspace;
+                    String owner = listAdapter.getItem(position).getOwner();
                     intent.putExtra(ACCESS_KEY, access);
                     intent.putExtra(WORKSPACE_NAME_KEY, message);
+                    intent.putExtra(OWNER_KEY, owner);
 
                     startActivity(intent);
                 }}});
@@ -135,7 +141,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
                                 }).show();
                         return;
                     }
-                    new FileManagerLocal(this).deleteDirectory(workspaceName);
+                    new FileManagerLocal(this).deleteWorkspace(workspaceName, user);
                 }
             }
         }
@@ -143,8 +149,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
             for (int i = 0; i < listView.getAdapter().getCount(); i++) {
                 if (checked.get(i)) {
                     String workspaceName = listAdapter.getItem(i).getWs_name();
-
-                    wsManager.unregisterForeignWorkspace(workspaceName);
+                    String workspaceOwner = listAdapter.getItem(i).getOwner();
+                    wsManager.unregisterForeignWorkspace(workspaceName, workspaceOwner);
                 }
             }
         }
@@ -169,7 +175,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
             wsList= wsManager.retrieveForeignWorkspaces();
 
         for (Workspace w : wsList) {
-            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota())));
+            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner()));
         }
 
         listAdapter.notifyDataSetChanged();

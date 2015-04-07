@@ -15,11 +15,6 @@
         android:textSize="17sp"
         android:padding="15dp" />
 
-    <ListView
-        android:id="@+id/viewers_list"
-        android:layout_width="match_parent"
-        android:layout_height="260dp"/>
-
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/invite_option"
@@ -48,5 +43,9 @@
             android:onClick="inviteUser"/>
     </LinearLayout>
 
+    <ListView
+        android:id="@+id/viewers_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

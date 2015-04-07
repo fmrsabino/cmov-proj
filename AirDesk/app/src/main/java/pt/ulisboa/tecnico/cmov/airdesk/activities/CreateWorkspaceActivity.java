@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
@@ -39,13 +41,15 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     private EditText viewer;
     private EditText keywords;
     private List<String> viewers;
-    ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> adapter;
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_workspace);
 
+        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
         listView = (ListView) findViewById(R.id.invitation_list);
         quota = (TextView) findViewById(R.id.activity_create_workspace_quota);
         name = (EditText) findViewById(R.id.name);
@@ -91,7 +95,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         String tags = keywords.getText().toString();
         int isPublic = (is_public) ? 1 : 0;
 
-        Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers);
+        Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers, user);
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
         List<Workspace> wsList = wsManager.retrieveOwnedWorkspaces();
         List<String> wsNameList = new ArrayList<>();
@@ -135,12 +139,13 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         }
 
         FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
-        fileManagerLocal.createFolder(workspace);
+        fileManagerLocal.createWorkspace(workspace, user);
 
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
         intent.putExtra(WORKSPACE_NAME_KEY, workspace);
         intent.putExtra(WorkspaceListActivity.ACCESS_KEY, "owned");
+        intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
         startActivity(intent);
     }
 

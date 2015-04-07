@@ -25,10 +25,11 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + AirDeskContract.Viewers.TABLE_NAME + " (" +
                     AirDeskContract.Viewers.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     AirDeskContract.Viewers.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE+ TEXT_TYPE + COMMA_SEP +
-                    " FOREIGN KEY ("+AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE+ ")" +
+                    AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER + TEXT_TYPE + COMMA_SEP +
+                    " FOREIGN KEY ("+AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + COMMA_SEP + " " + AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER + ")" +
                     " REFERENCES "+AirDeskContract.Workspaces.TABLE_NAME + " ("+
-                    AirDeskContract.Workspaces.COLUMN_NAME_NAME +"));";
+                    AirDeskContract.Workspaces.COLUMN_NAME_NAME + COMMA_SEP + " " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + "));";
 
     private static final String SQL_CREATE_USERS_TABLE =
             "CREATE TABLE " + AirDeskContract.Users.TABLE_NAME + " (" +

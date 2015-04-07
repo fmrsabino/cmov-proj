@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -20,6 +21,7 @@ public class FileEditorActivity extends ActionBarActivity {
     private String file_name = null;
     private String workspace_name = null;
     private WorkspaceManager wsManager;
+    private String user;
 
     private long initialFileSize = 0;
 
@@ -31,15 +33,17 @@ public class FileEditorActivity extends ActionBarActivity {
         Intent intent = getIntent();
         file_name = intent.getStringExtra("file_name");
         workspace_name = intent.getStringExtra("workspace_name");
+        user = intent.getStringExtra(WorkspaceListActivity.OWNER_KEY);
 
         getSupportActionBar().setTitle(file_name);
 
         fileManagerLocal = new FileManagerLocal(this);
         wsManager = new WorkspaceManager(getApplicationContext());
 
-        initialFileSize = fileManagerLocal.getFileSize(file_name, workspace_name);
 
-        String fileContents = fileManagerLocal.getFileContents(file_name, workspace_name);
+        initialFileSize = fileManagerLocal.getFileSize(file_name, workspace_name, user);
+
+        String fileContents = fileManagerLocal.getFileContents(file_name, workspace_name, user);
         EditText fileView = (EditText) findViewById(R.id.fileContents);
         fileView.setText(fileContents);
     }
@@ -68,16 +72,19 @@ public class FileEditorActivity extends ActionBarActivity {
                 fileBytes = fileView.getText().toString().getBytes("UTF-8");
                 long finalFileSize = fileBytes.length;
 
+                Log.d("Editor", "Final size is: " + finalFileSize);
+                Log.d("Editor", "Initial size is: " + initialFileSize);
+
                 long updatedBytes = finalFileSize - initialFileSize;
-                long currentQuota = wsManager.getCurrentWorkspaceQuota(workspace_name);
+                long currentQuota = wsManager.getCurrentWorkspaceQuota(workspace_name, user);
 
                 if (currentQuota - updatedBytes < 0) {
                     Toast.makeText(this, "Quota Exceeded: Couldn't save file", Toast.LENGTH_LONG).show();
                     return true;
                 }
 
-                wsManager.updateWorkspaceQuota(workspace_name, -updatedBytes);
-                fileManagerLocal.saveFileContents(file_name, workspace_name, fileView.getText().toString());
+                wsManager.updateWorkspaceQuota(workspace_name, -updatedBytes, user);
+                fileManagerLocal.saveFileContents(file_name, workspace_name, user, fileView.getText().toString());
 
                 Toast.makeText(this, "Saved File", Toast.LENGTH_SHORT).show();
                 finish();

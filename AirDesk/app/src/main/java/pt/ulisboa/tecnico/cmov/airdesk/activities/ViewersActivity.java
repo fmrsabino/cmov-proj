@@ -34,7 +34,8 @@ public class ViewersActivity extends ActionBarActivity {
     private List<String> viewers;
     private ArrayAdapter<String> adapter;
     private Workspace ws;
-    WorkspaceManager wsManager;
+    private WorkspaceManager wsManager;
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,16 +46,16 @@ public class ViewersActivity extends ActionBarActivity {
         viewer = (EditText) findViewById(R.id.viewer);
         TextView tv = (TextView) findViewById(R.id.workspace_name);
         LinearLayout invite_layout = (LinearLayout) findViewById(R.id.invite_option);
-
         wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
         String access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
         ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
+        user = intent.getStringExtra(WorkspaceListActivity.OWNER_KEY);
 
         tv.setText(ws_name + " Viewers");
 
-        ws = wsManager.retrieveWorkspace(ws_name);
+        ws = wsManager.retrieveWorkspace(ws_name, user);
 
         viewers = new ArrayList<>(ws.getUsers());
 
@@ -109,12 +110,12 @@ public class ViewersActivity extends ActionBarActivity {
 
         for (int i = 0; i < listView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
-                wsManager.deleteWorkspaceViewer(adapter.getItem(i), ws_name);
+                wsManager.deleteWorkspaceViewer(adapter.getItem(i), ws_name, user);
             }
         }
 
         viewers.clear();
-        ws = wsManager.retrieveWorkspace(ws_name);
+        ws = wsManager.retrieveWorkspace(ws_name, user);
         viewers.addAll(ws.getUsers());
         adapter.notifyDataSetChanged();
     }
@@ -156,7 +157,7 @@ public class ViewersActivity extends ActionBarActivity {
 
                 viewers.add(v);
 
-                wsManager.addViewer(v, ws_name);
+                wsManager.addViewer(v, ws_name, user);
 
                 adapter.notifyDataSetChanged();
                 viewer.setText(null);

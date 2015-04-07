@@ -18,10 +18,12 @@ public class WorkspacesListAdapter extends BaseAdapter
     public static class Content {
         private String ws_name;
         private String quota;
+        private String owner;
 
-        public Content(String ws_name, String quota) {
+        public Content(String ws_name, String quota, String owner) {
             this.ws_name = ws_name;
             this.quota = quota + " bytes";
+            this.owner = owner;
         }
 
         public String getQuota() {
@@ -38,6 +40,10 @@ public class WorkspacesListAdapter extends BaseAdapter
 
         public void setWs_name(String ws_name) {
             this.ws_name = ws_name;
+        }
+
+        public String getOwner() {
+            return owner;
         }
     }
 
