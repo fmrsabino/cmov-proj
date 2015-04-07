@@ -149,8 +149,8 @@ public class WorkspaceListActivity extends ActionBarActivity {
             for (int i = 0; i < listView.getAdapter().getCount(); i++) {
                 if (checked.get(i)) {
                     String workspaceName = listAdapter.getItem(i).getWs_name();
-
-                    wsManager.unregisterForeignWorkspace(workspaceName, user);
+                    String workspaceOwner = listAdapter.getItem(i).getOwner();
+                    wsManager.unregisterForeignWorkspace(workspaceName, workspaceOwner);
                 }
             }
         }

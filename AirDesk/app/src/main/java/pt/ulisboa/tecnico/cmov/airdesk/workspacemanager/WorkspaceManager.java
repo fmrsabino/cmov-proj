@@ -70,9 +70,9 @@ public class WorkspaceManager {
         return DatabaseAPI.deleteLocalWorkspace(dbHelper, ws_name);
     }
 
-    public void unregisterForeignWorkspace(String ws_name, String user) {
+    public void unregisterForeignWorkspace(String ws_name, String wsOwner) {
         String loggedInUser = DatabaseAPI.getLoggedUser(dbHelper);
-        DatabaseAPI.deleteViewer(dbHelper, loggedInUser, ws_name, user);
+        DatabaseAPI.deleteViewer(dbHelper, loggedInUser, ws_name, wsOwner);
     }
 
     public void subscribeWorkspaces(List<String> tags){
