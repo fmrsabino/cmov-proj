@@ -69,6 +69,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
                 Intent intent = new Intent(BrowseWorkspaceActivity.this, FileEditorActivity.class);
                 intent.putExtra("file_name", gridAdapter.getItem(position));
                 intent.putExtra("workspace_name", workspaceName);
+                intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
                 startActivity(intent);
             }
         });

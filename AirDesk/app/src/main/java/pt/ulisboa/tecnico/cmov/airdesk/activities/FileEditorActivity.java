@@ -35,12 +35,13 @@ public class FileEditorActivity extends ActionBarActivity {
         Intent intent = getIntent();
         file_name = intent.getStringExtra("file_name");
         workspace_name = intent.getStringExtra("workspace_name");
+        user = intent.getStringExtra(WorkspaceListActivity.OWNER_KEY);
 
         getSupportActionBar().setTitle(file_name);
 
         fileManagerLocal = new FileManagerLocal(this);
         wsManager = new WorkspaceManager(getApplicationContext());
-        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
+
 
         initialFileSize = fileManagerLocal.getFileSize(file_name, workspace_name, user);
 
