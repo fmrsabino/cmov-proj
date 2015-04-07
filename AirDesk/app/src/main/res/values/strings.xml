@@ -14,8 +14,8 @@
     <string name="addFile">Add File</string>
     <string name="add_workspace">Add Workspace</string>
     <string name="invite">Invite to Workspace</string>
-    <string name="viewers">Browse Workspace Viewers</string>
-    <string name="manage_settings">Manage Workspace Settings</string>
+    <string name="viewers">Workspace Viewers</string>
+    <string name="workspace_settings">Workspace Settings</string>
     <string name="leave_delete">Leave / Delete Workspace</string>
     <string name="title_activity_file_manager_test">FileManagerTestActivity</string>
     <string name="signin">Sign In</string>

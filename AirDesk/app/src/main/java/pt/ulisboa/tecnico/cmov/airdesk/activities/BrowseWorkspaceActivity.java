@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -54,8 +55,10 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
         workspaceName = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         getSupportActionBar().setTitle(workspaceName);
-
         user = intent.getStringExtra(WorkspaceListActivity.OWNER_KEY);
+
+        invalidateOptionsMenu();
+
         files.addAll(fileManager.getFilesNames(workspaceName, user));
         gridView = (GridView) findViewById(R.id.workspace_files);
         gridAdapter = new ArrayAdapter<>(this,
@@ -126,6 +129,14 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             }
         }
         refreshFilesList();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (access.equals("foreign")) {
+            menu.removeItem(R.id.action_manage_settings);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
