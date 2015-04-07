@@ -145,6 +145,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
         intent.putExtra(WORKSPACE_NAME_KEY, workspace);
         intent.putExtra(WorkspaceListActivity.ACCESS_KEY, "owned");
+        intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
         startActivity(intent);
     }
 
