@@ -48,12 +48,12 @@ public class ViewersActivity extends ActionBarActivity {
         viewer = (EditText) findViewById(R.id.viewer);
         TextView tv = (TextView) findViewById(R.id.workspace_name);
         LinearLayout invite_layout = (LinearLayout) findViewById(R.id.invite_option);
-        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
         wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
         String access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
         ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
+        user = intent.getStringExtra(WorkspaceListActivity.OWNER_KEY);
 
         tv.setText(ws_name + " Viewers");
 

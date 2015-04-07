@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.activities.WorkspaceListActivity;
 import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
@@ -58,11 +59,11 @@ public class ManageWorkspaceDialogFragment extends DialogFragment {
         FileManagerLocal fileManager = new FileManagerLocal(getActivity());
         AirDeskDbHelper dbHelper = AirDeskDbHelper.getInstance(getActivity());
         String workspaceName = getArguments().getString("workspace");
+        user = getArguments().getString(WorkspaceListActivity.OWNER_KEY);
 
         WorkspaceManager manager = new WorkspaceManager(getActivity());
         Workspace workspace = manager.retrieveWorkspace(workspaceName, user);
 
-        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(getActivity()));
         long workspaceSize = fileManager.getWorkspaceSize(workspaceName, user);
         workspaceSize += DatabaseAPI.getCurrentQuota(dbHelper,workspaceName, user);
 

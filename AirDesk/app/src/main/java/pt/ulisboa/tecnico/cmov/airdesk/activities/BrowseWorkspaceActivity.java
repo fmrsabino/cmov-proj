@@ -157,6 +157,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             Intent intent = new Intent(this, ViewersActivity.class);
             intent.putExtra(WorkspaceListActivity.ACCESS_KEY, this.access);
             intent.putExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY, this.workspaceName);
+            intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
             startActivity(intent);
             return true;
         }
@@ -172,6 +173,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     private void showManageWorkspaceSettingsDialog() {
         Bundle args = new Bundle();
         args.putString("workspace", workspaceName);
+        args.putString(WorkspaceListActivity.OWNER_KEY, user);
 
         ManageWorkspaceDialogFragment dialog = new ManageWorkspaceDialogFragment();
         dialog.setArguments(args);
