@@ -248,7 +248,7 @@ public class DatabaseAPI {
                 AirDeskContract.Viewers.TABLE_NAME,
                 AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + v_email + "\' AND " +
                 AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + "= \'" + ws_name +"\' AND " +
-                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER + " = " + owner,
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER + " = \'" + owner + "\'",
                 null);
 
     }
