@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -61,7 +59,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
         listAdapter = new WorkspacesListAdapter(this, directories);
         listView.setAdapter(listAdapter);
 
-        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
+        user = userManager.getLoggedUser();
 
         populateWorkspaceList();
 

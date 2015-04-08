@@ -4,7 +4,6 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -21,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageWorkspaceDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -207,24 +204,23 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
     @Override
     public void onWorkspaceSettingsDialogPositiveClick(DialogFragment dialog) {
-        AirDeskDbHelper dbHelper = AirDeskDbHelper.getInstance(getApplicationContext());
         String newQuota = ((ManageWorkspaceDialogFragment)dialog).getUpdatedQuota();
         if(newQuota != null) {
             long updatedQuota = Long.parseLong(newQuota);
             long workspaceSize = fileManager.getWorkspaceSize(workspaceName, user);
 
             if (updatedQuota >= workspaceSize) {
-                DatabaseAPI.setWorkspaceQuota(dbHelper, workspaceName, (updatedQuota - workspaceSize), user);
+                wsManager.setWorkspaceQuota(workspaceName, (updatedQuota - workspaceSize), user);
             } else
                 Toast.makeText(this, "New quota must be greater than current workspace size", Toast.LENGTH_SHORT).show();
         }
 
         boolean newVisibility = ((ManageWorkspaceDialogFragment)dialog).getWorkspaceVisibility();
         int visibility = (newVisibility)? 1: 0;
-        DatabaseAPI.setWorkspaceVisibility(dbHelper, workspaceName, visibility, user);
+        wsManager.setWorkspaceVisibility(workspaceName, visibility, user);
 
         String keywords = ((ManageWorkspaceDialogFragment)dialog).getWorkspaceKeywords();
-        DatabaseAPI.setWorkspaceKeywords(dbHelper, workspaceName, keywords, user);
+        wsManager.setWorkspaceKeywords(workspaceName, keywords, user);
     }
 
     @Override

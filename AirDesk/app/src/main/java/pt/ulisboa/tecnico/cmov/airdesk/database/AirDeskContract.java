@@ -21,6 +21,7 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_EMAIL = "email";
         public static final String COLUMN_NAME_SUBSCRIPTION = "subscription";
         public static final String COLUMN_NAME_LOGGED = "logged";
+        public static final String COLUMN_NAME_PASSWORD = "password";
     }
 
     public static abstract class Workspaces implements BaseColumns {

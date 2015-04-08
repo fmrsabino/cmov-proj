@@ -17,10 +17,11 @@ public class DatabaseAPI {
 
     private static SQLiteDatabase db;
 
-    public static boolean login(AirDeskDbHelper dbHelper, String email){
+    public static boolean login(AirDeskDbHelper dbHelper, String email, String password){
         db = dbHelper.getReadableDatabase();
         String query = "Select * from " + AirDeskContract.Users.TABLE_NAME +
-                " where " + AirDeskContract.Users.COLUMN_NAME_EMAIL + " = '" + email + "'";
+                " where " + AirDeskContract.Users.COLUMN_NAME_EMAIL + " = '" + email + "' AND " +
+                AirDeskContract.Users.COLUMN_NAME_PASSWORD + " = '" + password + "'";
 
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.getCount() <= 0) {
@@ -163,12 +164,22 @@ public class DatabaseAPI {
         }
     }
 
-    public static boolean register(AirDeskDbHelper dbHelper, String nick, String email){
+    public static boolean register(AirDeskDbHelper dbHelper, String nick, String email, String password){
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
+        String query = "Select * from " + AirDeskContract.Users.TABLE_NAME +
+                " where " + AirDeskContract.Users.COLUMN_NAME_EMAIL + " = '" + email + "'";
+
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.close();
+            return false;
+        }
+
         values.put(AirDeskContract.Users.COLUMN_NAME_NICK, nick);
         values.put(AirDeskContract.Users.COLUMN_NAME_EMAIL, email);
+        values.put(AirDeskContract.Users.COLUMN_NAME_PASSWORD, password);
         values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 1);
 
         long row = db.insert(AirDeskContract.Users.TABLE_NAME, null,values);

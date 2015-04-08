@@ -56,7 +56,7 @@ public class WorkspaceManager {
             incompleteFields=true;
         else if(workspace.getQuota() < 0)
             incompleteFields=true;
-        else if(TextUtils.isEmpty(workspace.getKeywords()) && (workspace.isPublic() == 1))
+        else if((TextUtils.isEmpty(workspace.getKeywords()) || (workspace.getKeywords().trim().length() == 0)) && (workspace.isPublic() == 1))
             incompleteFields=true;
         return incompleteFields;
     }
@@ -83,4 +83,11 @@ public class WorkspaceManager {
         DatabaseAPI.setWorkspaceQuota(dbHelper, ws_name, bytes, user);
     }
 
+    public void setWorkspaceVisibility(String workspaceName, int visibility, String user) {
+        DatabaseAPI.setWorkspaceVisibility(dbHelper, workspaceName, visibility, user);
+    }
+
+    public void setWorkspaceKeywords(String workspaceName, String keywords, String user) {
+        DatabaseAPI.setWorkspaceKeywords(dbHelper, workspaceName, keywords, user);
+    }
 }

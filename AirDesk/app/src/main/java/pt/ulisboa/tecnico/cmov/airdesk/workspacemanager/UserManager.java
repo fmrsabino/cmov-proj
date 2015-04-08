@@ -27,13 +27,13 @@ public class UserManager {
     public void setLoggedUserSubscription(String tags){
         DatabaseAPI.setLoggedUserSubscription(dbHelper, tags);
     }
-    public boolean userLogin(String email) {
-        return DatabaseAPI.login(dbHelper, email);
+    public boolean userLogin(String email, String password) {
+        return DatabaseAPI.login(dbHelper, email, password);
     }
 
 
-    public boolean registerUser(String nick, String email) {
-        return DatabaseAPI.register(dbHelper, nick, email);
+    public boolean registerUser(String nick, String email, String password) {
+        return DatabaseAPI.register(dbHelper, nick, email, password);
     }
 
 

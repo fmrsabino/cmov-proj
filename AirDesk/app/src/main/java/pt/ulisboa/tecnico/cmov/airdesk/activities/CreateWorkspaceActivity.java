@@ -22,10 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class CreateWorkspaceActivity extends ActionBarActivity {
@@ -48,8 +47,9 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_workspace);
+        UserManager userManager = new UserManager(getApplicationContext());
 
-        user = DatabaseAPI.getLoggedUser(AirDeskDbHelper.getInstance(this));
+        user = userManager.getLoggedUser();
         listView = (ListView) findViewById(R.id.invitation_list);
         quota = (TextView) findViewById(R.id.activity_create_workspace_quota);
         name = (EditText) findViewById(R.id.name);
