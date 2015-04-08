@@ -76,7 +76,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             }
         });
 
-        if(TextUtils.equals(access, "owned")) {
+
             gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
             gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
                 @Override
@@ -113,7 +113,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
                 public void onDestroyActionMode(ActionMode mode) {
                 }
             });
-        }
+        
         refreshFilesList();
 
     }

@@ -54,6 +54,7 @@ public class WelcomeActivity extends ActionBarActivity {
                 Toast.makeText(this, "Successful LogOut", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                finish();
             } else Toast.makeText(this, "LogOut Failed", Toast.LENGTH_SHORT).show();
             return true;
         }
