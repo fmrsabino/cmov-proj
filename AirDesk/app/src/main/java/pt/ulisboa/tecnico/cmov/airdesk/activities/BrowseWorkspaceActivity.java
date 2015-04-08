@@ -150,8 +150,6 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         int id = item.getItemId();
 
         switch (id) {
-            case (R.id.action_settings):
-                return true;
             case (R.id.action_add_file):
                 showCreateFileDialog();
                 return true;

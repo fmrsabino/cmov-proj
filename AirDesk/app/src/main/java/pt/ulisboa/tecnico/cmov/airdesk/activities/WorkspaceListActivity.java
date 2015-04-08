@@ -196,8 +196,6 @@ public class WorkspaceListActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_settings:
-                return true;
             case R.id.action_add_workspace:
                 if(TextUtils.equals(repo, "owned")) {
                     Intent intent = new Intent(this, CreateWorkspaceActivity.class);

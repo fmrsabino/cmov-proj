@@ -56,9 +56,6 @@ public class FileViewerActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
         if (id == R.id.edit_file) {
             Intent intent = new Intent(FileViewerActivity.this, FileEditorActivity.class);
             intent.putExtra("file_name", file_name);
