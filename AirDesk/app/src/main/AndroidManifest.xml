@@ -50,12 +50,21 @@
         </activity>
         <activity
             android:name=".activities.WelcomeActivity"
-            android:label="@string/title_activity_welcome">
+            android:label="@string/title_activity_welcome" >
         </activity>
         <activity
             android:name=".activities.FileEditorActivity"
             android:label="@string/title_activity_file_editor"
-            android:parentActivityName=".activities.BrowseWorkspaceActivity" >
+            android:parentActivityName=".activities.FileViewerActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmov.airdesk.activities.FileViewerActivity" />
+        </activity>
+        <activity
+            android:name=".activities.FileViewerActivity"
+            android:label="@string/title_activity_file_viewer"
+            android:parentActivityName=".activities.BrowseWorkspaceActivity"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.cmov.airdesk.activities.BrowseWorkspaceActivity" />

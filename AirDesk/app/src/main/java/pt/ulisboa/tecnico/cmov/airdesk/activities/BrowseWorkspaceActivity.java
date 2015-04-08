@@ -68,7 +68,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Intent intent = new Intent(BrowseWorkspaceActivity.this, FileEditorActivity.class);
+                Intent intent = new Intent(BrowseWorkspaceActivity.this, FileViewerActivity.class);
                 intent.putExtra("file_name", gridAdapter.getItem(position));
                 intent.putExtra("workspace_name", workspaceName);
                 intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
@@ -113,7 +113,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
                 public void onDestroyActionMode(ActionMode mode) {
                 }
             });
-        
+
         refreshFilesList();
 
     }

@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="pt.ulisboa.tecnico.cmov.airdesk.activities.FileViewerActivity">
+
+    <item
+        android:id="@+id/edit_file"
+        android:title="Edit"
+        android:icon="@drawable/ic_action_edit"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
+
+</menu>
