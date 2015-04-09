@@ -13,8 +13,6 @@ import android.widget.LinearLayout;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.activities.WorkspaceListActivity;
-import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
-import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
@@ -57,7 +55,7 @@ public class ManageWorkspaceDialogFragment extends DialogFragment {
         visibilityCheckBox = (CheckBox) view.findViewById(R.id.is_public);
         keyHolder = (LinearLayout) view.findViewById(R.id.keyHolder);
         FileManagerLocal fileManager = new FileManagerLocal(getActivity());
-        AirDeskDbHelper dbHelper = AirDeskDbHelper.getInstance(getActivity());
+
         String workspaceName = getArguments().getString("workspace");
         user = getArguments().getString(WorkspaceListActivity.OWNER_KEY);
 
@@ -65,7 +63,7 @@ public class ManageWorkspaceDialogFragment extends DialogFragment {
         Workspace workspace = manager.retrieveWorkspace(workspaceName, user);
 
         long workspaceSize = fileManager.getWorkspaceSize(workspaceName, user);
-        workspaceSize += DatabaseAPI.getCurrentQuota(dbHelper,workspaceName, user);
+        workspaceSize += manager.getCurrentWorkspaceQuota(workspaceName, user);
 
         keyWords = (EditText) keyHolder.findViewById(R.id.keywords);
         keyWords.setText(workspace.getKeywords());
