@@ -45,13 +45,19 @@ public class MainActivity extends ActionBarActivity {
     public void signIn(View view){
         Intent intent = new Intent(this, WelcomeActivity.class);
         EditText email = (EditText) findViewById(R.id.userIn);
-        EditText password = (EditText) findViewById(R.id.userPwd);
+        EditText plaintext = (EditText) findViewById(R.id.userPwd);
 
-        if(!email.getText().toString().isEmpty() && !password.getText().toString().isEmpty()) {
-            if (userManager.userLogin( email.getText().toString(), password.getText().toString())) {
+
+        if(!email.getText().toString().isEmpty() && !plaintext.getText().toString().isEmpty()) {
+            try{
+            String password = hashPassword(plaintext.getText().toString());
+            if (userManager.userLogin( email.getText().toString(), password)) {
                 Toast.makeText(this, "Successful Login", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             } else Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+            } catch(NoSuchAlgorithmException e){
+                Toast.makeText(this, "Login Failed - Internal Error", Toast.LENGTH_SHORT).show();
+            }
         } else Toast.makeText(this, "Please write your nick", Toast.LENGTH_SHORT).show();
     }
 
