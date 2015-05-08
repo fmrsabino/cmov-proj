@@ -68,6 +68,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.cmov.airdesk.activities.BrowseWorkspaceActivity" />
         </activity>
+
+        <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
+
     </application>
 
 </manifest>
