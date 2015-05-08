@@ -17,13 +17,11 @@ import android.widget.Toast;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.utilities.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
@@ -38,9 +36,6 @@ public class MainActivity extends ActionBarActivity {
     private boolean mBound = false;
     private SimWifiP2pSocketServer mSrvSocket = null;
     private SimWifiP2pSocket mCliSocket = null;
-    private TextView mTextInput;
-    private TextView mTextOutput;
-
 
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
@@ -79,14 +74,6 @@ public class MainActivity extends ActionBarActivity {
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
 
-        // register broadcast receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
-        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
-        registerReceiver(receiver, filter);
     }
 
     @Override
