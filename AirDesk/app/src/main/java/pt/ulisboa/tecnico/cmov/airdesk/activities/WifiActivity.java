@@ -42,6 +42,7 @@ public class WifiActivity extends ActionBarActivity {
     private SimWifiP2pSocket mCliSocket = null;
     private TextView outputText = null;
     private EditText inputText = null;
+    private EditText ipAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class WifiActivity extends ActionBarActivity {
 
         outputText = (TextView) findViewById(R.id.textOutput);
         inputText = (EditText) findViewById(R.id.textInput);
-
+        ipAddress = (EditText) findViewById(R.id.activity_wifi_ip_address);
 
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
@@ -257,6 +258,6 @@ public class WifiActivity extends ActionBarActivity {
     public void connectHost(View view) {
         new OutgoingCommTask().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR,
-                "ADDRESS");
+                ipAddress.getText().toString());
     }
 }

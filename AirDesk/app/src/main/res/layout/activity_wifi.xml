@@ -1,18 +1,14 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Write message here"
-        android:textSize="20sp"
-        android:layout_margin="20dp"
-        android:id="@+id/textInput" />
+        android:hint="IP Address"
+        android:id="@+id/activity_wifi_ip_address"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -22,6 +18,13 @@
         android:id="@+id/Connect"
         android:onClick="connectHost"
         android:layout_gravity="center_horizontal" />
+
+    <EditText
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Write message here"
+        android:id="@+id/textInput" />
 
     <Button
         android:layout_width="wrap_content"
@@ -33,11 +36,10 @@
         android:layout_gravity="center_horizontal" />
 
     <TextView
-        android:layout_margin="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:textSize="20dp"
-        android:text="Received Message here"
+        android:hint="Received Message here"
         android:id="@+id/textOutput"/>
 
 
