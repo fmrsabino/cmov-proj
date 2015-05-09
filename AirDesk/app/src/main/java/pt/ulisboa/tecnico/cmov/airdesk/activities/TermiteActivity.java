@@ -24,6 +24,8 @@ public abstract class TermiteActivity extends ActionBarActivity {
     protected SimWifiP2pSocketServer mSrvSocket;
     protected SimWifiP2pSocket mCliSocket;
 
+    protected ReceiveCommTask receiveTask = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

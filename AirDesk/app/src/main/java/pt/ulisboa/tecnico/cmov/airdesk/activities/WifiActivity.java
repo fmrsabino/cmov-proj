@@ -26,7 +26,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 
 public class WifiActivity extends TermiteActivity implements SimWifiP2pManager.GroupInfoListener, SimWifiP2pManager.PeerListListener {
-    private ReceiveCommTask mComm = null;
+
     private TextView outputText = null;
     private EditText inputText = null;
     private EditText ipAddress = null;
@@ -107,9 +107,9 @@ public class WifiActivity extends TermiteActivity implements SimWifiP2pManager.G
         @Override
         protected void onProgressUpdate(SimWifiP2pSocket... values) {
             mCliSocket = values[0];
-            mComm = new ReceiveCommTask();
+            receiveTask = new ReceiveCommTask();
 
-            mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
+            receiveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
         }
     }
 
@@ -140,8 +140,8 @@ public class WifiActivity extends TermiteActivity implements SimWifiP2pManager.G
                 outputText.setText(result);
             }
             else {
-                mComm = new ReceiveCommTask();
-                mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,mCliSocket);
+                receiveTask = new ReceiveCommTask();
+                receiveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
             }
         }
     }
