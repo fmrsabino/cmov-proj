@@ -62,17 +62,23 @@
         <activity
             android:name=".activities.FileViewerActivity"
             android:label="@string/title_activity_file_viewer"
-            android:parentActivityName=".activities.BrowseWorkspaceActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.BrowseWorkspaceActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.cmov.airdesk.activities.BrowseWorkspaceActivity" />
         </activity>
 
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
+
         <meta-data
             android:name="com.google.android.apps.drive.APP_ID"
             android:value="id=AIzaSyCl0td2-KT0DtN9xXDj0XxKDfCpfoHphMQ" />
+
+        <activity
+            android:name=".activities.WifiActivity"
+            android:label="@string/title_activity_wifi" >
+        </activity>
     </application>
 
 </manifest>

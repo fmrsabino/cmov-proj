@@ -25,5 +25,6 @@
     <string name="title_activity_welcome">WelcomeActivity</string>
     <string name="title_activity_file_editor">FileEditorActivity</string>
     <string name="title_activity_file_viewer">FileViewerActivity</string>
+    <string name="title_activity_wifi">WifiActivity</string>
 
 </resources>
