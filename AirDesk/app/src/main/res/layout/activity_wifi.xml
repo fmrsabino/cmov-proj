@@ -34,6 +34,14 @@
         android:id="@+id/SendMessage"
         android:onClick="sendMessage"
         android:layout_gravity="center_horizontal" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="40dp"
+        android:text="List Peers"
+        android:id="@+id/listPeers"
+        android:onClick="listPeers"
+        android:layout_gravity="center_horizontal" />
 
     <TextView
         android:layout_width="match_parent"

@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.utilities;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.ulisboa.tecnico.cmov.airdesk.activities.TermiteActivity;
 import pt.ulisboa.tecnico.cmov.airdesk.activities.WifiActivity;
 
 import android.content.BroadcastReceiver;
@@ -12,9 +13,9 @@ import android.widget.Toast;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
-    private WifiActivity mActivity;
+    private TermiteActivity mActivity;
 
-    public SimWifiP2pBroadcastReceiver(WifiActivity activity) {
+    public SimWifiP2pBroadcastReceiver(TermiteActivity activity) {
         super();
         this.mActivity = activity;
     }
