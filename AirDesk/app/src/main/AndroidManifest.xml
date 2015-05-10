@@ -68,17 +68,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.cmov.airdesk.activities.BrowseWorkspaceActivity" />
         </activity>
+        <activity
+            android:name=".activities.WifiActivity"
+            android:label="@string/title_activity_wifi" >
+        </activity>
 
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
 
         <meta-data
             android:name="com.google.android.apps.drive.APP_ID"
             android:value="id=AIzaSyCl0td2-KT0DtN9xXDj0XxKDfCpfoHphMQ" />
-
-        <activity
-            android:name=".activities.WifiActivity"
-            android:label="@string/title_activity_wifi" >
-        </activity>
     </application>
 
 </manifest>

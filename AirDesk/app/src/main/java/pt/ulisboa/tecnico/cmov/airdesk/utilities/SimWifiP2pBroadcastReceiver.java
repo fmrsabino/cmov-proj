@@ -1,19 +1,21 @@
 package pt.ulisboa.tecnico.cmov.airdesk.utilities;
 
 
-import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
-import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
-import pt.ulisboa.tecnico.cmov.airdesk.activities.TermiteActivity;
-import pt.ulisboa.tecnico.cmov.airdesk.activities.WifiActivity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
+
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.ulisboa.tecnico.cmov.airdesk.activities.TermiteActivity;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
     private TermiteActivity mActivity;
+
+    private final static String TAG = "BroadcastReceiver";
 
     public SimWifiP2pBroadcastReceiver(TermiteActivity activity) {
         super();
@@ -24,7 +26,7 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-
+            Log.d(TAG, "Received WIFI_P2P_STATE_CHANGED_ACTION");
             // This action is triggered when the WDSim service changes state:
             // - creating the service generates the WIFI_P2P_STATE_ENABLED event
             // - destroying the service generates the WIFI_P2P_STATE_DISABLED event
@@ -39,7 +41,7 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
             }
 
         } else if (SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-
+            Log.d(TAG, "Received WIFI_P2P_PEERS_CHANGED_ACTION");
             // Request available peers from the wifi p2p manager. This is an
             // asynchronous call and the calling activity is notified with a
             // callback on PeerListListener.onPeersAvailable()
@@ -48,6 +50,7 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
                     Toast.LENGTH_SHORT).show();
 
         } else if (SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION.equals(action)) {
+            Log.d(TAG, "Received WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION");
 
             SimWifiP2pInfo ginfo = (SimWifiP2pInfo) intent.getSerializableExtra(
                     SimWifiP2pBroadcast.EXTRA_GROUP_INFO);
@@ -56,6 +59,7 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
                     Toast.LENGTH_SHORT).show();
 
         } else if (SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION.equals(action)) {
+            Log.d(TAG, "Received WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION");
 
             SimWifiP2pInfo ginfo = (SimWifiP2pInfo) intent.getSerializableExtra(
                     SimWifiP2pBroadcast.EXTRA_GROUP_INFO);

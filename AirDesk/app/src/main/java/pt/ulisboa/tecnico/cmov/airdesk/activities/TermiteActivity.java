@@ -8,7 +8,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.UnknownHostException;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
@@ -18,6 +17,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteConnector;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 
 public abstract class TermiteActivity extends ActionBarActivity {
+    private static final String TAG = "TermiteActivity";
 
     protected TermiteConnector termiteConnector;
     private SimWifiP2pBroadcastReceiver receiver;
@@ -31,13 +31,13 @@ public abstract class TermiteActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         termiteConnector = TermiteConnector.getInstance(getApplicationContext());
-        new IncommingCommTask().executeOnExecutor(
+        new IncomingCommTask().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -46,6 +46,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
         receiver = new SimWifiP2pBroadcastReceiver(this);
         registerReceiver(receiver, filter);
+        Log.d(TAG, "Registered BroadcastReceiver");
     }
 
     @Override
@@ -53,14 +54,15 @@ public abstract class TermiteActivity extends ActionBarActivity {
         super.onPause();
         try {
             unregisterReceiver(receiver);
+            Log.d(TAG, "Unregistered BroadcastReceiver");
         } catch (IllegalArgumentException e) {}
     }
 
-    public class IncommingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
-
+    public class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             try {
+                Log.i(TAG, "IncomingCommTask - doInBackground()");
                 mSrvSocket = new SimWifiP2pSocketServer(10001);
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
@@ -85,6 +87,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
                 try {
                     if (mSrvSocket != null) {
                         mSrvSocket.close();
+                        mSrvSocket = null;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
