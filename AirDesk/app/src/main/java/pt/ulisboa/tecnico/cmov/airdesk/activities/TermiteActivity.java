@@ -51,37 +51,46 @@ public abstract class TermiteActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        //unregisterReceiver(receiver);
+        try {
+            unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {}
     }
 
     public class IncommingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
-
             try {
                 mSrvSocket = new SimWifiP2pSocketServer(10001);
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        SimWifiP2pSocket sock = mSrvSocket.accept();
+                        if (mCliSocket != null && mCliSocket.isClosed()) {
+                            mCliSocket = null;
+                        }
+                        if (mCliSocket != null) {
+                            Log.d("INC_TASK", "Closing accepted socket because mCliSocket still active.");
+                            sock.close();
+                        } else {
+                            publishProgress(sock);
+                        }
+                    } catch (IOException e) {
+                        Log.d("Error accepting socket:", e.getMessage());
+                        break;
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            while (!Thread.currentThread().isInterrupted()) {
+            } finally {
                 try {
-                    SimWifiP2pSocket sock = mSrvSocket.accept();
-                    if (mCliSocket != null && mCliSocket.isClosed()) {
-                        mCliSocket = null;
-                    }
-                    if (mCliSocket != null) {
-                        Log.d("INC_TASK", "Closing accepted socket because mCliSocket still active.");
-                        sock.close();
-                    } else {
-                        publishProgress(sock);
+                    if (mSrvSocket != null) {
+                        mSrvSocket.close();
                     }
                 } catch (IOException e) {
-                    Log.d("Error accepting socket:", e.getMessage());
-                    break;
-                    //e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
+
             return null;
         }
 
