@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -46,7 +47,6 @@ public class WorkspaceListActivity extends  TermiteActivity {
     private WorkspacesListAdapter listAdapter;
     private String selectedWorkspace;
     private EditText tagTxt;
-    private WorkspaceManager wsManager;
     private UserManager userManager;
     private String user;
     private SendMessageTask sendTask;
@@ -171,20 +171,19 @@ public class WorkspaceListActivity extends  TermiteActivity {
     private void populateWorkspaceList() {
         directories.clear();
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
-        List<Workspace> wsList = new ArrayList<>();
+        List<Workspace> wsList;
 
-        if(TextUtils.equals(repo, "owned"))
+        if(TextUtils.equals(repo, "owned")) {
             wsList = wsManager.retrieveOwnedWorkspaces();
-        else if(TextUtils.equals(repo, "foreign"))
-            wsList= retrieveForeignWorkspaces();
 
-        for (Workspace w : wsList) {
-            directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner()));
+            for (Workspace w : wsList) {
+                directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner()));
+            }
+
+            listAdapter.notifyDataSetChanged();
         }
-
-        listAdapter.notifyDataSetChanged();
-
-
+        else if(TextUtils.equals(repo, "foreign"))
+            retrieveForeignWorkspaces();
     }
 
     @Override
@@ -245,7 +244,7 @@ public class WorkspaceListActivity extends  TermiteActivity {
             try {
                 SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket("192.168.0.2",10001);
                 oos = new ObjectOutputStream(mCliSocket.getOutputStream());
-                TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST, "Isto é um teste");
+                TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, userManager.getLoggedUser());
                 oos.writeObject(msg);
                 oos.close();
             } catch (IOException e) {
@@ -263,16 +262,20 @@ public class WorkspaceListActivity extends  TermiteActivity {
         }
     }
 
-    private List<Workspace> retrieveForeignWorkspaces(){
-        List<Workspace> wsList = new ArrayList<>();
+    private void retrieveForeignWorkspaces(){
         sendTask = new SendMessageTask();
         sendTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        return wsList;
     }
 
 
     @Override
     public void processMessage(TermiteMessage message) {
+        Log.d("PROCESS MESSAGE", "POR CA PASSEI");
+        List<String> wsList = (List<String>) message.contents;
+        for (String s : wsList) {
+            directories.add(new WorkspacesListAdapter.Content(s, "30","DONO"));
+        }
 
+        listAdapter.notifyDataSetChanged();
     }
 }

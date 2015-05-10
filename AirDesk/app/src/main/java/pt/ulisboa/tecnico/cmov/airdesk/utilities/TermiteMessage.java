@@ -4,7 +4,10 @@ import java.io.Serializable;
 
 public class TermiteMessage implements Serializable {
     public static enum MSG_TYPE {
-        WS_FILE_LIST
+        WS_LIST,
+        WS_LIST_REPLY,
+        WS_FILE_LIST,
+        WS_FILE_LIST_REPLY
     }
 
     public MSG_TYPE type;

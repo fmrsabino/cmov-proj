@@ -90,4 +90,8 @@ public class WorkspaceManager {
     public void setWorkspaceKeywords(String workspaceName, String keywords, String user) {
         DatabaseAPI.setWorkspaceKeywords(dbHelper, workspaceName, keywords, user);
     }
+
+    public List<String> remoteRetrieveForeignWorkspaces(String requestingUser) {
+       return DatabaseAPI.remoteRetrieveForeignWorkspaces(dbHelper,requestingUser);
+    }
 }

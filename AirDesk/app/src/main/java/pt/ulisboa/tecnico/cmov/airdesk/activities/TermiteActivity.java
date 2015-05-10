@@ -8,6 +8,8 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
@@ -15,22 +17,26 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteConnector;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public abstract class TermiteActivity extends ActionBarActivity {
     private static final String TAG = "TermiteActivity";
 
     protected TermiteConnector termiteConnector;
     private SimWifiP2pBroadcastReceiver receiver;
+    private GenericSendMessageTask sendTask;
 
     protected SimWifiP2pSocketServer mSrvSocket;
     protected SimWifiP2pSocket mCliSocket;
 
+    protected WorkspaceManager wsManager;
     protected ReceiveCommTask receiveTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         termiteConnector = TermiteConnector.getInstance(getApplicationContext());
+        wsManager = new WorkspaceManager(this);
         new IncomingCommTask().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -56,6 +62,18 @@ public abstract class TermiteActivity extends ActionBarActivity {
             unregisterReceiver(receiver);
             Log.d(TAG, "Unregistered BroadcastReceiver");
         } catch (IllegalArgumentException e) {}
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        try {
+            if (mSrvSocket != null) {
+                mSrvSocket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
@@ -137,7 +155,16 @@ public abstract class TermiteActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(TermiteMessage message) {
-            processMessage(message);
+            switch (message.type){
+                case WS_LIST:
+                    feedSubscribedWorkspaces(message.contents);
+                    break;
+                case WS_FILE_LIST:
+                    feedWorkspaceFiles(message.contents);
+                    break;
+                default:
+                    processMessage(message);
+            }
             if (!s.isClosed()) {
                 try {
                     s.close();
@@ -148,6 +175,51 @@ public abstract class TermiteActivity extends ActionBarActivity {
             }
             s = null;
         }
+    }
+
+
+    public class GenericSendMessageTask extends AsyncTask<TermiteMessage, Void, Void> {
+        @Override
+        protected Void doInBackground(TermiteMessage ... params) {
+            ObjectOutputStream oos = null;
+
+            try {
+                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket("192.168.0.1",10001);
+                oos = new ObjectOutputStream(mCliSocket.getOutputStream());
+                TermiteMessage msg = params[0];
+                oos.writeObject(msg);
+                oos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if(oos != null) {
+                    try {
+                        oos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    private void feedSubscribedWorkspaces(Object messageContent) {
+        String requestingUser = (String) messageContent;
+        List<String> workspaces = wsManager.remoteRetrieveForeignWorkspaces(requestingUser);
+        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST_REPLY, workspaces);
+
+        sendTask = new GenericSendMessageTask();
+        sendTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, msg);
+    }
+
+    private void feedWorkspaceFiles(Object messageContent) {
+        String workspace = (String) messageContent;
+        List<String> files = null; // go to file system and fetch files from demanded workspace
+        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST_REPLY, files);
+
+        sendTask = new GenericSendMessageTask();
+        sendTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, msg);
     }
 
     public abstract void processMessage(TermiteMessage message);

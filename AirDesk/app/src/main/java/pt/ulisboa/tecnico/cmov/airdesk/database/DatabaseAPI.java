@@ -622,10 +622,41 @@ public class DatabaseAPI {
 
         String loggedUser = getLoggedUser(dbHelper);
 
-        db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE +" in (SELECT "+
+        db.delete(AirDeskContract.Viewers.TABLE_NAME, AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " in (SELECT " +
                 AirDeskContract.Workspaces.COLUMN_NAME_NAME + " FROM " + AirDeskContract.Workspaces.TABLE_NAME +
-                " WHERE "+ AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC+ "= 1)" + "AND "+ AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + loggedUser +"\'",null);
+                " WHERE " + AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC + "= 1)" + "AND " + AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + loggedUser + "\'", null);
     }
 
+    public static List<String> remoteRetrieveForeignWorkspaces(AirDeskDbHelper dbHelper, String requestingUser) {
+        db = dbHelper.getReadableDatabase();
+        List<String> wsList = new ArrayList<>();
+
+        String[] projection = {
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE};
+
+        String[] v_selectionArgs = {requestingUser};
+
+        String v_sortOrder =
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " ASC";
+
+        Cursor c = db.query(
+                AirDeskContract.Viewers.TABLE_NAME,
+                projection,
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL + " LIKE ?",
+                v_selectionArgs,
+                null,
+                null,
+                v_sortOrder
+        );
+
+
+        while (c.moveToNext()) {
+            wsList.add(c.getString(0));
+        }
+
+        c.close();
+
+        return wsList;
+    }
 }
 
