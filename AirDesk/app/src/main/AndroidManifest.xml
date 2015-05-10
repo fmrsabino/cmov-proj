@@ -75,9 +75,6 @@
 
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
 
-        <meta-data
-            android:name="com.google.android.apps.drive.APP_ID"
-            android:value="id=AIzaSyCl0td2-KT0DtN9xXDj0XxKDfCpfoHphMQ" />
     </application>
 
 </manifest>

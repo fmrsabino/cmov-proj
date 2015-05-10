@@ -17,6 +17,7 @@ import com.google.android.gms.drive.Drive;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
@@ -26,7 +27,7 @@ public class WelcomeActivity extends TermiteActivity implements
 
     public final static String WORKSPACE_ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSACCESS";
     private UserManager userManager;
-    private GoogleApiClient mGoogleApiClient;
+    private User loggedUser;
     private static final int REQUEST_CODE_RESOLUTION = 3;
 
     @Override
@@ -35,7 +36,7 @@ public class WelcomeActivity extends TermiteActivity implements
         setContentView(R.layout.activity_welcome);
         userManager = new UserManager(getApplicationContext());
 
-        User loggedUser = userManager.getLoggedDomainUser();
+        loggedUser = userManager.getLoggedDomainUser();
 
         TextView email = (TextView) findViewById(R.id.emailView);
         email.setText(loggedUser.getEmail());
@@ -43,43 +44,30 @@ public class WelcomeActivity extends TermiteActivity implements
         TextView nick = (TextView) findViewById(R.id.nickView);
         nick.setText("Welcome " + loggedUser.getNick() + "!");
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mGoogleApiClient == null) {
-            // Create the API client and bind it to an instance variable.
-            // We use this instance as the callback for connection and connection
-            // failures.
-            // Since no account name is passed, the user is prompted to choose.
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
+        if(AirDeskDriveAPI.getClient() == null){
+            GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(Drive.API)
                     .addScope(Drive.SCOPE_FILE)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
+            AirDeskDriveAPI.setClient(mGoogleApiClient);
         }
-        // Connect the client. Once connected, the camera is launched.
-        mGoogleApiClient.connect();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().connect();
+        }
     }
 
     @Override
     protected void onPause() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
+        if (AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().disconnect();
         }
         super.onPause();
     }
@@ -87,7 +75,17 @@ public class WelcomeActivity extends TermiteActivity implements
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d("drive", "API client connected.");
+        Toast.makeText(this, "Successfully Connected to Drive", Toast.LENGTH_SHORT).show();
+        if(loggedUser.getDriveID() == null) {
+            loggedUser = userManager.getLoggedDomainUser();
+            if(loggedUser.getDriveID() == null) {
+                AirDeskDriveAPI.setContext(this);
+                AirDeskDriveAPI.createUserFolder(loggedUser.getEmail().toString());
+                loggedUser = userManager.getLoggedDomainUser();
+            }
+        }
     }
+
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -110,7 +108,7 @@ public class WelcomeActivity extends TermiteActivity implements
         switch (requestCode) {
             case REQUEST_CODE_RESOLUTION:
                 if (resultCode == RESULT_OK) {
-                    mGoogleApiClient.connect();
+                    AirDeskDriveAPI.getClient().connect();
                 }
                 break;
         }
@@ -143,6 +141,10 @@ public class WelcomeActivity extends TermiteActivity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void createFile(View view){
+        AirDeskDriveAPI.createFile(loggedUser.getDriveID(), "olafile", "ola ola ola");
     }
 
     public void listWorkspaces(View view){

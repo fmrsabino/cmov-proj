@@ -79,6 +79,23 @@ public class DatabaseAPI {
         return count != 0;
     }
 
+    public static boolean setUserDriveID(AirDeskDbHelper dbHelper, String driveID){
+        db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Users.COLUMN_NAME_FOLDERID, driveID);
+
+        String selection = AirDeskContract.Users.COLUMN_NAME_LOGGED + " = ?";
+        String[] selectionArgs = { "1" };
+
+        int count = db.update(
+                AirDeskContract.Users.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        return count != 0;
+    }
+
     public static String getLoggedUser(AirDeskDbHelper dbHelper){
         db = dbHelper.getReadableDatabase();
 
@@ -110,9 +127,11 @@ public class DatabaseAPI {
         db = dbHelper.getReadableDatabase();
         String nick = null;
         String email = null;
+        String driveID = null;
 
         String[] projection = {AirDeskContract.Users.COLUMN_NAME_EMAIL,
-                AirDeskContract.Users.COLUMN_NAME_NICK};
+                AirDeskContract.Users.COLUMN_NAME_NICK,
+                AirDeskContract.Users.COLUMN_NAME_FOLDERID};
 
         String[] selectionArgs = {"1"};
 
@@ -129,12 +148,13 @@ public class DatabaseAPI {
         while(c.moveToNext()){
             email = c.getString(0);
             nick = c.getString(1);
+            driveID = c.getString(2);
         }
 
         c.close();
         if(TextUtils.isEmpty(email) || TextUtils.isEmpty(nick)){
             return null;
-        } else return new User(nick,email);
+        } else return new User(nick,email,driveID);
     }
 
     public static String getLoggedUserSubscription(AirDeskDbHelper dbHelper){

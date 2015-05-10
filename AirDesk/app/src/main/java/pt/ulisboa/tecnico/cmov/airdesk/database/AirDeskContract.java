@@ -22,6 +22,7 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_SUBSCRIPTION = "subscription";
         public static final String COLUMN_NAME_LOGGED = "logged";
         public static final String COLUMN_NAME_PASSWORD = "password";
+        public static final String COLUMN_NAME_FOLDERID = "folderID";
     }
 
     public static abstract class Workspaces implements BaseColumns {
@@ -32,5 +33,6 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_QUOTA = "quota";
         public static final String COLUMN_NAME_PUBLIC = "public";
         public static final String COLUMN_NAME_KEYWORDS = "keywords";
+        public static final String COLUMN_NAME_FOLDERID = "folderID";
     }
 }
