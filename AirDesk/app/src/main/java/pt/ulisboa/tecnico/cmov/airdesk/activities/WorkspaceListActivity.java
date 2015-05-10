@@ -248,7 +248,7 @@ public class WorkspaceListActivity extends  TermiteActivity {
             try {
                 SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket("192.168.0.2",10001);
                 oos = new ObjectOutputStream(mCliSocket.getOutputStream());
-                TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST, "Isto é um teste");
+                TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST, "Isto Ã© um teste");
                 oos.writeObject(msg);
                 oos.close();
             } catch (IOException e) {
