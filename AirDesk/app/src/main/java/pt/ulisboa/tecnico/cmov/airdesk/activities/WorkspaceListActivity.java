@@ -3,9 +3,11 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -18,19 +20,24 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
-public class WorkspaceListActivity extends ActionBarActivity {
+public class WorkspaceListActivity extends  TermiteActivity {
 
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     public final static String ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.ACCESS";
@@ -45,6 +52,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
     private WorkspaceManager wsManager;
     private UserManager userManager;
     private String user;
+    private SendMessageTask sendTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +129,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
         });
     }
 
+
     private void deleteSelectedItems() {
         SparseBooleanArray checked = listView.getCheckedItemPositions();
 
@@ -170,7 +179,7 @@ public class WorkspaceListActivity extends ActionBarActivity {
         if(TextUtils.equals(repo, "owned"))
             wsList = wsManager.retrieveOwnedWorkspaces();
         else if(TextUtils.equals(repo, "foreign"))
-            wsList= wsManager.retrieveForeignWorkspaces();
+            wsList= retrieveForeignWorkspaces();
 
         for (Workspace w : wsList) {
             directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner()));
@@ -231,4 +240,42 @@ public class WorkspaceListActivity extends ActionBarActivity {
     }
 
 
+    public class SendMessageTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            ObjectOutputStream oos = null;
+
+            try {
+                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket("192.168.0.2",10001);
+                oos = new ObjectOutputStream(mCliSocket.getOutputStream());
+                TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST, "Isto é um teste");
+                oos.writeObject(msg);
+                oos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if(oos != null) {
+                    try {
+                        oos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    private List<Workspace> retrieveForeignWorkspaces(){
+        List<Workspace> wsList = new ArrayList<>();
+        sendTask = new SendMessageTask();
+        sendTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        return wsList;
+    }
+
+
+    @Override
+    public void processMessage(TermiteMessage message) {
+
+    }
 }

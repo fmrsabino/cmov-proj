@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.UnknownHostException;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
@@ -30,6 +31,8 @@ public abstract class TermiteActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         termiteConnector = TermiteConnector.getInstance(getApplicationContext());
+        new IncommingCommTask().executeOnExecutor(
+                AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
@@ -48,8 +51,49 @@ public abstract class TermiteActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(receiver);
+        //unregisterReceiver(receiver);
     }
+
+    public class IncommingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(10001);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    if (mCliSocket != null && mCliSocket.isClosed()) {
+                        mCliSocket = null;
+                    }
+                    if (mCliSocket != null) {
+                        Log.d("INC_TASK", "Closing accepted socket because mCliSocket still active.");
+                        sock.close();
+                    } else {
+                        publishProgress(sock);
+                    }
+                } catch (IOException e) {
+                    Log.d("Error accepting socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(SimWifiP2pSocket... values) {
+            mCliSocket = values[0];
+            receiveTask = new ReceiveCommTask();
+
+            receiveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
+        }
+    }
+
 
     public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, Void, TermiteMessage> {
         SimWifiP2pSocket s;
@@ -58,9 +102,9 @@ public abstract class TermiteActivity extends ActionBarActivity {
         protected TermiteMessage doInBackground(SimWifiP2pSocket... params) {
             ObjectInputStream ois = null;
             TermiteMessage message = null;
+            try{
+                s = params[0];
 
-            s = params[0];
-            try {
                 ois = new ObjectInputStream(s.getInputStream());
                 message = (TermiteMessage) ois.readObject();
             } catch (IOException e) {
@@ -82,6 +126,15 @@ public abstract class TermiteActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(TermiteMessage message) {
             processMessage(message);
+            if (!s.isClosed()) {
+                try {
+                    s.close();
+                }
+                catch (Exception e) {
+                    Log.d("Error closing socket:", e.getMessage());
+                }
+            }
+            s = null;
         }
     }
 

@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -20,9 +21,10 @@ import com.google.android.gms.drive.Drive;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
+import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
-public class WelcomeActivity extends ActionBarActivity implements
+public class WelcomeActivity extends TermiteActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
 
@@ -155,5 +157,11 @@ public class WelcomeActivity extends ActionBarActivity implements
         Intent intent = new Intent(this, WorkspaceListActivity.class);
         intent.putExtra(WORKSPACE_ACCESS_KEY, view.getTag().toString());
         startActivity(intent);
+    }
+
+    @Override
+    public void processMessage(TermiteMessage message) {
+        Toast.makeText(this, "Received Termite Message!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Contents: " + message.contents, Toast.LENGTH_LONG).show();
     }
 }
