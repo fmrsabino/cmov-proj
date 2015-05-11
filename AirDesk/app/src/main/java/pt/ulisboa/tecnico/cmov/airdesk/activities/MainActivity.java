@@ -11,7 +11,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 
@@ -96,8 +95,8 @@ public class MainActivity extends ActionBarActivity {
         byte byteData[] = md.digest();
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < byteData.length; i++) {
-            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        for (byte aByteData : byteData) {
+            sb.append(Integer.toString((aByteData & 0xff) + 0x100, 16).substring(1));
         }
         return sb.toString();
     }

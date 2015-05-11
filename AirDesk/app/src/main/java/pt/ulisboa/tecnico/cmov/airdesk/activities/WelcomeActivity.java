@@ -79,7 +79,7 @@ public class WelcomeActivity extends TermiteActivity implements
             loggedUser = userManager.getLoggedDomainUser();
             if(loggedUser.getDriveID() == null) {
                 AirDeskDriveAPI.setContext(this);
-                AirDeskDriveAPI.createUserFolder(loggedUser.getEmail().toString());
+                AirDeskDriveAPI.createUserFolder(loggedUser.getEmail());
                 loggedUser = userManager.getLoggedDomainUser();
             }
         }

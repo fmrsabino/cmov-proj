@@ -105,7 +105,7 @@ public class FileEditorActivity extends ActionBarActivity {
                 return true;
 
             } catch (UnsupportedEncodingException e) {
-
+               //do nothing
             }
         }
         return super.onOptionsItemSelected(item);
