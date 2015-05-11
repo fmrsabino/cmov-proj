@@ -1,8 +1,11 @@
 package pt.ulisboa.tecnico.cmov.airdesk.drive;
 
 import android.content.Context;
-import android.text.Editable;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -10,6 +13,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
+import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.DriveResource;
@@ -26,18 +30,16 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.activities.MainActivity;
 import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
-import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 
 public abstract class AirDeskDriveAPI {
 
     private static GoogleApiClient mGoogleApiClient;
     private static String userDriveID = null;
     private static Context driveContext = null;
-    private static DriveId folderDriveID = null;
 
     public static void setClient(GoogleApiClient client){
         mGoogleApiClient = client;
@@ -49,10 +51,6 @@ public abstract class AirDeskDriveAPI {
 
     private static void setUserDriveID(String driveID){
         userDriveID = driveID;
-    }
-
-    public static String getUserDriveID(){
-        return userDriveID;
     }
 
     public static void setContext(Context context){
@@ -89,58 +87,13 @@ public abstract class AirDeskDriveAPI {
                 .setResultCallback(fileCallback);
     }
 
-    //add file to folder by folderID
-    public static void createFile(String folderID, final String fileName, final String fileContents) {
+    //update existing file (delete + create)
+    public static void updateFile(String folderID, final String fileName, final String fileContents) {
 
-        final ResultCallback<DriveFolder.DriveFileResult> fileCallback =
-                new ResultCallback<DriveFolder.DriveFileResult>() {
-                    @Override
-                    public void onResult(DriveFolder.DriveFileResult result) {
-                        if (!result.getStatus().isSuccess()) {
-                            Log.d("drive", "Error while trying to create the file");
-                            return;
-                        }
-                        Log.d("drive", "Created a file: " + result.getDriveFile().getDriveId());
-                    }
-                };
+        deleteFileFromFolder(folderID, fileName);
+        createFile(folderID, fileName, fileContents);
 
-        final ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
-           new ResultCallback<DriveApi.DriveContentsResult>() {
-                @Override
-                public void onResult(DriveApi.DriveContentsResult result) {
-                    if (!result.getStatus().isSuccess()) {
-                        Log.d("drive", "Error while trying to create new file contents");
-                        return;
-                    }
-
-                    final DriveContents driveContents = result.getDriveContents();
-
-                    // write content to DriveContents
-                    OutputStream outputStream = driveContents.getOutputStream();
-                    Writer writer = new OutputStreamWriter(outputStream);
-                    try {
-                        writer.write(fileContents);
-                        writer.close();
-                    } catch (IOException e) {
-                        Log.d("drive", e.getMessage());
-                    }
-
-                    MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                            .setTitle(fileName)
-                            .setMimeType("text/plain")
-                            .setStarred(false).build();
-
-                    DriveFolder folder = Drive.DriveApi.getFolder(mGoogleApiClient, folderDriveID);
-                    folder.createFile(mGoogleApiClient, changeSet, driveContents)
-                            .setResultCallback(fileCallback);
-                }
-           };
-
-        folderDriveID = DriveId.decodeFromString(folderID);
-        Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                 .setResultCallback(driveContentsCallback);
     }
-
 
     // add folder to user folder (workspace)
     public static void createWorkspaceFolder(final String workspace, final String user,  String userFolderID) {
@@ -167,11 +120,65 @@ public abstract class AirDeskDriveAPI {
                 .setTitle(workspace).build();
         folder.createFolder(mGoogleApiClient, changeSet).setResultCallback(folderCreatedCallback);
         try {
+            //FIXME SUPER SERIOUS PROBLEM - NEEDS TO WAIT FOR OPERATION COMPLETION - SLEEP DIRTY HACK - WILL FAIL!!!!
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+    }
+
+    //add file to folder by folderID
+    public static void createFile(String folderID, final String fileName, final String fileContents) {
+
+        final DriveId folderDriveID = DriveId.decodeFromString(folderID);
+
+        final ResultCallback<DriveFolder.DriveFileResult> fileCallback =
+                new ResultCallback<DriveFolder.DriveFileResult>() {
+                    @Override
+                    public void onResult(DriveFolder.DriveFileResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.d("drive", "Error while trying to create the file");
+                            return;
+                        }
+                        Log.d("drive", "Created a file: " + result.getDriveFile().getDriveId());
+                    }
+                };
+
+        final ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
+                new ResultCallback<DriveApi.DriveContentsResult>() {
+                    @Override
+                    public void onResult(DriveApi.DriveContentsResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.d("drive", "Error while trying to create new file contents");
+                            return;
+                        }
+
+                        final DriveContents driveContents = result.getDriveContents();
+
+                        // write content to DriveContents
+                        OutputStream outputStream = driveContents.getOutputStream();
+                        Writer writer = new OutputStreamWriter(outputStream);
+                        try {
+                            writer.write(fileContents);
+                            writer.close();
+                        } catch (IOException e) {
+                            Log.d("drive", e.getMessage());
+                        }
+
+                        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                                .setTitle(fileName)
+                                .setMimeType("text/plain")
+                                .setStarred(true).build();
+
+                        DriveFolder folder = Drive.DriveApi.getFolder(mGoogleApiClient, folderDriveID);
+                        folder.createFile(mGoogleApiClient, changeSet, driveContents)
+                                .setResultCallback(fileCallback);
+                    }
+                };
+
+        Drive.DriveApi.newDriveContents(mGoogleApiClient)
+                .setResultCallback(driveContentsCallback);
     }
 
     //add folder to root (user folder)
@@ -247,7 +254,7 @@ public abstract class AirDeskDriveAPI {
         }
         else folder = Drive.DriveApi.getFolder(mGoogleApiClient, DriveId.decodeFromString(folderID));
 
-        ArrayList<Filter> filters = new ArrayList<Filter>();
+        ArrayList<Filter> filters = new ArrayList<>();
         filters.add(Filters.eq(SearchableField.TRASHED, false));
         filters.add(Filters.eq(SearchableField.TITLE, fileName));
 

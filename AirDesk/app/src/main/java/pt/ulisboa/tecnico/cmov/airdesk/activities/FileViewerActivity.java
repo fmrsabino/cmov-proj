@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 
 public class FileViewerActivity extends ActionBarActivity {
@@ -30,6 +31,7 @@ public class FileViewerActivity extends ActionBarActivity {
         getSupportActionBar().setTitle(file_name);
 
         fileManagerLocal = new FileManagerLocal(this);
+        AirDeskDriveAPI.setContext(this);
 
     }
 

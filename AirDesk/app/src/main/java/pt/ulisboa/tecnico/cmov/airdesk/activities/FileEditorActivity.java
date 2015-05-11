@@ -11,6 +11,7 @@ import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
@@ -47,6 +48,22 @@ public class FileEditorActivity extends ActionBarActivity {
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().connect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().disconnect();
+        }
+        super.onPause();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_file_editor, menu);
@@ -79,6 +96,9 @@ public class FileEditorActivity extends ActionBarActivity {
 
                 wsManager.updateWorkspaceQuota(workspace_name, -updatedBytes, user);
                 fileManagerLocal.saveFileContents(file_name, workspace_name, user, fileView.getText().toString());
+                if(AirDeskDriveAPI.getClient() != null) {
+                    AirDeskDriveAPI.updateFile(wsManager.getDriveID(workspace_name, user), file_name, fileView.getText().toString());
+                }
 
                 Toast.makeText(this, "Saved File", Toast.LENGTH_SHORT).show();
                 finish();

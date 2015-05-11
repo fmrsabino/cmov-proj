@@ -75,7 +75,6 @@ public class WelcomeActivity extends TermiteActivity implements
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d("drive", "API client connected.");
-        //Toast.makeText(this, "Successfully Connected to Drive", Toast.LENGTH_SHORT).show();
         if(loggedUser.getDriveID() == null) {
             loggedUser = userManager.getLoggedDomainUser();
             if(loggedUser.getDriveID() == null) {
