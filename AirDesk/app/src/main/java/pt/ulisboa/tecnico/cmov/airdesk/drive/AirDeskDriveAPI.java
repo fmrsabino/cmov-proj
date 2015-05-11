@@ -6,20 +6,31 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.DriveResource;
+import com.google.android.gms.drive.Metadata;
+import com.google.android.gms.drive.MetadataBuffer;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.android.gms.drive.query.Filter;
+import com.google.android.gms.drive.query.Filters;
+import com.google.android.gms.drive.query.Query;
+import com.google.android.gms.drive.query.SearchableField;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
+import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 
 public abstract class AirDeskDriveAPI {
 
@@ -52,7 +63,6 @@ public abstract class AirDeskDriveAPI {
         mGoogleApiClient.disconnect();
         mGoogleApiClient = null;
     }
-
 
     //add file to folder by folderID
     public static void createFile(String folderID, final String fileName, final String fileContents) {
@@ -132,5 +142,59 @@ public abstract class AirDeskDriveAPI {
 
     }
 
+    //delete file from folder
+    public static void deleteFileFromFolder(String folderID, String fileName){
 
+        final ResultCallback<Status> trashStatusCallback =
+            new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                    if (!status.isSuccess()) {
+                        Log.d("drive", status.getStatusMessage());
+                        return;
+                    }
+                    Log.d("drive", "file deleted successfully");
+                }
+        };
+
+        final ResultCallback<DriveApi.MetadataBufferResult> metadataCallback = new
+                ResultCallback<DriveApi.MetadataBufferResult>() {
+                    @Override
+                    public void onResult(DriveApi.MetadataBufferResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.d("drive", "Problem while retrieving files");
+                            return;
+                        }
+
+                        MetadataBuffer buffer = result.getMetadataBuffer();
+
+                        if(buffer.getCount() == 0){
+                            Log.d("drive", "query files returned 0 results");
+                            return;
+                        }
+                        Metadata fileMeta = buffer.get(0);
+
+                        DriveResource driveResource = Drive.DriveApi.getFile(mGoogleApiClient,
+                                fileMeta.getDriveId());
+
+                        driveResource.trash(mGoogleApiClient)
+                                .setResultCallback(trashStatusCallback);
+
+                        buffer.close();
+                    }
+                };
+
+        DriveFolder folder = Drive.DriveApi.getFolder(mGoogleApiClient, DriveId.decodeFromString(folderID));
+
+        ArrayList<Filter> filters = new ArrayList<Filter>();
+        filters.add(Filters.eq(SearchableField.TRASHED, false));
+        filters.add(Filters.eq(SearchableField.TITLE, fileName));
+
+        Query query = new Query.Builder()
+                .addFilter(Filters.and(filters)).build();
+
+        folder.queryChildren(mGoogleApiClient, query)
+                .setResultCallback(metadataCallback);
+
+    }
 }

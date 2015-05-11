@@ -132,6 +132,7 @@ public class WelcomeActivity extends TermiteActivity implements
 
         if (id == R.id.logoff) {
             if(userManager.signOut()){
+                AirDeskDriveAPI.disconnect();
                 Toast.makeText(this, "Successful LogOut", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
@@ -145,6 +146,10 @@ public class WelcomeActivity extends TermiteActivity implements
 
     public void createFile(View view){
         AirDeskDriveAPI.createFile(loggedUser.getDriveID(), "olafile", "ola ola ola");
+    }
+
+    public void deleteFile(View view){
+        AirDeskDriveAPI.deleteFileFromFolder(loggedUser.getDriveID(), "olafile");
     }
 
     public void listWorkspaces(View view){

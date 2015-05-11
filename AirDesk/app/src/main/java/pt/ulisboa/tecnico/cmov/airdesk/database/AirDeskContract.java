@@ -33,6 +33,5 @@ public final class AirDeskContract {
         public static final String COLUMN_NAME_QUOTA = "quota";
         public static final String COLUMN_NAME_PUBLIC = "public";
         public static final String COLUMN_NAME_KEYWORDS = "keywords";
-        public static final String COLUMN_NAME_FOLDERID = "folderID";
     }
 }
