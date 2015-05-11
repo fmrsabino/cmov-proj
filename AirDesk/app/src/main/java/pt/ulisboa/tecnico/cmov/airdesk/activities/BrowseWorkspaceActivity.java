@@ -138,7 +138,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
             if (checked.get(i)) {
                 String fileName = gridAdapter.getItem(i);
                 wsManager.updateWorkspaceQuota(workspaceName, fileManager.getFileSize(fileName, workspaceName, user), user);
-                fileManager.deleteFile(fileName, workspaceName, user);
+                fileManager.deleteFile(fileName, workspaceName, user, wsManager.getDriveID(workspaceName,user));
             }
         }
         refreshFilesList();

@@ -241,7 +241,11 @@ public abstract class AirDeskDriveAPI {
                     }
                 };
 
-        DriveFolder folder = Drive.DriveApi.getFolder(mGoogleApiClient, DriveId.decodeFromString(folderID));
+        DriveFolder folder;
+        if(folderID == null){
+            folder = Drive.DriveApi.getRootFolder(mGoogleApiClient);
+        }
+        else folder = Drive.DriveApi.getFolder(mGoogleApiClient, DriveId.decodeFromString(folderID));
 
         ArrayList<Filter> filters = new ArrayList<Filter>();
         filters.add(Filters.eq(SearchableField.TRASHED, false));

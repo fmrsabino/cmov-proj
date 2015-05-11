@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
+
 public class FileManagerLocal {
 
     public static String TAG = "FILE_MANAGER";
@@ -53,13 +55,17 @@ public class FileManagerLocal {
         return success;
     }
 
-    public boolean deleteFile(String name, String workspace, String user) {
+    public boolean deleteFile(String name, String workspace, String user, String workspaceDriveID) {
         File file = new File(mContext.getFilesDir() + File.separator + user + File.separator + workspace, name);
         boolean success = false;
         if (file.exists()) {
             success = file.delete();
         } else {
             Log.d(TAG, "The file " + name + " doesn't exist");
+        }
+        if(AirDeskDriveAPI.getClient() != null) {
+            Log.d("drive", "deleting file: " + name);
+            AirDeskDriveAPI.deleteFileFromFolder(workspaceDriveID, name);
         }
 
         return success;
@@ -111,22 +117,22 @@ public class FileManagerLocal {
         }
     }
 
-    public boolean deleteWorkspace(String workspace, String user) {
+    public boolean deleteWorkspace(String workspace, String user, String workspaceDriveID) {
         boolean success = false;
 
         File file = new File(mContext.getFilesDir() + File.separator + user, workspace);
 
         if (file.isDirectory()) {
-            formatWorkspace(workspace, user);
+            formatWorkspace(workspace, user, workspaceDriveID);
             success = file.delete();
         }
 
         return success;
     }
 
-    public void formatWorkspace(String workspace, String user) {
+    public void formatWorkspace(String workspace, String user, String workspaceDriveID) {
         for (String file : getFilesNames(workspace, user)) {
-            deleteFile(file, workspace, user);
+            deleteFile(file, workspace, user, workspaceDriveID);
         }
     }
 

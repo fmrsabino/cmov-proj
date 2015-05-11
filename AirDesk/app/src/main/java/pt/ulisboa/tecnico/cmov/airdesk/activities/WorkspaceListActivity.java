@@ -27,7 +27,9 @@ import java.util.List;
 
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
@@ -126,6 +128,22 @@ public class WorkspaceListActivity extends  TermiteActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().connect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().disconnect();
+        }
+        super.onPause();
+    }
+
 
     private void deleteSelectedItems() {
         SparseBooleanArray checked = listView.getCheckedItemPositions();
@@ -135,6 +153,7 @@ public class WorkspaceListActivity extends  TermiteActivity {
                 if (checked.get(i)) {
                     String workspaceName = listAdapter.getItem(i).getWs_name();
 
+                    String workspaceDriveID = wsManager.getDriveID(workspaceName, user);
                     if (!wsManager.deleteOwnedWorkspace(workspaceName)) {
                         new AlertDialog.Builder(this)
                                 .setTitle("Database Error")
@@ -145,7 +164,10 @@ public class WorkspaceListActivity extends  TermiteActivity {
                                 }).show();
                         return;
                     }
-                    new FileManagerLocal(this).deleteWorkspace(workspaceName, user);
+                    new FileManagerLocal(this).deleteWorkspace(workspaceName, user, workspaceDriveID);
+                    if(AirDeskDriveAPI.getClient() != null) {
+                        AirDeskDriveAPI.deleteFileFromFolder(userManager.getLoggedDomainUser().getDriveID(), workspaceName);
+                    }
                 }
             }
         }

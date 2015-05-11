@@ -144,14 +144,6 @@ public class WelcomeActivity extends TermiteActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    public void createFile(View view){
-        AirDeskDriveAPI.createFile(loggedUser.getDriveID(), "olafile", "ola ola ola");
-    }
-
-    public void deleteFile(View view){
-        AirDeskDriveAPI.deleteFileFromFolder(loggedUser.getDriveID(), "olafile");
-    }
-
     public void listWorkspaces(View view){
         Intent intent = new Intent(this, WorkspaceListActivity.class);
         intent.putExtra(WORKSPACE_ACCESS_KEY, view.getTag().toString());
