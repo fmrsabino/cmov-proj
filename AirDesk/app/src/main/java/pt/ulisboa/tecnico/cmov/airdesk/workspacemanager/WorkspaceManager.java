@@ -94,4 +94,8 @@ public class WorkspaceManager {
     public List<String> remoteRetrieveForeignWorkspaces(String requestingUser) {
        return DatabaseAPI.remoteRetrieveForeignWorkspaces(dbHelper,requestingUser);
     }
+
+    public String getDriveID(String workspaceName, String username){
+        return DatabaseAPI.getWorkspaceDriveID(dbHelper, workspaceName, username);
+    }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageWorkspaceDialogFragment;
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
@@ -115,6 +116,22 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().connect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().disconnect();
+        }
+        super.onPause();
+    }
+
     private void deleteSelectedItems() {
         SparseBooleanArray checked = gridView.getCheckedItemPositions();
         for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
@@ -194,6 +211,7 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName(), workspaceName, user);
+        AirDeskDriveAPI.createEmptyFile(wsManager.getDriveID(workspaceName, user), ((CreateFileDialogFragment) dialog).getFileName());
         refreshFilesList();
     }
 

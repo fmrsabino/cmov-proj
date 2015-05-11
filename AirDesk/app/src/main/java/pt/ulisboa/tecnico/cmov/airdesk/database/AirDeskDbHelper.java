@@ -9,7 +9,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
     private static AirDeskDbHelper dbHelper = null;
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "AirDesk.db";
 
     private static final String TEXT_TYPE = " TEXT";
@@ -50,6 +50,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Workspaces.COLUMN_NAME_QUOTA + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Workspaces.COLUMN_NAME_KEYWORDS + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Workspaces.COLUMN_NAME_FOLDERID + TEXT_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+AirDeskContract.Workspaces.COLUMN_NAME_OWNER+ ")" +
                     " REFERENCES "+AirDeskContract.Users.TABLE_NAME + " ("+
                     AirDeskContract.Users.COLUMN_NAME_EMAIL + "));";

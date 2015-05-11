@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
@@ -41,7 +43,8 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     private EditText keywords;
     private List<String> viewers;
     private ArrayAdapter<String> adapter;
-    private String user;
+    private String username;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +52,8 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         setContentView(R.layout.activity_create_workspace);
         UserManager userManager = new UserManager(getApplicationContext());
 
-        user = userManager.getLoggedUser();
+        username = userManager.getLoggedUser();
+        user = userManager.getLoggedDomainUser();
         listView = (ListView) findViewById(R.id.invitation_list);
         quota = (TextView) findViewById(R.id.activity_create_workspace_quota);
         name = (EditText) findViewById(R.id.name);
@@ -77,6 +81,21 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().connect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.getClient().disconnect();
+        }
+        super.onPause();
+    }
 
     public void createWorkspace(View view) {
         //get workspace parameters
@@ -95,7 +114,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         String tags = keywords.getText().toString();
         int isPublic = (is_public) ? 1 : 0;
 
-        Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers, user);
+        Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers, username);
         WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
         List<Workspace> wsList = wsManager.retrieveOwnedWorkspaces();
         List<String> wsNameList = new ArrayList<>();
@@ -139,16 +158,20 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         }
 
         FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
-        fileManagerLocal.createWorkspace(workspace, user);
+        fileManagerLocal.createWorkspace(workspace, username);
+
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.setContext(this);
+            AirDeskDriveAPI.createWorkspaceFolder(workspace, username, user.getDriveID());
+        }
 
         //launch workspace browsing
         Intent intent = new Intent(CreateWorkspaceActivity.this, BrowseWorkspaceActivity.class);
         intent.putExtra(WORKSPACE_NAME_KEY, workspace);
         intent.putExtra(WorkspaceListActivity.ACCESS_KEY, "owned");
-        intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
+        intent.putExtra(WorkspaceListActivity.OWNER_KEY, username);
         startActivity(intent);
     }
-
 
     public void inviteUser(View view) {
         if(viewer != null) {

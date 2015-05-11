@@ -533,6 +533,22 @@ public class DatabaseAPI {
         return true;
     }
 
+    public static boolean setWorkspaceDriveID(AirDeskDbHelper dbHelper, String workspace, String user, String folderID) {
+        db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Workspaces.COLUMN_NAME_FOLDERID, folderID);
+
+        db.update(
+                AirDeskContract.Workspaces.TABLE_NAME,
+                values,
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ? AND " + AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
+                new String[]{workspace, user}
+        );
+
+        return true;
+    }
+
     public static boolean setWorkspaceVisibility(AirDeskDbHelper dbHelper, String workspace, int visibility, String user){
         db = dbHelper.getWritableDatabase();
 
@@ -592,6 +608,35 @@ public class DatabaseAPI {
 
         c.close();
         return workspaceQuota;
+    }
+
+    // Returns the current quota value in bytes for workspace
+    public static String getWorkspaceDriveID(AirDeskDbHelper dbHelper, String workspace, String user) {
+        db = dbHelper.getReadableDatabase();
+
+        String driveID = null;
+        String[] projection = {
+                AirDeskContract.Workspaces.COLUMN_NAME_FOLDERID, AirDeskContract.Workspaces.COLUMN_NAME_OWNER
+        };
+
+        Cursor c = db.query(
+                AirDeskContract.Workspaces.TABLE_NAME,
+                projection,
+                AirDeskContract.Workspaces.COLUMN_NAME_NAME + " = ? AND " +  AirDeskContract.Workspaces.COLUMN_NAME_OWNER + " = ?",
+                new String[]{workspace, user},
+                null,
+                null,
+                null
+        );
+
+        Log.d("DB", "OWNER IS: " + user);
+
+        if (c.moveToFirst()) {
+            driveID = c.getString(0);
+        }
+
+        c.close();
+        return driveID;
     }
 
 

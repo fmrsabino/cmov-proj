@@ -64,6 +64,31 @@ public abstract class AirDeskDriveAPI {
         mGoogleApiClient = null;
     }
 
+
+    public static void createEmptyFile(String folderID, String fileName){
+
+        final ResultCallback<DriveFolder.DriveFileResult> fileCallback =
+                new ResultCallback<DriveFolder.DriveFileResult>() {
+                    @Override
+                    public void onResult(DriveFolder.DriveFileResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.d("drive", "Error while trying to create the file");
+                            return;
+                        }
+                        Log.d("drive", "Created an empty file: " + result.getDriveFile().getDriveId());
+                    }
+           };
+
+        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                .setTitle(fileName)
+                .setMimeType("text/plain")
+                .setStarred(false).build();
+
+        DriveFolder folder = Drive.DriveApi.getFolder(mGoogleApiClient, DriveId.decodeFromString(folderID));
+        folder.createFile(mGoogleApiClient, changeSet, null)
+                .setResultCallback(fileCallback);
+    }
+
     //add file to folder by folderID
     public static void createFile(String folderID, final String fileName, final String fileContents) {
 
@@ -103,7 +128,7 @@ public abstract class AirDeskDriveAPI {
                     MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
                             .setTitle(fileName)
                             .setMimeType("text/plain")
-                            .setStarred(true).build();
+                            .setStarred(false).build();
 
                     DriveFolder folder = Drive.DriveApi.getFolder(mGoogleApiClient, folderDriveID);
                     folder.createFile(mGoogleApiClient, changeSet, driveContents)
@@ -117,7 +142,39 @@ public abstract class AirDeskDriveAPI {
     }
 
 
-    //add folder to root (easy one)
+    // add folder to user folder (workspace)
+    public static void createWorkspaceFolder(final String workspace, final String user,  String userFolderID) {
+
+        final ResultCallback<DriveFolder.DriveFolderResult> folderCreatedCallback = new
+                ResultCallback<DriveFolder.DriveFolderResult>() {
+                    @Override
+                    public void onResult(DriveFolder.DriveFolderResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.d("drive", "Error while trying to create the user folder");
+                            return;
+                        }
+                        Log.d("drive", "Created workspace folder with id:" + result.getDriveFolder().getDriveId());
+                        String encodedDriveID = result.getDriveFolder().getDriveId().encodeToString();
+                        if(encodedDriveID != null){
+                            DatabaseAPI.setWorkspaceDriveID(AirDeskDbHelper.getInstance(driveContext), workspace, user, encodedDriveID);
+                        }
+
+                    }
+        };
+
+        DriveFolder folder = Drive.DriveApi.getFolder(mGoogleApiClient, DriveId.decodeFromString(userFolderID));
+        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                .setTitle(workspace).build();
+        folder.createFolder(mGoogleApiClient, changeSet).setResultCallback(folderCreatedCallback);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //add folder to root (user folder)
     public static void createUserFolder(String user) {
 
         final ResultCallback<DriveFolder.DriveFolderResult> createUserFolderCallback = new ResultCallback<DriveFolder.DriveFolderResult>() {
