@@ -206,9 +206,10 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
             }
 
             listAdapter.notifyDataSetChanged();
-        }
-        else if(TextUtils.equals(repo, "foreign"))
+        } else if(TextUtils.equals(repo, "foreign")) {
             retrieveForeignWorkspaces();
+        }
+        listAdapter.notifyDataSetChanged();
     }
 
     @Override
