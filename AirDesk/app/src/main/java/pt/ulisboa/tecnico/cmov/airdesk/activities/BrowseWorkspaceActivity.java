@@ -65,13 +65,7 @@ public class BrowseWorkspaceActivity extends TermiteActivity
 
         invalidateOptionsMenu();
 
-        if (!TextUtils.isEmpty(ip)) {
-            if (ip.equals(WorkspacesListAdapter.IP_LOCALHOST)) {
-                files.addAll(fileManager.getFilesNames(workspaceName, user));
-            } else {
-                retrieveForeignFiles();
-            }
-        }
+
 
         gridView = (GridView) findViewById(R.id.workspace_files);
         gridAdapter = new ArrayAdapter<>(this,
@@ -220,7 +214,13 @@ public class BrowseWorkspaceActivity extends TermiteActivity
 
     private void refreshFilesList() {
         files.clear();
-        files.addAll(fileManager.getFilesNames(workspaceName, user));
+        if (!TextUtils.isEmpty(ip)) {
+            if (ip.equals(WorkspacesListAdapter.IP_LOCALHOST)) {
+                files.addAll(fileManager.getFilesNames(workspaceName, user));
+            } else {
+                retrieveForeignFiles();
+            }
+        }
         gridAdapter.notifyDataSetChanged();
     }
 
