@@ -8,17 +8,19 @@ import android.util.Log;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteConnector;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteTaskManager;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public abstract class TermiteActivity extends ActionBarActivity {
     private static final String TAG = "TermiteActivity";
 
     protected TermiteConnector termiteConnector;
-    private TermiteTaskManager taskManager;
+    protected TermiteTaskManager taskManager;
     private SimWifiP2pBroadcastReceiver receiver;
 
     protected WorkspaceManager wsManager;
@@ -51,24 +53,31 @@ public abstract class TermiteActivity extends ActionBarActivity {
         try {
             unregisterReceiver(receiver);
             Log.d(TAG, "Unregistered BroadcastReceiver");
-        } catch (IllegalArgumentException e) {}
+        } catch (IllegalArgumentException ignored) {}
     }
 
     public void sendSubscribedWorkspaces(TermiteMessage receivedMessage) {
         String requestingUser = (String) receivedMessage.contents;
-        List<String> workspaces = wsManager.remoteRetrieveForeignWorkspaces(requestingUser);
+        List<Workspace> workspaces = wsManager.remoteRetrieveForeignWorkspaces(requestingUser);
         TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, workspaces);
 
         taskManager.sendMessage(msg);
     }
 
     public void sendWorkspaceFiles(TermiteMessage receivedMessage) {
-        String workspace = (String) receivedMessage.contents;
-        List<String> files = null; // go to file system and fetch files from demanded workspace
+        String[] contents = (String[]) receivedMessage.contents;
+        if(contents.length == 2) { //ws_name + owner
+            String wsName = contents[0];
+            String wsOwner = contents[1];
 
-        //taskManager.sendMessage();
+            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
+            List<String> files = fileManagerLocal.getFilesNames(wsName, wsOwner);
+
+            TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, files);
+            taskManager.sendMessage(msg);
+        }
     }
 
     //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
-    public abstract void processMessage(TermiteMessage message);
+    public abstract void processMessage(TermiteMessage receivedMessage);
 }

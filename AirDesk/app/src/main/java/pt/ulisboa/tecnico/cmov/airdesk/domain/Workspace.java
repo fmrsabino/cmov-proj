@@ -1,15 +1,18 @@
 package pt.ulisboa.tecnico.cmov.airdesk.domain;
 
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Workspace {
+public class Workspace implements Serializable {
     private String name;
     private int quota;
     private int isPublic;
     private String keywords;
     private List<String> users;
     private String owner;
+
+    public Workspace() {}
 
     public Workspace(String name, int quota, int isPublic, String keywords, List<String> users, String owner) {
         this.name = name;
@@ -63,5 +66,9 @@ public class Workspace {
 
     public String getOwner() {
         return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }

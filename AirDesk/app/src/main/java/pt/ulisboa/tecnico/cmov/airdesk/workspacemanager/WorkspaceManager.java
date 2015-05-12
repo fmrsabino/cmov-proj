@@ -91,7 +91,7 @@ public class WorkspaceManager {
         DatabaseAPI.setWorkspaceKeywords(dbHelper, workspaceName, keywords, user);
     }
 
-    public List<String> remoteRetrieveForeignWorkspaces(String requestingUser) {
+    public List<Workspace> remoteRetrieveForeignWorkspaces(String requestingUser) {
        return DatabaseAPI.remoteRetrieveForeignWorkspaces(dbHelper,requestingUser);
     }
 

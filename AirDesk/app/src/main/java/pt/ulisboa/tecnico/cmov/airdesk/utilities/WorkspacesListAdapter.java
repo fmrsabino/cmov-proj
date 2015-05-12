@@ -15,15 +15,19 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 public class WorkspacesListAdapter extends BaseAdapter
 {
+    public static final String IP_LOCALHOST = "LOCALHOST";
+
     public static class Content {
         private String ws_name;
         private String quota;
         private String owner;
+        private String ip;
 
-        public Content(String ws_name, String quota, String owner) {
+        public Content(String ws_name, String quota, String owner, String ip) {
             this.ws_name = ws_name;
             this.quota = quota + " bytes";
             this.owner = owner;
+            this.ip = ip;
         }
 
         public String getQuota() {
@@ -44,6 +48,10 @@ public class WorkspacesListAdapter extends BaseAdapter
 
         public String getOwner() {
             return owner;
+        }
+
+        public String getIp() {
+            return ip;
         }
     }
 

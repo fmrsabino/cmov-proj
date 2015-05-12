@@ -190,9 +190,9 @@ public class WelcomeActivity extends TermiteActivity implements
     }
 
     @Override
-    public void processMessage(TermiteMessage message) {
+    public void processMessage(TermiteMessage receivedMessage) {
         Toast.makeText(this, "Received Termite Message!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, "Contents: " + message.contents, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Contents: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
     }
 
 }

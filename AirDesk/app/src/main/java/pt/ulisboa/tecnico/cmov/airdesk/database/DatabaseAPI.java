@@ -696,12 +696,13 @@ public class DatabaseAPI {
                 " WHERE " + AirDeskContract.Workspaces.COLUMN_NAME_PUBLIC + "= 1)" + "AND " + AirDeskContract.Viewers.COLUMN_NAME_EMAIL + "= \'" + loggedUser + "\'", null);
     }
 
-    public static List<String> remoteRetrieveForeignWorkspaces(AirDeskDbHelper dbHelper, String requestingUser) {
+    public static List<Workspace> remoteRetrieveForeignWorkspaces(AirDeskDbHelper dbHelper, String requestingUser) {
         db = dbHelper.getReadableDatabase();
-        List<String> wsList = new ArrayList<>();
+        List<Workspace> wsList = new ArrayList<>();
 
         String[] projection = {
-                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE};
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE,
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER};
 
         String[] v_selectionArgs = {requestingUser};
 
@@ -718,9 +719,12 @@ public class DatabaseAPI {
                 v_sortOrder
         );
 
-
+        //TODO: GET THE WS QUOTA
         while (c.moveToNext()) {
-            wsList.add(c.getString(0));
+            Workspace ws = new Workspace();
+            ws.setName(c.getString(0));
+            ws.setOwner(c.getString(1));
+            wsList.add(ws);
         }
 
         c.close();

@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +26,6 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
-import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
@@ -42,9 +38,12 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2pManager.GroupInfoListener {
 
+    public static final String TAG = "WorkspaceListActivity";
+
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     public final static String ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.ACCESS";
     public final static String OWNER_KEY = "owner";
+    public final static String IP_KEY = "ip";
 
     private String repo;
     private ListView listView;
@@ -85,9 +84,11 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                     String access = repo;
                     String message = selectedWorkspace;
                     String owner = listAdapter.getItem(position).getOwner();
+                    String ip = listAdapter.getItem(position).getIp();
                     intent.putExtra(ACCESS_KEY, access);
                     intent.putExtra(WORKSPACE_NAME_KEY, message);
                     intent.putExtra(OWNER_KEY, owner);
+                    intent.putExtra(IP_KEY, ip);
 
                     startActivity(intent);
                 }}});
@@ -201,7 +202,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
             wsList = wsManager.retrieveOwnedWorkspaces();
 
             for (Workspace w : wsList) {
-                directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner()));
+                directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner(), WorkspacesListAdapter.IP_LOCALHOST));
             }
 
             listAdapter.notifyDataSetChanged();
@@ -259,33 +260,6 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
         wsManager.subscribeWorkspaces(items);
     }
 
-
-    public class SendMessageTask extends AsyncTask<TermiteMessage, Void, Void> {
-        @Override
-        protected Void doInBackground(TermiteMessage... params) {
-            ObjectOutputStream oos = null;
-
-            try {
-                TermiteMessage msg = params[0];
-                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket(msg.rcvIp, 10001);
-                oos = new ObjectOutputStream(mCliSocket.getOutputStream());
-                oos.writeObject(msg);
-                oos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if(oos != null) {
-                    try {
-                        oos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
-    }
-
     private void retrieveForeignWorkspaces(){
         //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
         termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
@@ -303,18 +277,17 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
             SimWifiP2pDevice device = simWifiP2pDeviceList.getByName(deviceName);
 
             TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, myVirtualIp, device.getVirtIp(), userManager.getLoggedUser());
-            new SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, msg);
+            taskManager.sendMessage(msg);
         }
     }
 
     @Override
-    public void processMessage(TermiteMessage message) {
-        Log.d("PROCESS MESSAGE", "POR CA PASSEI");
-        List<String> wsList = (List<String>) message.contents;
-        for (String s : wsList) {
-            directories.add(new WorkspacesListAdapter.Content(s, "30","DONO"));
+    public void processMessage(TermiteMessage receivedMessage) {
+        List<Workspace> wsList = (List<Workspace>) receivedMessage.contents;
+        for (Workspace ws : wsList) {
+            //TODO: Check content values
+            directories.add(new WorkspacesListAdapter.Content(ws.getName(), "30",ws.getOwner(), receivedMessage.srcIp));
         }
-
         listAdapter.notifyDataSetChanged();
     }
 }
