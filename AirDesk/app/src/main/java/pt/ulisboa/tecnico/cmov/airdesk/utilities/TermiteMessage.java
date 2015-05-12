@@ -7,7 +7,13 @@ public class TermiteMessage implements Serializable {
         WS_LIST,
         WS_LIST_REPLY,
         WS_FILE_LIST,
-        WS_FILE_LIST_REPLY
+        WS_FILE_LIST_REPLY,
+        WS_FILE_CONTENT,
+        WS_FILE_CONTENT_REPLY,
+        WS_FILE_EDIT,
+        WS_FILE_EDIT_LOCK,
+        WS_FILE_EDIT_LOCK_REPLY,
+        WS_ERROR
     }
 
     public MSG_TYPE type;

@@ -284,11 +284,12 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
 
     @Override
     public void processMessage(TermiteMessage receivedMessage) {
-        List<Workspace> wsList = (List<Workspace>) receivedMessage.contents;
-        for (Workspace ws : wsList) {
-            //TODO: Check content values
-            directories.add(new WorkspacesListAdapter.Content(ws.getName(), "30",ws.getOwner(), receivedMessage.srcIp));
-        }
-        listAdapter.notifyDataSetChanged();
+            @SuppressWarnings("unchecked")
+            List<Workspace> wsList = (List<Workspace>) receivedMessage.contents;
+            for (Workspace ws : wsList) {
+                //TODO: Check content values
+                directories.add(new WorkspacesListAdapter.Content(ws.getName(), ""+ws.getQuota(), ws.getOwner(), receivedMessage.srcIp));
+            }
+            listAdapter.notifyDataSetChanged();
     }
 }

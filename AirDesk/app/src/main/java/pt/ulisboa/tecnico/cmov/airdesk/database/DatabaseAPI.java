@@ -719,11 +719,12 @@ public class DatabaseAPI {
                 v_sortOrder
         );
 
-        //TODO: GET THE WS QUOTA
+
         while (c.moveToNext()) {
             Workspace ws = new Workspace();
             ws.setName(c.getString(0));
             ws.setOwner(c.getString(1));
+            ws.setQuota((int)getCurrentQuota(dbHelper, c.getString(0), c.getString(1)));
             wsList.add(ws);
         }
 

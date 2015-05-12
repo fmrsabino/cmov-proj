@@ -86,6 +86,54 @@ public abstract class TermiteActivity extends ActionBarActivity {
         }
     }
 
+    public void sendFileContent(TermiteMessage receivedMessage) {
+        String[] contents = (String[]) receivedMessage.contents;
+        if(contents.length == 3) { //file_name, ws_name, owner
+            String fileName = contents[0];
+            String wsName = contents[1];
+            String wsOwner = contents[2];
+
+            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
+            String fileContent = fileManagerLocal.getFileContents(fileName, wsName, wsOwner);
+            TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_CONTENT_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, fileContent);
+            taskManager.sendMessage(msg);
+        }
+    }
+
+    public void changeFileContent(TermiteMessage receivedMessage) {
+        String[] contents = (String[]) receivedMessage.contents;
+        if(contents.length == 4) { //file_name, ws_name, owner, newFileContent
+            String fileName = contents[0];
+            String wsName = contents[1];
+            String wsOwner = contents[2];
+            String fileContent = contents[3];
+
+            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
+            fileManagerLocal.saveFileContents(fileName, wsName, wsOwner, fileContent);
+        }
+    }
+
+    public void lockFile(TermiteMessage receivedMessage){
+        String[] contents = (String[]) receivedMessage.contents;
+        if(contents.length == 3) { //file_name, ws_name, owner
+            String fileName = contents[0];
+            String wsName = contents[1];
+            String wsOwner = contents[2];
+
+            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
+            TermiteMessage msg;
+            if(fileManagerLocal.lockFile(fileName, wsName, wsOwner)) {
+                String[] file = {fileManagerLocal.getFileContents(fileName, wsName, wsOwner),"" + fileManagerLocal.getFileSize(fileName, wsName, wsOwner)}; // file content + its size
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_EDIT_LOCK_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, file);
+            }
+            else
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_ERROR, receivedMessage.rcvIp, receivedMessage.srcIp, "Please try later");
+
+            taskManager.sendMessage(msg);
+        }
+    }
+
+
     //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
     public abstract void processMessage(TermiteMessage receivedMessage);
 }

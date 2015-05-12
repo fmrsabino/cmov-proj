@@ -23,9 +23,11 @@ public class FileManagerLocal {
     public static String TAG = "FILE_MANAGER";
 
     private Context mContext;
+    private List<String[]> lockedFiles;
 
     public FileManagerLocal(Context context) {
         mContext = context;
+        lockedFiles = new ArrayList<>();
     }
 
     public boolean createFile(String name, String workspace, String user) {
@@ -156,5 +158,17 @@ public class FileManagerLocal {
         long availableBlocks = statFs.getAvailableBlocks();
 
         return Formatter.formatFileSize(mContext, availableBlocks * blockSize);
+    }
+
+    public boolean lockFile(String fileName, String wsName, String wsOwner){
+        String[] fileTuple = {fileName, wsName, wsOwner};
+        boolean reserved = true;
+
+        if(!lockedFiles.contains(fileTuple))
+            lockedFiles.add(fileTuple);
+        else
+            reserved = false;
+
+        return reserved;
     }
 }

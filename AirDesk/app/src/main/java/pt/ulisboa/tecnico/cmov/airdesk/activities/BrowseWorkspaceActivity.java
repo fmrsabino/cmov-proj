@@ -80,6 +80,8 @@ public class BrowseWorkspaceActivity extends TermiteActivity
                 intent.putExtra("file_name", gridAdapter.getItem(position));
                 intent.putExtra("workspace_name", workspaceName);
                 intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
+                intent.putExtra(WorkspaceListActivity.ACCESS_KEY, access);
+                intent.putExtra(WorkspaceListActivity.IP_KEY, ip);
                 startActivity(intent);
             }
         });

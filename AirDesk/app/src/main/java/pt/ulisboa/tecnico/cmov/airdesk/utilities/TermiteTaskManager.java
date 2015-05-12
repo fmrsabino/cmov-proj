@@ -117,6 +117,15 @@ public class TermiteTaskManager {
                 case WS_FILE_LIST:
                     mActivity.sendWorkspaceFiles(message);
                     break;
+                case WS_FILE_CONTENT:
+                    mActivity.sendFileContent(message);
+                    break;
+                case WS_FILE_EDIT:
+                    mActivity.changeFileContent(message);
+                    break;
+                case WS_FILE_EDIT_LOCK:
+                    mActivity.lockFile(message);
+                    break;
                 default:
                     mActivity.processMessage(message);
             }
