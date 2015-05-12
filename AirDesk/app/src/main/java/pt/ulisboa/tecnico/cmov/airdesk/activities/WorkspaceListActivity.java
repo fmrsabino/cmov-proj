@@ -25,6 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
@@ -36,7 +40,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
-public class WorkspaceListActivity extends  TermiteActivity {
+public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2pManager.GroupInfoListener {
 
     public final static String WORKSPACE_NAME_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSNAME";
     public final static String ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.ACCESS";
@@ -50,7 +54,6 @@ public class WorkspaceListActivity extends  TermiteActivity {
     private EditText tagTxt;
     private UserManager userManager;
     private String user;
-    private SendMessageTask sendTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,15 +260,15 @@ public class WorkspaceListActivity extends  TermiteActivity {
     }
 
 
-    public class SendMessageTask extends AsyncTask<Void, Void, Void> {
+    public class SendMessageTask extends AsyncTask<TermiteMessage, Void, Void> {
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(TermiteMessage... params) {
             ObjectOutputStream oos = null;
 
             try {
-                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket("192.168.0.2",10001);
+                TermiteMessage msg = params[0];
+                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket(msg.rcvIp, 10001);
                 oos = new ObjectOutputStream(mCliSocket.getOutputStream());
-                TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, userManager.getLoggedUser());
                 oos.writeObject(msg);
                 oos.close();
             } catch (IOException e) {
@@ -284,10 +287,25 @@ public class WorkspaceListActivity extends  TermiteActivity {
     }
 
     private void retrieveForeignWorkspaces(){
-        sendTask = new SendMessageTask();
-        sendTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
+        termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
     }
 
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+        SimWifiP2pDevice myDevice = simWifiP2pDeviceList.getByName(simWifiP2pInfo.getDeviceName());
+        if (myDevice == null) {
+            return;
+        }
+        String myVirtualIp = myDevice.getVirtIp();
+
+        for (String deviceName : simWifiP2pInfo.getDevicesInNetwork()) {
+            SimWifiP2pDevice device = simWifiP2pDeviceList.getByName(deviceName);
+
+            TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, myVirtualIp, device.getVirtIp(), userManager.getLoggedUser());
+            new SendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, msg);
+        }
+    }
 
     @Override
     public void processMessage(TermiteMessage message) {

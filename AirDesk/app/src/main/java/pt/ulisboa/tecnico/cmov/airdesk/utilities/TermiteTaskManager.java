@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.utilities;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -111,10 +112,10 @@ public class TermiteTaskManager {
         protected void onPostExecute(TermiteMessage message) {
             switch (message.type){
                 case WS_LIST:
-                    mActivity.feedSubscribedWorkspaces(message.contents);
+                    mActivity.sendSubscribedWorkspaces(message);
                     break;
                 case WS_FILE_LIST:
-                    mActivity.feedWorkspaceFiles(message.contents);
+                    mActivity.sendWorkspaceFiles(message);
                     break;
                 default:
                     mActivity.processMessage(message);
@@ -140,10 +141,15 @@ public class TermiteTaskManager {
         protected Void doInBackground(TermiteMessage ... params) {
             ObjectOutputStream oos = null;
 
+            TermiteMessage msg = params[0];
+
+            if (TextUtils.isEmpty(msg.rcvIp)) {
+                return null;
+            }
+
             try {
-                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket("192.168.0.1",10001);
+                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket(msg.rcvIp, 10001);
                 oos = new ObjectOutputStream(mCliSocket.getOutputStream());
-                TermiteMessage msg = params[0];
                 oos.writeObject(msg);
                 oos.close();
             } catch (IOException e) {

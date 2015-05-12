@@ -11,11 +11,15 @@ public class TermiteMessage implements Serializable {
     }
 
     public MSG_TYPE type;
+    public String srcIp;
+    public String rcvIp;
     public Object contents;
 
     public TermiteMessage() {}
-    public TermiteMessage(MSG_TYPE type, Object contents) {
+    public TermiteMessage(MSG_TYPE type, String srcIp, String rcvIp, Object contents) {
         this.type = type;
+        this.srcIp = srcIp;
+        this.rcvIp = rcvIp;
         this.contents = contents;
     }
 }

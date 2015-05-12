@@ -54,20 +54,19 @@ public abstract class TermiteActivity extends ActionBarActivity {
         } catch (IllegalArgumentException e) {}
     }
 
-    public void feedSubscribedWorkspaces(Object messageContent) {
-        String requestingUser = (String) messageContent;
+    public void sendSubscribedWorkspaces(TermiteMessage receivedMessage) {
+        String requestingUser = (String) receivedMessage.contents;
         List<String> workspaces = wsManager.remoteRetrieveForeignWorkspaces(requestingUser);
-        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST_REPLY, workspaces);
+        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, workspaces);
 
         taskManager.sendMessage(msg);
     }
 
-    public void feedWorkspaceFiles(Object messageContent) {
-        String workspace = (String) messageContent;
+    public void sendWorkspaceFiles(TermiteMessage receivedMessage) {
+        String workspace = (String) receivedMessage.contents;
         List<String> files = null; // go to file system and fetch files from demanded workspace
-        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST_REPLY, files);
 
-        taskManager.sendMessage(msg);
+        //taskManager.sendMessage();
     }
 
     //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
