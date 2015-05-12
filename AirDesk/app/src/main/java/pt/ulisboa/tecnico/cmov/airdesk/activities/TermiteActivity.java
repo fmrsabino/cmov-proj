@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -31,6 +32,13 @@ public abstract class TermiteActivity extends ActionBarActivity {
         termiteConnector = TermiteConnector.getInstance(getApplicationContext());
         taskManager = TermiteTaskManager.getInstance(this);
         wsManager = new WorkspaceManager(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        termiteConnector = TermiteConnector.getInstance(getApplicationContext());
+        taskManager = TermiteTaskManager.getInstance(this);
     }
 
     @Override
