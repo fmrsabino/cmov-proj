@@ -55,7 +55,6 @@ public abstract class AirDeskDriveAPI {
         mGoogleApiClient = null;
     }
 
-
     public static void createEmptyFile(String folderID, String fileName){
 
         final ResultCallback<DriveFolder.DriveFileResult> fileCallback =

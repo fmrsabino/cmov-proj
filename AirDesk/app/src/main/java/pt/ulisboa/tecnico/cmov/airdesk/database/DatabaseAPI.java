@@ -128,10 +128,12 @@ public class DatabaseAPI {
         String nick = null;
         String email = null;
         String driveID = null;
+        int driveOpts = 0;
 
         String[] projection = {AirDeskContract.Users.COLUMN_NAME_EMAIL,
                 AirDeskContract.Users.COLUMN_NAME_NICK,
-                AirDeskContract.Users.COLUMN_NAME_FOLDERID};
+                AirDeskContract.Users.COLUMN_NAME_FOLDERID,
+                AirDeskContract.Users.COLUMN_NAME_DRIVE_OPTS};
 
         String[] selectionArgs = {"1"};
 
@@ -149,12 +151,13 @@ public class DatabaseAPI {
             email = c.getString(0);
             nick = c.getString(1);
             driveID = c.getString(2);
+            driveOpts = c.getInt(3);
         }
 
         c.close();
         if(TextUtils.isEmpty(email) || TextUtils.isEmpty(nick)){
             return null;
-        } else return new User(nick,email,driveID);
+        } else return new User(nick,email,driveID, driveOpts);
     }
 
     public static String getLoggedUserSubscription(AirDeskDbHelper dbHelper){
@@ -201,6 +204,7 @@ public class DatabaseAPI {
         values.put(AirDeskContract.Users.COLUMN_NAME_EMAIL, email);
         values.put(AirDeskContract.Users.COLUMN_NAME_PASSWORD, password);
         values.put(AirDeskContract.Users.COLUMN_NAME_LOGGED, 1);
+        values.put(AirDeskContract.Users.COLUMN_NAME_DRIVE_OPTS, 0);
 
         long row = db.insert(AirDeskContract.Users.TABLE_NAME, null,values);
         return row != -1;
@@ -722,6 +726,21 @@ public class DatabaseAPI {
         c.close();
 
         return wsList;
+    }
+
+    public static void setUserDriveOption(AirDeskDbHelper dbHelper, int option) {
+        db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(AirDeskContract.Users.COLUMN_NAME_DRIVE_OPTS, option);
+
+        String selection = AirDeskContract.Users.COLUMN_NAME_LOGGED + " = ?";
+        String[] selectionArgs = { "1" };
+
+        int count = db.update(
+                AirDeskContract.Users.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
     }
 }
 

@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.dialogs.GoogleDriveIntegrationDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
@@ -23,7 +25,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 public class WelcomeActivity extends TermiteActivity implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleDriveIntegrationDialogFragment.DriveIntegrationListener{
 
     public final static String WORKSPACE_ACCESS_KEY = "pt.ulisboa.tecnico.cmov.airdesk.WSACCESS";
     private UserManager userManager;
@@ -44,17 +47,52 @@ public class WelcomeActivity extends TermiteActivity implements
         TextView nick = (TextView) findViewById(R.id.nickView);
         nick.setText("Welcome " + loggedUser.getNick() + "!");
 
-        if(AirDeskDriveAPI.getClient() == null){
-            GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(Drive.API)
-                    .addScope(Drive.SCOPE_FILE)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-            AirDeskDriveAPI.setClient(mGoogleApiClient);
+        int i = loggedUser.getDriveOptions();
+        //user wants google drive integration
+        if(i == 1) {
+            if (AirDeskDriveAPI.getClient() == null) {
+                GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addApi(Drive.API)
+                        .addScope(Drive.SCOPE_FILE)
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .build();
+                AirDeskDriveAPI.setClient(mGoogleApiClient);
+            }
+        }
+        //user has not decided yet
+        else if(i == 0){
+            GoogleDriveIntegrationDialogFragment dialog = new GoogleDriveIntegrationDialogFragment();
+            dialog.show(getFragmentManager(), "GoogleDriveIntegration");
         }
 
     }
+
+    @Override
+    public void onYesClick(DialogFragment dialog) {
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Drive.API)
+                .addScope(Drive.SCOPE_FILE)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        AirDeskDriveAPI.setClient(mGoogleApiClient);
+        userManager.registerDriveOptions(1);
+        loggedUser = userManager.getLoggedDomainUser();
+    }
+
+    @Override
+    public void onNoClick(DialogFragment dialog) {
+        userManager.registerDriveOptions(2);
+        loggedUser = userManager.getLoggedDomainUser();
+    }
+
+    @Override
+    public void onLaterClick(DialogFragment dialog) {
+        userManager.registerDriveOptions(0);
+        loggedUser = userManager.getLoggedDomainUser();
+    }
+
 
     @Override
     protected void onResume() {
@@ -131,7 +169,9 @@ public class WelcomeActivity extends TermiteActivity implements
 
         if (id == R.id.logoff) {
             if(userManager.signOut()){
-                AirDeskDriveAPI.disconnect();
+                if(AirDeskDriveAPI.getClient() != null){
+                    AirDeskDriveAPI.disconnect();
+                }
                 Toast.makeText(this, "Successful LogOut", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
@@ -154,4 +194,5 @@ public class WelcomeActivity extends TermiteActivity implements
         Toast.makeText(this, "Received Termite Message!", Toast.LENGTH_SHORT).show();
         Toast.makeText(this, "Contents: " + message.contents, Toast.LENGTH_LONG).show();
     }
+
 }

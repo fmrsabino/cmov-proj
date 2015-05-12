@@ -31,7 +31,9 @@ public class FileViewerActivity extends ActionBarActivity {
         getSupportActionBar().setTitle(file_name);
 
         fileManagerLocal = new FileManagerLocal(this);
-        AirDeskDriveAPI.setContext(this);
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.setContext(this);
+        }
 
     }
 

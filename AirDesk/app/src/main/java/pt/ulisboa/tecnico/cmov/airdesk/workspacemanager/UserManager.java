@@ -48,4 +48,8 @@ public class UserManager {
     public boolean signOut() {
         return DatabaseAPI.signOut(dbHelper);
     }
+
+    public void registerDriveOptions(int option){
+          DatabaseAPI.setUserDriveOption(dbHelper, option);
+    }
 }

@@ -39,6 +39,7 @@ public class AirDeskDbHelper extends SQLiteOpenHelper {
                     AirDeskContract.Users.COLUMN_NAME_LOGGED + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Users.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
                     AirDeskContract.Users.COLUMN_NAME_PASSWORD + TEXT_TYPE + COMMA_SEP +
+                    AirDeskContract.Users.COLUMN_NAME_DRIVE_OPTS + INTEGER_TYPE + COMMA_SEP +
                     AirDeskContract.Users.COLUMN_NAME_FOLDERID + TEXT_TYPE +
             " )";
 

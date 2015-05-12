@@ -211,7 +211,9 @@ public class BrowseWorkspaceActivity extends ActionBarActivity
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName(), workspaceName, user);
-        AirDeskDriveAPI.createEmptyFile(wsManager.getDriveID(workspaceName, user), ((CreateFileDialogFragment) dialog).getFileName());
+        if(AirDeskDriveAPI.getClient() != null) {
+            AirDeskDriveAPI.createEmptyFile(wsManager.getDriveID(workspaceName, user), ((CreateFileDialogFragment) dialog).getFileName());
+        }
         refreshFilesList();
     }
 
