@@ -53,7 +53,7 @@ public class ViewersActivity extends TermiteActivity implements SimWifiP2pManage
         viewer = (EditText) findViewById(R.id.viewer);
         TextView tv = (TextView) findViewById(R.id.workspace_name);
         LinearLayout invite_layout = (LinearLayout) findViewById(R.id.invite_option);
-        wsManager = new WorkspaceManager(getApplicationContext());
+        wsManager = WorkspaceManager.getInstance(getApplicationContext());
 
         Intent intent = getIntent();
         access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);

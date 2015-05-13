@@ -54,8 +54,8 @@ public class BrowseWorkspaceActivity extends TermiteActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_workspace);
 
-        fileManager = new FileManagerLocal(getApplicationContext());
-        wsManager = new WorkspaceManager(getApplicationContext());
+        fileManager = FileManagerLocal.getInstance(getApplicationContext());
+        wsManager = WorkspaceManager.getInstance(getApplicationContext());
 
         Intent intent = getIntent();
         access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);

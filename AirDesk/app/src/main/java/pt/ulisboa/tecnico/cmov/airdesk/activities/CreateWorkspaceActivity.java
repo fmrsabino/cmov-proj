@@ -62,7 +62,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         viewer = (EditText) findViewById(R.id.viewer);
         keywords = (EditText) findViewById(R.id.keywords);
         TextView availableStorage = (TextView) findViewById(R.id.activity_create_workspace_available_space);
-        availableStorage.setText(new FileManagerLocal(this).getSystemAvailableSpace());
+        availableStorage.setText(FileManagerLocal.getInstance(this).getSystemAvailableSpace());
 
         viewers = new ArrayList<>();
 
@@ -115,7 +115,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         int isPublic = (is_public) ? 1 : 0;
 
         Workspace ws = new Workspace(workspace, quotaValue, isPublic, tags, viewers, username);
-        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
+        WorkspaceManager wsManager = WorkspaceManager.getInstance(getApplicationContext());
         List<Workspace> wsList = wsManager.retrieveOwnedWorkspaces();
         List<String> wsNameList = new ArrayList<>();
 
@@ -157,7 +157,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
             return;
         }
 
-        FileManagerLocal fileManagerLocal = new FileManagerLocal(getApplicationContext());
+        FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(getApplicationContext());
         fileManagerLocal.createWorkspace(workspace, username);
 
         if(AirDeskDriveAPI.getClient() != null) {

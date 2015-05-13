@@ -20,14 +20,22 @@ import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 
 public class FileManagerLocal {
 
+    private static FileManagerLocal fileManager = null;
     public static String TAG = "FILE_MANAGER";
 
     private Context mContext;
     private List<String[]> lockedFiles;
 
-    public FileManagerLocal(Context context) {
+    private FileManagerLocal(Context context) {
         mContext = context;
         lockedFiles = new ArrayList<>();
+    }
+
+    public static FileManagerLocal getInstance(Context context) {
+        if (fileManager == null) {
+            fileManager = new FileManagerLocal(context.getApplicationContext());
+        }
+        return fileManager;
     }
 
     public boolean createFile(String name, String workspace, String user) {
@@ -164,11 +172,28 @@ public class FileManagerLocal {
         String[] fileTuple = {fileName, wsName, wsOwner};
         boolean reserved = true;
 
-        if(!lockedFiles.contains(fileTuple))
+        for (String[] f : lockedFiles) {
+            if ((f[0].equals(fileTuple[0]) && f[1].equals(fileTuple[1]) && f[2].equals(fileTuple[2]))) {
+                reserved = false;
+            }
+        }
+        if(reserved)
             lockedFiles.add(fileTuple);
-        else
-            reserved = false;
 
         return reserved;
+    }
+
+    public List<String[]> getLockedFiles(){ return lockedFiles;}
+
+    public void removeLock(String[] file) {
+        String[] toRemove = file;
+        for (String[] f : lockedFiles) {
+            if (f[0].equals(file[0]) && f[1].equals(file[1]) && f[2].equals(file[2])) {
+                toRemove = f;
+                break;
+            }
+        }
+        lockedFiles.remove(toRemove);
+
     }
 }

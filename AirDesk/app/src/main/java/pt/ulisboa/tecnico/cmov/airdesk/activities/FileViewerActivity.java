@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
@@ -14,14 +16,17 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 public class FileViewerActivity extends TermiteActivity implements SimWifiP2pManager.GroupInfoListener {
+    private UserManager userManager;
     private FileManagerLocal fileManagerLocal;
     private String file_name = null;
     private String workspace_name = null;
     private String user;
     private String access;
     private String ip;
+    private boolean editAttempt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +41,9 @@ public class FileViewerActivity extends TermiteActivity implements SimWifiP2pMan
         ip = intent.getStringExtra(WorkspaceListActivity.IP_KEY);
 
         getSupportActionBar().setTitle(file_name);
+        userManager = new UserManager(getApplicationContext());
+        fileManagerLocal = FileManagerLocal.getInstance(this);
 
-        fileManagerLocal = new FileManagerLocal(this);
         if(AirDeskDriveAPI.getClient() != null) {
             AirDeskDriveAPI.setContext(this);
         }
@@ -67,13 +73,23 @@ public class FileViewerActivity extends TermiteActivity implements SimWifiP2pMan
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.edit_file) {
-            Intent intent = new Intent(FileViewerActivity.this, FileEditorActivity.class);
-            intent.putExtra("file_name", file_name);
-            intent.putExtra("workspace_name", workspace_name);
-            intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
-            intent.putExtra(WorkspaceListActivity.ACCESS_KEY, access);
-            intent.putExtra(WorkspaceListActivity.IP_KEY, ip);
-            startActivity(intent);
+            if(access.equals("foreign")) {
+                editAttempt = true;
+                retrieveForeignFileContent();
+            }
+            else{
+                if(fileManagerLocal.lockFile(file_name, workspace_name, user)) {
+                    Intent intent = new Intent(FileViewerActivity.this, FileEditorActivity.class);
+                    intent.putExtra("file_name", file_name);
+                    intent.putExtra("workspace_name", workspace_name);
+                    intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
+                    intent.putExtra(WorkspaceListActivity.ACCESS_KEY, access);
+                    intent.putExtra(WorkspaceListActivity.IP_KEY, ip);
+                    startActivity(intent);
+                }
+                else
+                    Toast.makeText(this, "Error acquiring lock", Toast.LENGTH_LONG).show();
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -102,7 +118,14 @@ public class FileViewerActivity extends TermiteActivity implements SimWifiP2pMan
         }
 
         String myVirtualIp = myDevice.getVirtIp();
-        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_CONTENT, myVirtualIp, ip, new String[]{file_name, workspace_name, user});
+        TermiteMessage msg;
+
+        if(editAttempt)
+            msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_EDIT_LOCK, myVirtualIp, ip, new String[]{file_name, workspace_name, user});
+        else
+            msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_CONTENT, myVirtualIp, ip, new String[]{file_name, workspace_name, user});
+
+        editAttempt = false;
         taskManager.sendMessage(msg);
     }
 
@@ -112,6 +135,21 @@ public class FileViewerActivity extends TermiteActivity implements SimWifiP2pMan
             String fileContents = (String) receivedMessage.contents;
             TextView fileView = (TextView) findViewById(R.id.fileViewContents);
             fileView.setText(fileContents);
+        }
+        else if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_EDIT_LOCK_REPLY) {
+            String contents = (String) receivedMessage.contents;
+
+            Intent intent = new Intent(FileViewerActivity.this, FileEditorActivity.class);
+            intent.putExtra("file_name", file_name);
+            intent.putExtra("workspace_name", workspace_name);
+            intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
+            intent.putExtra(WorkspaceListActivity.ACCESS_KEY, access);
+            intent.putExtra(WorkspaceListActivity.IP_KEY, ip);
+            intent.putExtra("file_content", contents);
+            startActivity(intent);
+        }
+        else if(receivedMessage.type == TermiteMessage.MSG_TYPE.WS_ERROR){
+            Toast.makeText(this, "ERROR: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
         }
     }
 }

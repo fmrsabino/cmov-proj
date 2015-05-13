@@ -54,12 +54,12 @@ public class ManageWorkspaceDialogFragment extends DialogFragment {
         quotaEditText = (EditText) view.findViewById(R.id.quota);
         visibilityCheckBox = (CheckBox) view.findViewById(R.id.is_public);
         keyHolder = (LinearLayout) view.findViewById(R.id.keyHolder);
-        FileManagerLocal fileManager = new FileManagerLocal(getActivity());
+        FileManagerLocal fileManager = FileManagerLocal.getInstance(getActivity());
 
         String workspaceName = getArguments().getString("workspace");
         user = getArguments().getString(WorkspaceListActivity.OWNER_KEY);
 
-        WorkspaceManager manager = new WorkspaceManager(getActivity());
+        WorkspaceManager manager = WorkspaceManager.getInstance(getActivity());
         Workspace workspace = manager.retrieveWorkspace(workspaceName, user);
 
         long workspaceSize = fileManager.getWorkspaceSize(workspaceName, user);

@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteConnector;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
@@ -33,7 +35,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         termiteConnector = TermiteConnector.getInstance(getApplicationContext());
         taskManager = TermiteTaskManager.getInstance(this);
-        wsManager = new WorkspaceManager(this);
+        wsManager = WorkspaceManager.getInstance(this);
     }
 
     @Override
@@ -101,7 +103,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
             String wsName = contents[0];
             String wsOwner = contents[1];
 
-            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
+            FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
             List<String> files = fileManagerLocal.getFilesNames(wsName, wsOwner);
 
             TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, files);
@@ -116,7 +118,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
             String wsName = contents[1];
             String wsOwner = contents[2];
 
-            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
+            FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
             String fileContent = fileManagerLocal.getFileContents(fileName, wsName, wsOwner);
             TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_CONTENT_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, fileContent);
             taskManager.sendMessage(msg);
@@ -125,14 +127,39 @@ public abstract class TermiteActivity extends ActionBarActivity {
 
     public void changeFileContent(TermiteMessage receivedMessage) {
         String[] contents = (String[]) receivedMessage.contents;
-        if(contents.length == 4) { //file_name, ws_name, owner, newFileContent
+        if (contents.length == 5) { //file_name, ws_name, owner, lockRequester, newFileContent
             String fileName = contents[0];
             String wsName = contents[1];
             String wsOwner = contents[2];
-            String fileContent = contents[3];
+            String lockRequester = contents[3];
+            String fileContent = contents[4];
 
-            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
-            fileManagerLocal.saveFileContents(fileName, wsName, wsOwner, fileContent);
+            TermiteMessage msg;
+            boolean inList = false;
+
+            FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
+            List<String[]> lockedFiles = fileManagerLocal.getLockedFiles();
+            String[] file = new String[]{fileName, wsName, wsOwner, lockRequester};
+
+            for (String[] f : lockedFiles) {
+                if (f[0].equals(fileName) && f[1].equals(wsName) && f[2].equals(wsOwner) && f[3].equals(lockRequester)) {
+                    inList = true;
+                    break;
+                }
+            }
+
+            if (inList) {
+                boolean quota_exceeded = isQuotaExceeded(fileContent, fileName, wsName, wsOwner);
+                //Check whether the quota is exceeded in local WS
+                if (!quota_exceeded) {
+                    msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_EDIT_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, fileName);
+                } else {
+                    msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_ERROR, receivedMessage.rcvIp, receivedMessage.srcIp, "Quota Exceeded");
+                }
+
+                fileManagerLocal.removeLock(file);
+                taskManager.sendMessage(msg);
+            }
         }
     }
 
@@ -143,10 +170,10 @@ public abstract class TermiteActivity extends ActionBarActivity {
             String wsName = contents[1];
             String wsOwner = contents[2];
 
-            FileManagerLocal fileManagerLocal = new FileManagerLocal(this);
+            FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
             TermiteMessage msg;
             if(fileManagerLocal.lockFile(fileName, wsName, wsOwner)) {
-                String[] file = {fileManagerLocal.getFileContents(fileName, wsName, wsOwner),"" + fileManagerLocal.getFileSize(fileName, wsName, wsOwner)}; // file content + its size
+                String file = fileManagerLocal.getFileContents(fileName, wsName, wsOwner); // file content
                 msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_EDIT_LOCK_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, file);
             }
             else
@@ -157,6 +184,32 @@ public abstract class TermiteActivity extends ActionBarActivity {
     }
 
 
+    private boolean isQuotaExceeded(String fileContent, String fileName, String wsName, String wsOwner){
+        byte[] fileBytes;
+        long finalFileSize =0;
+        try {
+            fileBytes = fileContent.getBytes("UTF-8");
+            finalFileSize = fileBytes.length;
+        } catch (UnsupportedEncodingException e) {
+            return true;
+        }
+
+            FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
+            long initialFileSize = fileManagerLocal.getFileSize(fileName, wsName, wsOwner);
+            long updatedBytes = finalFileSize - initialFileSize;
+            long currentQuota = wsManager.getCurrentWorkspaceQuota(wsName, wsOwner);
+
+            if (currentQuota - updatedBytes < 0) {
+                return true;
+            }
+
+            wsManager.updateWorkspaceQuota(wsName, -updatedBytes, wsOwner);
+            fileManagerLocal.saveFileContents(fileName, wsName, wsOwner, fileContent);
+            if (AirDeskDriveAPI.getClient() != null) {
+                AirDeskDriveAPI.updateFile(wsManager.getDriveID(wsName, wsOwner), fileName, fileContent);
+            }
+            return false;
+    }
     //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
     public abstract void processMessage(TermiteMessage receivedMessage);
 

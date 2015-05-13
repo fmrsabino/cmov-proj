@@ -66,7 +66,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
 
         Intent intent = getIntent();
         repo = intent.getStringExtra(WelcomeActivity.WORKSPACE_ACCESS_KEY);
-        wsManager = new WorkspaceManager(getApplicationContext());
+        wsManager = WorkspaceManager.getInstance(getApplicationContext());
         userManager = new UserManager(getApplicationContext());
         listView = (ListView) findViewById(R.id.workspace_list);
         listAdapter = new WorkspacesListAdapter(this, directories);
@@ -172,7 +172,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                                 }).show();
                         return;
                     }
-                    new FileManagerLocal(this).deleteWorkspace(workspaceName, user, workspaceDriveID);
+                    FileManagerLocal.getInstance(this).deleteWorkspace(workspaceName, user, workspaceDriveID);
                     if(AirDeskDriveAPI.getClient() != null) {
                         AirDeskDriveAPI.deleteFileFromFolder(userManager.getLoggedDomainUser().getDriveID(), workspaceName);
                     }
@@ -204,7 +204,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
 
     private void populateWorkspaceList() {
         directories.clear();
-        WorkspaceManager wsManager = new WorkspaceManager(getApplicationContext());
+        WorkspaceManager wsManager = WorkspaceManager.getInstance(getApplicationContext());
         List<Workspace> wsList;
 
         if(TextUtils.equals(repo, "owned")) {

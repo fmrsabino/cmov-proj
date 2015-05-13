@@ -11,12 +11,20 @@ import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 
 public class WorkspaceManager {
 
+    private static WorkspaceManager wsManager = null;
+
     private AirDeskDbHelper dbHelper;
 
-    public WorkspaceManager(Context context) {
+    private WorkspaceManager(Context context) {
         this.dbHelper = AirDeskDbHelper.getInstance(context);
     }
 
+    public static WorkspaceManager getInstance(Context context) {
+        if (wsManager == null) {
+            wsManager = new WorkspaceManager(context.getApplicationContext());
+        }
+        return wsManager;
+    }
 
     public boolean addWorkspace(Workspace workspace) {
         String loggedUser = DatabaseAPI.getLoggedUser(dbHelper);
