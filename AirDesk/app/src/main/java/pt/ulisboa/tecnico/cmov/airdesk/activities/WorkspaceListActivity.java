@@ -51,11 +51,13 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
     private WorkspacesListAdapter listAdapter;
     private String selectedWorkspace;
     private boolean unsubscribing = false;
+    private boolean subscribing = false;
     private EditText tagTxt;
     private UserManager userManager;
     private String user;
     private String wsNameUnsub;
     private String wsOwnerUnsub;
+    private String subscriptionTags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,7 +253,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                                     String tags = tagTxt.getText().toString();
                                     userManager.clearSubscribedWorkspaces();
                                     subscribeWorkspaces(tags);
-                                    populateWorkspaceList();
+                                    //populateWorkspaceList();
                                 }
                             }).show();
                 }
@@ -264,8 +266,11 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
 
     private void subscribeWorkspaces(String tags) {
         List<String> items = new ArrayList<>(Arrays.asList(tags.split("\\s*,\\s*")));
+        subscriptionTags = tags;
         userManager.setLoggedUserSubscription(tags);
-        wsManager.subscribeWorkspaces(items);
+        //wsManager.subscribeWorkspaces(items);
+        subscribing = true;
+        subscribeWorkspaces();
     }
 
     private void retrieveForeignWorkspaces(){
@@ -274,6 +279,11 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
     }
 
     private void unregisterForeignWorkspace() {
+        termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
+    }
+
+    private void subscribeWorkspaces(){
+        //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
         termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
     }
 
@@ -290,17 +300,21 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
 
             TermiteMessage msg;
 
-            if(!unsubscribing)
-                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, myVirtualIp, device.getVirtIp(), userManager.getLoggedUser());
-            else
+            if(subscribing)
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_SUBSCRIBE, myVirtualIp, device.getVirtIp(), new String[] {userManager.getLoggedUser(), subscriptionTags});
+            else if(unsubscribing)
                 msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_UNSUBSCRIBE, myVirtualIp, device.getVirtIp(), new String[]{userManager.getLoggedUser(), wsNameUnsub, wsOwnerUnsub});
+            else
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, myVirtualIp, device.getVirtIp(), userManager.getLoggedUser());
 
 
             taskManager.sendMessage(msg);
 
             wsNameUnsub = null;
             wsOwnerUnsub = null;
+            subscriptionTags = null;
             unsubscribing = false;
+            subscribing = false;
         }
     }
 
@@ -313,5 +327,6 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                 directories.add(new WorkspacesListAdapter.Content(ws.getName(), ""+ws.getQuota(), ws.getOwner(), receivedMessage.srcIp));
             }
             listAdapter.notifyDataSetChanged();
+        //populateWorkspaceList(); //can possibly correct empty ws list
     }
 }

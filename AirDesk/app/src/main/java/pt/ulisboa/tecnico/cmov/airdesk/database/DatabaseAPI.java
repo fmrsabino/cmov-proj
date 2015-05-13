@@ -646,9 +646,9 @@ public class DatabaseAPI {
 
 
 
-    public static void subscribeWorkspaces(AirDeskDbHelper dbHelper, List<String> ws_keywords){
+    public static void subscribeWorkspaces(AirDeskDbHelper dbHelper, String viewer, List<String> ws_keywords){
         db = dbHelper.getReadableDatabase();
-        String loggedInUser = getLoggedUser(dbHelper);
+
         List<String> ws_tags = new ArrayList<>();
         boolean contains;
 
@@ -680,7 +680,7 @@ public class DatabaseAPI {
                 }
             }
             if(contains)
-                addUserToWorkspace(dbHelper, loggedInUser, c.getString(0), c.getString(2));
+                addUserToWorkspace(dbHelper, viewer, c.getString(0), c.getString(2));
         }
 
         c.close();

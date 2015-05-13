@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
@@ -70,6 +72,13 @@ public abstract class TermiteActivity extends ActionBarActivity {
         TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, workspaces);
 
         taskManager.sendMessage(msg);
+    }
+
+    public void subscribeViewer(TermiteMessage receivedMessage) {
+        String[] contents = (String[]) receivedMessage.contents;
+        String subscribingUser = contents[0];
+        List<String> items = new ArrayList<>(Arrays.asList(contents[1].split("\\s*,\\s*")));
+        wsManager.subscribeWorkspaces(subscribingUser, items);
     }
 
     public void unsubscribeViewer(TermiteMessage receivedMessage) {

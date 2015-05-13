@@ -16,6 +16,7 @@ public class TermiteMessage implements Serializable {
         WS_FILE_EDIT_LOCK,
         WS_FILE_EDIT_LOCK_REPLY,
         WS_UNSUBSCRIBE,
+        WS_SUBSCRIBE,
         WS_ERROR
     }
 

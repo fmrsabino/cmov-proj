@@ -75,8 +75,8 @@ public class WorkspaceManager {
         DatabaseAPI.deleteViewer(dbHelper, loggedInUser, ws_name, wsOwner);
     }
 
-    public void subscribeWorkspaces(List<String> tags){
-        DatabaseAPI.subscribeWorkspaces(dbHelper, tags);
+    public void subscribeWorkspaces(String viewer, List<String> tags){
+        DatabaseAPI.subscribeWorkspaces(dbHelper, viewer, tags);
     }
 
     public void setWorkspaceQuota(String ws_name, long bytes, String user) {
