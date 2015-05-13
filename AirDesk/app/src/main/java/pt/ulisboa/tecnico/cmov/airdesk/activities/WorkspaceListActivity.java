@@ -50,9 +50,12 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
     private List<WorkspacesListAdapter.Content> directories = new ArrayList<>();
     private WorkspacesListAdapter listAdapter;
     private String selectedWorkspace;
+    private boolean unsubscribing = false;
     private EditText tagTxt;
     private UserManager userManager;
     private String user;
+    private String wsNameUnsub;
+    private String wsOwnerUnsub;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,13 +182,17 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                 if (checked.get(i)) {
                     String workspaceName = listAdapter.getItem(i).getWs_name();
                     String workspaceOwner = listAdapter.getItem(i).getOwner();
-                    wsManager.unregisterForeignWorkspace(workspaceName, workspaceOwner);
+                    unsubscribing = true;
+                    wsNameUnsub = workspaceName;
+                    wsOwnerUnsub = workspaceOwner;
+                    unregisterForeignWorkspace();
                 }
             }
         }
 
         populateWorkspaceList();
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -266,6 +273,10 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
         termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
     }
 
+    private void unregisterForeignWorkspace() {
+        termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
+    }
+
     @Override
     public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
         SimWifiP2pDevice myDevice = simWifiP2pDeviceList.getByName(simWifiP2pInfo.getDeviceName());
@@ -277,8 +288,19 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
         for (String deviceName : simWifiP2pInfo.getDevicesInNetwork()) {
             SimWifiP2pDevice device = simWifiP2pDeviceList.getByName(deviceName);
 
-            TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, myVirtualIp, device.getVirtIp(), userManager.getLoggedUser());
+            TermiteMessage msg;
+
+            if(!unsubscribing)
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_LIST, myVirtualIp, device.getVirtIp(), userManager.getLoggedUser());
+            else
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_UNSUBSCRIBE, myVirtualIp, device.getVirtIp(), new String[]{userManager.getLoggedUser(), wsNameUnsub, wsOwnerUnsub});
+
+
             taskManager.sendMessage(msg);
+
+            wsNameUnsub = null;
+            wsOwnerUnsub = null;
+            unsubscribing = false;
         }
     }
 

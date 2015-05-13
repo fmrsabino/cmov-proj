@@ -21,12 +21,17 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 
-public class ViewersActivity extends ActionBarActivity {
+public class ViewersActivity extends TermiteActivity implements SimWifiP2pManager.GroupInfoListener {
 
     private String ws_name;
     private ListView listView ;
@@ -36,6 +41,8 @@ public class ViewersActivity extends ActionBarActivity {
     private Workspace ws;
     private WorkspaceManager wsManager;
     private String user;
+    private String access;
+    private String ip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,20 +56,22 @@ public class ViewersActivity extends ActionBarActivity {
         wsManager = new WorkspaceManager(getApplicationContext());
 
         Intent intent = getIntent();
-        String access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
+        access = intent.getStringExtra(WorkspaceListActivity.ACCESS_KEY);
         ws_name = intent.getStringExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY);
         user = intent.getStringExtra(WorkspaceListActivity.OWNER_KEY);
+        ip = intent.getStringExtra(WorkspaceListActivity.IP_KEY);
 
         tv.setText(ws_name + " Viewers");
+        if(access.equals("owned")) {
+            ws = wsManager.retrieveWorkspace(ws_name, user);
+            viewers = new ArrayList<>(ws.getUsers());
 
-        ws = wsManager.retrieveWorkspace(ws_name, user);
+            adapter = new ArrayAdapter<>(this,
+                    R.layout.activity_viewers_list_item, R.id.selected_item, viewers);
 
-        viewers = new ArrayList<>(ws.getUsers());
-
-        adapter = new ArrayAdapter<>(this,
-                R.layout.activity_viewers_list_item, R.id.selected_item, viewers);
-
-        listView.setAdapter(adapter);
+            listView.setAdapter(adapter);
+        } else
+            retrieveWorkspaceViewers();
 
         if(TextUtils.equals(access, "owned")) {
             invite_layout.setVisibility(LinearLayout.VISIBLE);
@@ -104,6 +113,7 @@ public class ViewersActivity extends ActionBarActivity {
             });
         }
     }
+
 
     private void deleteSelectedItems() {
         SparseBooleanArray checked = listView.getCheckedItemPositions();
@@ -147,6 +157,34 @@ public class ViewersActivity extends ActionBarActivity {
                 adapter.notifyDataSetChanged();
                 viewer.setText(null);
             }
+        }
+    }
+
+    private void retrieveWorkspaceViewers() {
+        //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
+        termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
+    }
+
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+        SimWifiP2pDevice myDevice = simWifiP2pDeviceList.getByName(simWifiP2pInfo.getDeviceName());
+        if (myDevice == null) {
+            return;
+        }
+
+        String myVirtualIp = myDevice.getVirtIp();
+        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_VIEWERS, myVirtualIp, ip, new String[]{ws_name, user});
+        taskManager.sendMessage(msg);
+    }
+
+    @Override
+    public void processMessage(TermiteMessage receivedMessage) {
+        if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_VIEWERS_REPLY) {
+            @SuppressWarnings("unchecked")
+            List<String> viewers = (List<String>) receivedMessage.contents;
+            adapter = new ArrayAdapter<>(this,
+                    R.layout.activity_viewers_list_item, R.id.selected_item, viewers);
+            listView.setAdapter(adapter);
         }
     }
 }

@@ -72,6 +72,20 @@ public abstract class TermiteActivity extends ActionBarActivity {
         taskManager.sendMessage(msg);
     }
 
+    public void unsubscribeViewer(TermiteMessage receivedMessage) {
+        String[] contents = (String[]) receivedMessage.contents;
+        wsManager.deleteWorkspaceViewer(contents[0], contents[1], contents[2]);
+    }
+
+    public void sendWorkspaceViewers(TermiteMessage receivedMessage) {
+        String[] contents = (String[]) receivedMessage.contents;
+        Workspace w = wsManager.retrieveWorkspace(contents[0], contents[1]);
+        List<String> viewers = w.getUsers();
+        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_VIEWERS_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, viewers);
+
+        taskManager.sendMessage(msg);
+    }
+
     public void sendWorkspaceFiles(TermiteMessage receivedMessage) {
         String[] contents = (String[]) receivedMessage.contents;
         if(contents.length == 2) { //ws_name + owner
@@ -136,4 +150,5 @@ public abstract class TermiteActivity extends ActionBarActivity {
 
     //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
     public abstract void processMessage(TermiteMessage receivedMessage);
+
 }

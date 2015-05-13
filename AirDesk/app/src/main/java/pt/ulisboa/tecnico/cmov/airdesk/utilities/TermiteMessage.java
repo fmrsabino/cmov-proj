@@ -6,6 +6,8 @@ public class TermiteMessage implements Serializable {
     public static enum MSG_TYPE {
         WS_LIST,
         WS_LIST_REPLY,
+        WS_VIEWERS,
+        WS_VIEWERS_REPLY,
         WS_FILE_LIST,
         WS_FILE_LIST_REPLY,
         WS_FILE_CONTENT,
@@ -13,6 +15,7 @@ public class TermiteMessage implements Serializable {
         WS_FILE_EDIT,
         WS_FILE_EDIT_LOCK,
         WS_FILE_EDIT_LOCK_REPLY,
+        WS_UNSUBSCRIBE,
         WS_ERROR
     }
 

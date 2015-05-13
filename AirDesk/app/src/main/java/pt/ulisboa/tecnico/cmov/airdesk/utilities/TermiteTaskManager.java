@@ -114,8 +114,14 @@ public class TermiteTaskManager {
                 case WS_LIST:
                     mActivity.sendSubscribedWorkspaces(message);
                     break;
+                case WS_UNSUBSCRIBE:
+                    mActivity.unsubscribeViewer(message);
+                    break;
                 case WS_FILE_LIST:
                     mActivity.sendWorkspaceFiles(message);
+                    break;
+                case WS_VIEWERS:
+                    mActivity.sendWorkspaceViewers(message);
                     break;
                 case WS_FILE_CONTENT:
                     mActivity.sendFileContent(message);

@@ -46,6 +46,7 @@ public class BrowseWorkspaceActivity extends TermiteActivity
     private FileManagerLocal fileManager = null;
     private WorkspaceManager wsManager;
     private String user;
+    private String owner;
     private String ip;
 
     @Override
@@ -192,6 +193,7 @@ public class BrowseWorkspaceActivity extends TermiteActivity
             intent.putExtra(WorkspaceListActivity.ACCESS_KEY, this.access);
             intent.putExtra(WorkspaceListActivity.WORKSPACE_NAME_KEY, this.workspaceName);
             intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
+            intent.putExtra(WorkspaceListActivity.IP_KEY, ip);
             startActivity(intent);
             return true;
         }
