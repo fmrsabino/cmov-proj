@@ -237,13 +237,14 @@ public abstract class TermiteActivity extends ActionBarActivity {
         }
     }
 
+    
     public void deleteFiles(TermiteMessage receivedMessage) {
         String[] contents = (String[]) receivedMessage.contents;
         FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
 
         String wsName = contents[0];
         String wsOwner = contents[1];
-        
+
         for(int i=2; i< contents.length; i++){
             wsManager.updateWorkspaceQuota(wsName, fileManagerLocal.getFileSize(contents[i], wsName, wsOwner), wsOwner);
             fileManagerLocal.deleteFile(contents[i], wsName, wsOwner, wsManager.getDriveID(wsName, wsOwner));
