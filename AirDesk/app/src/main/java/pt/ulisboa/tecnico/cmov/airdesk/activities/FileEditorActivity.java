@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -26,7 +27,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 public class FileEditorActivity extends TermiteActivity implements SimWifiP2pManager.GroupInfoListener{
 
     private FileManagerLocal fileManagerLocal;
-    private UserManager userManager;
     EditText fileView;
     private String file_name = null;
     private String file_contents = null;
@@ -35,6 +35,8 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
     private String user;
     private String access;
     private String ip;
+    private String[] file;
+    private boolean releaseLock;
 
     private long initialFileSize = 0;
 
@@ -44,7 +46,6 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
         setContentView(R.layout.activity_file_editor);
 
         fileView = (EditText) findViewById(R.id.fileContents);
-
         Intent intent = getIntent();
         file_name = intent.getStringExtra("file_name");
         file_contents = intent.getStringExtra("file_content");
@@ -54,8 +55,7 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
         ip = intent.getStringExtra(WorkspaceListActivity.IP_KEY);
 
         getSupportActionBar().setTitle(file_name);
-
-        userManager = new UserManager(getApplicationContext());
+        file = new String[] {file_name, workspace_name, user};
         fileManagerLocal = FileManagerLocal.getInstance(this);
         wsManager = WorkspaceManager.getInstance(getApplicationContext());
 
@@ -76,9 +76,19 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
         if (AirDeskDriveAPI.getClient() != null) {
             AirDeskDriveAPI.getClient().disconnect();
         }
+        if(access.equals("owned")) {
+            Log.d("FILE LOCK", file[0]+file[1]+file[2]);
+            if (file != null)
+                fileManagerLocal.removeLock(file);
+            for(String[] s : fileManagerLocal.getLockedFiles()){
+                Log.d("LOCAL LOCKS", s[0]+s[1]+s[2]);
+            }
+        }
+        else
+        releaseRemoteLock();
+        Log.d("ANDEI AQUI", "NESTE SITIO");
         super.onPause();
     }
-
 
 
     @Override
@@ -100,7 +110,7 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
             if (access.equals("owned")) {
                 boolean inList = false;
                 List<String[]> lockedFiles = fileManagerLocal.getLockedFiles();
-                String[] file = new String[]{file_name, workspace_name, user};
+                file = new String[]{file_name, workspace_name, user};
 
                 for (String[] f : lockedFiles) {
                     if (f[0].equals(file_name) && f[1].equals(workspace_name) && f[2].equals(user)) {
@@ -159,7 +169,11 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
         fileView.setText(file_contents);
     }
 
-
+    private void releaseRemoteLock(){
+        releaseLock = true;
+        //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
+        termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
+    }
     private void editForeignFileContent(){
         //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
         termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
@@ -173,14 +187,20 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
         }
 
         String myVirtualIp = myDevice.getVirtIp();
-        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_EDIT, myVirtualIp, ip, new String[]{file_name, workspace_name, user, userManager.getLoggedUser(), fileView.getText().toString()});
+        TermiteMessage msg;
+        if(!releaseLock)
+            msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_EDIT, myVirtualIp, ip, new String[]{file_name, workspace_name, user, fileView.getText().toString()});
+        else
+            msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_RELEASE_LOCK, myVirtualIp, ip, new String[]{file_name, workspace_name, user});
+
+        releaseLock = false;
         taskManager.sendMessage(msg);
     }
 
     @Override
     public void processMessage(TermiteMessage receivedMessage) {
         if(receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_EDIT_REPLY){
-            Toast.makeText(this, "Save Sucessful: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Save Successful: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
             finish();
         }
         if(receivedMessage.type == TermiteMessage.MSG_TYPE.WS_ERROR){

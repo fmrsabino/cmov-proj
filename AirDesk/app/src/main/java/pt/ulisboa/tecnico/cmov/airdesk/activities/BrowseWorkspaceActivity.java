@@ -17,7 +17,10 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
@@ -46,8 +49,11 @@ public class BrowseWorkspaceActivity extends TermiteActivity
     private FileManagerLocal fileManager = null;
     private WorkspaceManager wsManager;
     private String user;
-    private String owner;
     private String ip;
+    private String fileToCreate;
+    private boolean fileCreation;
+    private boolean deleting;
+    private String[] deleteArgs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,15 +152,29 @@ public class BrowseWorkspaceActivity extends TermiteActivity
     }
 
     private void deleteSelectedItems() {
+        List<String> deleteBundle = new ArrayList<>();
+        deleteBundle.add(workspaceName);
+        deleteBundle.add(user);
         SparseBooleanArray checked = gridView.getCheckedItemPositions();
         for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
             if (checked.get(i)) {
                 String fileName = gridAdapter.getItem(i);
-                wsManager.updateWorkspaceQuota(workspaceName, fileManager.getFileSize(fileName, workspaceName, user), user);
-                fileManager.deleteFile(fileName, workspaceName, user, wsManager.getDriveID(workspaceName,user));
+                if(access.equals("owned")) {
+                    wsManager.updateWorkspaceQuota(workspaceName, fileManager.getFileSize(fileName, workspaceName, user), user);
+                    fileManager.deleteFile(fileName, workspaceName, user, wsManager.getDriveID(workspaceName, user));
+                }
+                else{
+                    deleteBundle.add(fileName);
+                }
             }
         }
-        refreshFilesList();
+        if(access.equals("owned"))
+            refreshFilesList();
+        else{
+            deleting = true;
+            deleteArgs = deleteBundle.toArray(new String[deleteBundle.size()]);
+            remoteDeleteFiles();
+        }
     }
 
     @Override
@@ -230,11 +250,18 @@ public class BrowseWorkspaceActivity extends TermiteActivity
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName(), workspaceName, user);
-        if(AirDeskDriveAPI.getClient() != null) {
-            AirDeskDriveAPI.createEmptyFile(wsManager.getDriveID(workspaceName, user), ((CreateFileDialogFragment) dialog).getFileName());
+        if(access.equals("owned")) {
+            fileManager.createFile(((CreateFileDialogFragment) dialog).getFileName(), workspaceName, user);
+            if (AirDeskDriveAPI.getClient() != null) {
+                AirDeskDriveAPI.createEmptyFile(wsManager.getDriveID(workspaceName, user), ((CreateFileDialogFragment) dialog).getFileName());
+            }
+            refreshFilesList();
         }
-        refreshFilesList();
+        else{
+            fileCreation = true;
+           fileToCreate = ((CreateFileDialogFragment) dialog).getFileName();
+           remoteCreateFile();
+        }
     }
 
     @Override
@@ -266,7 +293,17 @@ public class BrowseWorkspaceActivity extends TermiteActivity
       // do nothing
     }
 
+    private void remoteCreateFile(){
+        //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
+        termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
+    }
+
     private void retrieveForeignFiles(){
+        //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
+        termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
+    }
+
+    private void remoteDeleteFiles(){
         //We can only send the request when we have the group information available (onGroupInfoAvailable callback)
         termiteConnector.getManager().requestGroupInfo(termiteConnector.getChannel(), this);
     }
@@ -279,7 +316,17 @@ public class BrowseWorkspaceActivity extends TermiteActivity
         }
 
         String myVirtualIp = myDevice.getVirtIp();
-        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST, myVirtualIp, ip, new String[]{workspaceName, user});
+        TermiteMessage msg;
+
+        if(fileCreation)
+            msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_CREATE, myVirtualIp, ip, new String[]{fileToCreate, workspaceName, user});
+        else if(deleting)
+            msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_DELETE, myVirtualIp, ip, deleteArgs);
+        else
+            msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST, myVirtualIp, ip, new String[]{workspaceName, user});
+
+        fileCreation = false;
+        deleting = false;
         taskManager.sendMessage(msg);
     }
 

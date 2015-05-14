@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -19,7 +20,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 public class FileViewerActivity extends TermiteActivity implements SimWifiP2pManager.GroupInfoListener {
-    private UserManager userManager;
     private FileManagerLocal fileManagerLocal;
     private String file_name = null;
     private String workspace_name = null;
@@ -41,7 +41,6 @@ public class FileViewerActivity extends TermiteActivity implements SimWifiP2pMan
         ip = intent.getStringExtra(WorkspaceListActivity.IP_KEY);
 
         getSupportActionBar().setTitle(file_name);
-        userManager = new UserManager(getApplicationContext());
         fileManagerLocal = FileManagerLocal.getInstance(this);
 
         if(AirDeskDriveAPI.getClient() != null) {

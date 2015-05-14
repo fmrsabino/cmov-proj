@@ -172,6 +172,10 @@ public class FileManagerLocal {
         String[] fileTuple = {fileName, wsName, wsOwner};
         boolean reserved = true;
 
+        for(String[] s : lockedFiles){
+            Log.d("LOCKS ON HOLD-LOCK FILE", s[0]+s[1]+s[2]);
+        }
+
         for (String[] f : lockedFiles) {
             if ((f[0].equals(fileTuple[0]) && f[1].equals(fileTuple[1]) && f[2].equals(fileTuple[2]))) {
                 reserved = false;
@@ -187,6 +191,7 @@ public class FileManagerLocal {
 
     public void removeLock(String[] file) {
         String[] toRemove = file;
+        Log.d("CONTAGEM", ""+lockedFiles.size());
         for (String[] f : lockedFiles) {
             if (f[0].equals(file[0]) && f[1].equals(file[1]) && f[2].equals(file[2])) {
                 toRemove = f;
@@ -194,6 +199,6 @@ public class FileManagerLocal {
             }
         }
         lockedFiles.remove(toRemove);
-
+        Log.d("CONTAGEM DEPOIS", "" + lockedFiles.size());
     }
 }

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.SimWifiP2pBroadcastReceiver;
@@ -127,22 +128,21 @@ public abstract class TermiteActivity extends ActionBarActivity {
 
     public void changeFileContent(TermiteMessage receivedMessage) {
         String[] contents = (String[]) receivedMessage.contents;
-        if (contents.length == 5) { //file_name, ws_name, owner, lockRequester, newFileContent
+        if (contents.length == 4) { //file_name, ws_name, owner, newFileContent
             String fileName = contents[0];
             String wsName = contents[1];
             String wsOwner = contents[2];
-            String lockRequester = contents[3];
-            String fileContent = contents[4];
+            String fileContent = contents[3];
 
             TermiteMessage msg;
             boolean inList = false;
 
             FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
             List<String[]> lockedFiles = fileManagerLocal.getLockedFiles();
-            String[] file = new String[]{fileName, wsName, wsOwner, lockRequester};
+            String[] file = new String[]{fileName, wsName, wsOwner};
 
             for (String[] f : lockedFiles) {
-                if (f[0].equals(fileName) && f[1].equals(wsName) && f[2].equals(wsOwner) && f[3].equals(lockRequester)) {
+                if (f[0].equals(fileName) && f[1].equals(wsName) && f[2].equals(wsOwner)) {
                     inList = true;
                     break;
                 }
@@ -175,9 +175,12 @@ public abstract class TermiteActivity extends ActionBarActivity {
             if(fileManagerLocal.lockFile(fileName, wsName, wsOwner)) {
                 String file = fileManagerLocal.getFileContents(fileName, wsName, wsOwner); // file content
                 msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_EDIT_LOCK_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, file);
+                Log.d("TA TUDO BEM", "AMIGO");
             }
-            else
+            else{
                 msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_ERROR, receivedMessage.rcvIp, receivedMessage.srcIp, "Please try later");
+                Log.d("TA NADA BEM", "AMIGO");
+            }
 
             taskManager.sendMessage(msg);
         }
@@ -213,4 +216,37 @@ public abstract class TermiteActivity extends ActionBarActivity {
     //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
     public abstract void processMessage(TermiteMessage receivedMessage);
 
+    public void releaseLock(TermiteMessage receivedMessage) {
+        FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
+        fileManagerLocal.removeLock((String[]) receivedMessage.contents);
+    }
+
+    public void createFile(TermiteMessage receivedMessage) {
+        String[] contents = (String[]) receivedMessage.contents;
+        FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
+        if (contents.length == 3) { //file_name, ws_name, owner
+            String fileName = contents[0];
+            String wsName = contents[1];
+            String wsOwner = contents[2];
+
+            fileManagerLocal.createFile(fileName, wsName, wsOwner);
+
+            if (AirDeskDriveAPI.getClient() != null) {
+                AirDeskDriveAPI.createEmptyFile(wsManager.getDriveID(wsName, wsOwner), fileName);
+            }
+        }
+    }
+
+    public void deleteFiles(TermiteMessage receivedMessage) {
+        String[] contents = (String[]) receivedMessage.contents;
+        FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
+
+        String wsName = contents[0];
+        String wsOwner = contents[1];
+        
+        for(int i=2; i< contents.length; i++){
+            wsManager.updateWorkspaceQuota(wsName, fileManagerLocal.getFileSize(contents[i], wsName, wsOwner), wsOwner);
+            fileManagerLocal.deleteFile(contents[i], wsName, wsOwner, wsManager.getDriveID(wsName, wsOwner));
+        }
+    }
 }

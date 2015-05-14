@@ -135,6 +135,15 @@ public class TermiteTaskManager {
                 case WS_FILE_EDIT_LOCK:
                     mActivity.lockFile(message);
                     break;
+                case WS_RELEASE_LOCK:
+                    mActivity.releaseLock(message);
+                    break;
+                case WS_FILE_CREATE:
+                    mActivity.createFile(message);
+                    break;
+                case WS_FILE_DELETE:
+                    mActivity.deleteFiles(message);
+                    break;
                 default:
                     mActivity.processMessage(message);
             }
