@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -238,13 +239,11 @@ public class BrowseWorkspaceActivity extends TermiteActivity
 
     private void refreshFilesList() {
         files.clear();
-        if (!TextUtils.isEmpty(ip)) {
-            if (ip.equals(WorkspacesListAdapter.IP_LOCALHOST)) {
+        if (access.equals("owned"))
                 files.addAll(fileManager.getFilesNames(workspaceName, user));
-            } else {
-                retrieveForeignFiles();
-            }
-        }
+        else
+            retrieveForeignFiles();
+
         gridAdapter.notifyDataSetChanged();
     }
 
@@ -320,8 +319,13 @@ public class BrowseWorkspaceActivity extends TermiteActivity
 
         if(fileCreation)
             msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_CREATE, myVirtualIp, ip, new String[]{fileToCreate, workspaceName, user});
-        else if(deleting)
+        else if(deleting) {
             msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_DELETE, myVirtualIp, ip, deleteArgs);
+            for(int i=2; i< deleteArgs.length; i++){
+                files.remove(deleteArgs[i]);
+            }
+            gridAdapter.notifyDataSetChanged();
+        }
         else
             msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_LIST, myVirtualIp, ip, new String[]{workspaceName, user});
 
@@ -336,6 +340,23 @@ public class BrowseWorkspaceActivity extends TermiteActivity
             List<String> filesNames = (List<String>) receivedMessage.contents;
             files.addAll(filesNames);
             gridAdapter.notifyDataSetChanged();
+        }
+        if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_CREATE_REPLY) {
+            String fileName = (String) receivedMessage.contents;
+            files.add(fileName);
+            gridAdapter.notifyDataSetChanged();
+        }
+        if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_ERROR) {
+            String[] errorMsg = (String[]) receivedMessage.contents;
+            if(errorMsg.length == 2) {
+                if (errorMsg[0].equals("creationError"))
+                    Toast.makeText(this, "Unable to create file: " + errorMsg[1], Toast.LENGTH_LONG).show();
+                else { //deletion error
+                    Toast.makeText(this, "Unable to delete file: " + errorMsg[1], Toast.LENGTH_LONG).show();
+                    files.add(errorMsg[1]);
+                    gridAdapter.notifyDataSetChanged();
+                }
+            }
         }
     }
 }

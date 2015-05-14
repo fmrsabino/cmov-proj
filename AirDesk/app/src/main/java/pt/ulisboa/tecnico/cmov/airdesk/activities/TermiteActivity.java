@@ -213,8 +213,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
             }
             return false;
     }
-    //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
-    public abstract void processMessage(TermiteMessage receivedMessage);
+
 
     public void releaseLock(TermiteMessage receivedMessage) {
         FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
@@ -229,15 +228,21 @@ public abstract class TermiteActivity extends ActionBarActivity {
             String wsName = contents[1];
             String wsOwner = contents[2];
 
-            fileManagerLocal.createFile(fileName, wsName, wsOwner);
+            TermiteMessage msg;
+
+            if(fileManagerLocal.createFile(fileName, wsName, wsOwner))
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_FILE_CREATE_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, fileName);
+            else
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_ERROR, receivedMessage.rcvIp, receivedMessage.srcIp, new String[] {"creationError", fileName});
 
             if (AirDeskDriveAPI.getClient() != null) {
                 AirDeskDriveAPI.createEmptyFile(wsManager.getDriveID(wsName, wsOwner), fileName);
             }
+            taskManager.sendMessage(msg);
         }
     }
 
-    
+
     public void deleteFiles(TermiteMessage receivedMessage) {
         String[] contents = (String[]) receivedMessage.contents;
         FileManagerLocal fileManagerLocal = FileManagerLocal.getInstance(this);
@@ -245,9 +250,21 @@ public abstract class TermiteActivity extends ActionBarActivity {
         String wsName = contents[0];
         String wsOwner = contents[1];
 
-        for(int i=2; i< contents.length; i++){
-            wsManager.updateWorkspaceQuota(wsName, fileManagerLocal.getFileSize(contents[i], wsName, wsOwner), wsOwner);
-            fileManagerLocal.deleteFile(contents[i], wsName, wsOwner, wsManager.getDriveID(wsName, wsOwner));
+        TermiteMessage msg;
+
+        for (int i = 2; i < contents.length; i++) {
+            if (fileManagerLocal.lockFile(contents[i], wsName, wsOwner)) {
+                wsManager.updateWorkspaceQuota(wsName, fileManagerLocal.getFileSize(contents[i], wsName, wsOwner), wsOwner);
+                fileManagerLocal.deleteFile(contents[i], wsName, wsOwner, wsManager.getDriveID(wsName, wsOwner));
+                fileManagerLocal.removeLock(new String[]{contents[i], wsName, wsOwner});
+            }
+            else {
+                msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_ERROR, receivedMessage.rcvIp, receivedMessage.srcIp, new String[] {"deletionError", contents[i]});
+                taskManager.sendMessage(msg);
+            }
         }
     }
+
+    //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
+    public abstract void processMessage(TermiteMessage receivedMessage);
 }

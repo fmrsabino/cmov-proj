@@ -178,6 +178,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                     }
                 }
             }
+            populateWorkspaceList();
         }
         else if(TextUtils.equals(repo, "foreign")){
             for (int i = 0; i < listView.getAdapter().getCount(); i++) {
@@ -190,9 +191,8 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                     unregisterForeignWorkspace();
                 }
             }
+            populateWorkspaceList();
         }
-
-        populateWorkspaceList();
     }
 
 
@@ -213,12 +213,11 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
             for (Workspace w : wsList) {
                 directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner(), WorkspacesListAdapter.IP_LOCALHOST));
             }
-
             listAdapter.notifyDataSetChanged();
+
         } else if(TextUtils.equals(repo, "foreign")) {
             retrieveForeignWorkspaces();
         }
-        listAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -327,6 +326,5 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                 directories.add(new WorkspacesListAdapter.Content(ws.getName(), ""+ws.getQuota(), ws.getOwner(), receivedMessage.srcIp));
             }
             listAdapter.notifyDataSetChanged();
-        //populateWorkspaceList(); //can possibly correct empty ws list
     }
 }
