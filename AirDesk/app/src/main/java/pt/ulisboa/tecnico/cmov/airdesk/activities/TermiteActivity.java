@@ -49,6 +49,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        taskManager.setActivity(this);
         // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);

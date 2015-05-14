@@ -2,12 +2,10 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
@@ -21,13 +19,12 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
-import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public class FileEditorActivity extends TermiteActivity implements SimWifiP2pManager.GroupInfoListener{
 
     private FileManagerLocal fileManagerLocal;
-    EditText fileView;
+    private EditText fileView;
     private String file_name = null;
     private String file_contents = null;
     private String workspace_name = null;

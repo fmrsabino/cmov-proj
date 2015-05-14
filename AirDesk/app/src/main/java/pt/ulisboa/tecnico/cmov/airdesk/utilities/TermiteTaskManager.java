@@ -34,6 +34,10 @@ public class TermiteTaskManager {
         return termiteTaskManager;
     }
 
+    public void setActivity(TermiteActivity activity) {
+        mActivity = activity;
+    }
+
     public class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
         @Override
         protected Void doInBackground(Void... params) {
