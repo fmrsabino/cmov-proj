@@ -147,7 +147,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
     @Override
     protected void onPause() {
         if (AirDeskDriveAPI.getClient() != null) {
-            AirDeskDriveAPI.getClient().disconnect();
+            //AirDeskDriveAPI.getClient().disconnect();
         }
         super.onPause();
     }

@@ -5,6 +5,14 @@
 
     <item android:id="@+id/logoff"
           android:title="Log Off"
-          android:orderInCategory="100"
+        android:icon="@drawable/logout"
+          android:orderInCategory="2"
           app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/google_drive"
+        android:title="Google Drive"
+        android:icon="@drawable/google_drive"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom" />
 </menu>

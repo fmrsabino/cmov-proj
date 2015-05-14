@@ -71,7 +71,7 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
     @Override
     protected void onPause() {
         if (AirDeskDriveAPI.getClient() != null) {
-            AirDeskDriveAPI.getClient().disconnect();
+            //AirDeskDriveAPI.getClient().disconnect();
         }
         if(access.equals("owned")) {
             Log.d("FILE LOCK", file[0]+file[1]+file[2]);
@@ -133,6 +133,7 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
                         wsManager.updateWorkspaceQuota(workspace_name, -updatedBytes, user);
                         fileManagerLocal.saveFileContents(file_name, workspace_name, user, fileView.getText().toString());
                         if (AirDeskDriveAPI.getClient() != null) {
+                            AirDeskDriveAPI.setContext(this);
                             AirDeskDriveAPI.updateFile(wsManager.getDriveID(workspace_name, user), file_name, fileView.getText().toString());
                         }
 

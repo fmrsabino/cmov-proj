@@ -92,7 +92,7 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         if (AirDeskDriveAPI.getClient() != null) {
-            AirDeskDriveAPI.getClient().disconnect();
+            //AirDeskDriveAPI.getClient().disconnect();
         }
         super.onPause();
     }

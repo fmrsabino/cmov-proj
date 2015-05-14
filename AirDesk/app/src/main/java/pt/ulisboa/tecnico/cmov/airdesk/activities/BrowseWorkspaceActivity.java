@@ -147,7 +147,7 @@ public class BrowseWorkspaceActivity extends TermiteActivity
     @Override
     protected void onPause() {
         if (AirDeskDriveAPI.getClient() != null) {
-            AirDeskDriveAPI.getClient().disconnect();
+            //AirDeskDriveAPI.getClient().disconnect();
         }
         super.onPause();
     }

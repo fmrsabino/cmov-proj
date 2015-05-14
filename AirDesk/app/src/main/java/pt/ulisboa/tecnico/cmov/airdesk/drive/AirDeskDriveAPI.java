@@ -24,9 +24,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.database.AirDeskDbHelper;
 import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
+import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public abstract class AirDeskDriveAPI {
 
@@ -256,5 +261,27 @@ public abstract class AirDeskDriveAPI {
         folder.queryChildren(mGoogleApiClient, query)
                 .setResultCallback(metadataCallback);
 
+    }
+
+    public static void localScan(User user){
+        Log.d("drive", " --- PERFORMING LOCAL SCAN --- ");
+        WorkspaceManager wsManager = WorkspaceManager.getInstance(driveContext);
+        List<Workspace> wsList = wsManager.retrieveOwnedWorkspaces();
+        FileManagerLocal fileManager = FileManagerLocal.getInstance(driveContext);
+        List<String> files = new ArrayList<>();;
+        for(Workspace ws : wsList){
+            //workspace does not exist -> create it first
+            if(wsManager.getDriveID(ws.getName(), user.getEmail()) == null) {
+                AirDeskDriveAPI.createWorkspaceFolder(ws.getName(), user.getEmail(), user.getDriveID());
+            }
+            //workspace now has to exist -> update its files
+            files.clear();
+            files.addAll(fileManager.getFilesNames(ws.getName(), user.getEmail()));
+            //foreach file -> update contents
+            for(String file : files){
+                String file_contents = fileManager.getFileContents(file, ws.getName(), user.getEmail());
+                AirDeskDriveAPI.updateFile(wsManager.getDriveID(ws.getName(), user.getEmail()), file, file_contents);
+            }
+        }
     }
 }
