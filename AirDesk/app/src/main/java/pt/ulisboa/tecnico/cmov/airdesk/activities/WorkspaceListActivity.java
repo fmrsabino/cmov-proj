@@ -179,19 +179,19 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                 }
             }
             populateWorkspaceList();
-        }
-        else if(TextUtils.equals(repo, "foreign")){
+        } else if(TextUtils.equals(repo, "foreign")) {
             for (int i = 0; i < listView.getAdapter().getCount(); i++) {
                 if (checked.get(i)) {
                     String workspaceName = listAdapter.getItem(i).getWs_name();
                     String workspaceOwner = listAdapter.getItem(i).getOwner();
+                    directories.remove(i);
                     unsubscribing = true;
                     wsNameUnsub = workspaceName;
                     wsOwnerUnsub = workspaceOwner;
                     unregisterForeignWorkspace();
                 }
             }
-            populateWorkspaceList();
+            listAdapter.notifyDataSetChanged();
         }
     }
 
@@ -214,7 +214,6 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                 directories.add(new WorkspacesListAdapter.Content(w.getName(), Integer.toString(w.getQuota()), w.getOwner(), WorkspacesListAdapter.IP_LOCALHOST));
             }
             listAdapter.notifyDataSetChanged();
-
         } else if(TextUtils.equals(repo, "foreign")) {
             retrieveForeignWorkspaces();
         }
