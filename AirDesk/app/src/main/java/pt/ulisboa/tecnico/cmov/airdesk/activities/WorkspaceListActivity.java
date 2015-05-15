@@ -331,4 +331,9 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                 break;
         }
     }
+
+    @Override
+    public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
+
+    }
 }

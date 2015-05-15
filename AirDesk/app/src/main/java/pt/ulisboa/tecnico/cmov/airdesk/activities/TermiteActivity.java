@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.SimWifiP2pBroadcastReceiver;
@@ -270,4 +271,6 @@ public abstract class TermiteActivity extends ActionBarActivity {
 
     //Called when the TaskManager doesn't know how to handle the TermiteMessage (ie.: no generic)
     public abstract void processMessage(TermiteMessage receivedMessage);
+
+    public abstract void handleMembershipChange(SimWifiP2pInfo newGroupInfo);
 }

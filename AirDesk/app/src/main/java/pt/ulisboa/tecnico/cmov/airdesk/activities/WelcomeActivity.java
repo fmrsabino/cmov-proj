@@ -16,6 +16,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.GoogleDriveIntegrationDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
@@ -214,4 +215,8 @@ public class WelcomeActivity extends TermiteActivity implements
         Toast.makeText(this, "Contents: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
+
+    }
 }

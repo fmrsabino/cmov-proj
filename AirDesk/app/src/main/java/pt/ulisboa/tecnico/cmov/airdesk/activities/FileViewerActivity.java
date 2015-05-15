@@ -149,4 +149,9 @@ public class FileViewerActivity extends TermiteActivity implements SimWifiP2pMan
             Toast.makeText(this, "ERROR: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
+
+    }
 }

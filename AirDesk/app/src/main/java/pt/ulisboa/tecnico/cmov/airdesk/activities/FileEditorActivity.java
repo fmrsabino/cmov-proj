@@ -206,4 +206,9 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
             finish();
         }
     }
+
+    @Override
+    public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
+
+    }
 }

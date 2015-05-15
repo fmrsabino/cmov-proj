@@ -359,4 +359,9 @@ public class BrowseWorkspaceActivity extends TermiteActivity
             }
         }
     }
+
+    @Override
+    public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
+
+    }
 }

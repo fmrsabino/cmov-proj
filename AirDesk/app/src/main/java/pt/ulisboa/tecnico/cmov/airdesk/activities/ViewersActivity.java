@@ -187,4 +187,9 @@ public class ViewersActivity extends TermiteActivity implements SimWifiP2pManage
             listView.setAdapter(adapter);
         }
     }
+
+    @Override
+    public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
+
+    }
 }
