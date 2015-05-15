@@ -89,14 +89,6 @@ public class CreateWorkspaceActivity extends ActionBarActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        if (AirDeskDriveAPI.getClient() != null) {
-            //AirDeskDriveAPI.getClient().disconnect();
-        }
-        super.onPause();
-    }
-
     public void createWorkspace(View view) {
         //get workspace parameters
         int quotaValue = 0;

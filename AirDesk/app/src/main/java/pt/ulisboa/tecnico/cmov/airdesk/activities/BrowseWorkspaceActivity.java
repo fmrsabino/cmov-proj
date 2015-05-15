@@ -139,14 +139,6 @@ public class BrowseWorkspaceActivity extends TermiteActivity
         }
     }
 
-    @Override
-    protected void onPause() {
-        if (AirDeskDriveAPI.getClient() != null) {
-            //AirDeskDriveAPI.getClient().disconnect();
-        }
-        super.onPause();
-    }
-
     private void deleteSelectedItems() {
         List<String> deleteBundle = new ArrayList<>();
         deleteBundle.add(workspaceName);

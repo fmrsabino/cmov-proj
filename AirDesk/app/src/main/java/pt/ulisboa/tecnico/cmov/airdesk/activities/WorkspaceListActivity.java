@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -143,15 +142,6 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
             AirDeskDriveAPI.getClient().connect();
         }
     }
-
-    @Override
-    protected void onPause() {
-        if (AirDeskDriveAPI.getClient() != null) {
-            //AirDeskDriveAPI.getClient().disconnect();
-        }
-        super.onPause();
-    }
-
 
     private void deleteSelectedItems() {
         SparseBooleanArray checked = listView.getCheckedItemPositions();

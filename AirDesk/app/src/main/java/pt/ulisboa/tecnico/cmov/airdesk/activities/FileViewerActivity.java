@@ -17,7 +17,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
-import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 
 public class FileViewerActivity extends TermiteActivity implements SimWifiP2pManager.GroupInfoListener {
     private FileManagerLocal fileManagerLocal;

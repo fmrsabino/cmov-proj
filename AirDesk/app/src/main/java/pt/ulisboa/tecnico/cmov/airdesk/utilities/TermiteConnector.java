@@ -19,8 +19,6 @@ public class TermiteConnector {
     private SimWifiP2pManager mManager;
     private SimWifiP2pManager.Channel mChannel;
     private Messenger mService;
-    private ServiceConnection mConnection;
-    private boolean mBound;
 
     public static TermiteConnector getInstance(Context appContext) {
         if (termiteConnector == null) {
@@ -32,13 +30,12 @@ public class TermiteConnector {
     private TermiteConnector(Context appContext) {
         this.applicationContext = appContext;
 
-        mConnection = new ServiceConnection() {
+        ServiceConnection mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 mService = new Messenger(service);
                 mManager = new SimWifiP2pManager(mService);
                 mChannel = mManager.initialize(applicationContext, applicationContext.getMainLooper(), null);
-                mBound = true;
             }
 
             @Override
@@ -46,7 +43,6 @@ public class TermiteConnector {
                 mService = null;
                 mManager = null;
                 mChannel = null;
-                mBound = false;
             }
         };
 
@@ -54,7 +50,6 @@ public class TermiteConnector {
         SimWifiP2pSocketManager.Init(applicationContext);
         Intent intent = new Intent(applicationContext, SimWifiP2pService.class);
         applicationContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        mBound = true;
     }
 
     public SimWifiP2pManager getManager() {
@@ -63,17 +58,5 @@ public class TermiteConnector {
 
     public SimWifiP2pManager.Channel getChannel() {
         return mChannel;
-    }
-
-    public Messenger getService() {
-        return mService;
-    }
-
-    public ServiceConnection getConnection() {
-        return mConnection;
-    }
-
-    public boolean isBound() {
-        return mBound;
     }
 }

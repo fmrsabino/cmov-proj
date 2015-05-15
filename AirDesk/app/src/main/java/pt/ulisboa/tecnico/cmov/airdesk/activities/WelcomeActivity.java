@@ -113,14 +113,6 @@ public class WelcomeActivity extends TermiteActivity implements
     }
 
     @Override
-    protected void onPause() {
-        if (AirDeskDriveAPI.getClient() != null) {
-            //AirDeskDriveAPI.getClient().disconnect();
-        }
-        super.onPause();
-    }
-
-    @Override
     public void onConnected(Bundle connectionHint) {
         Log.d("drive", "API client connected");
         if(loggedUser.getDriveID() == null) {
