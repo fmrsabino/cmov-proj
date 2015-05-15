@@ -66,7 +66,6 @@ public class WelcomeActivity extends TermiteActivity implements
             GoogleDriveIntegrationDialogFragment dialog = new GoogleDriveIntegrationDialogFragment();
             dialog.show(getFragmentManager(), "GoogleDriveIntegration");
         }
-        Log.d("drive", "onCreate");
 
     }
 
@@ -107,6 +106,7 @@ public class WelcomeActivity extends TermiteActivity implements
     protected void onResume() {
         Log.d("drive", "onResume");
         super.onResume();
+        loggedUser = userManager.getLoggedDomainUser();
         if(AirDeskDriveAPI.getClient() != null) {
             AirDeskDriveAPI.getClient().connect();
         }
@@ -124,22 +124,23 @@ public class WelcomeActivity extends TermiteActivity implements
     public void onConnected(Bundle connectionHint) {
         Log.d("drive", "API client connected");
         if(loggedUser.getDriveID() == null) {
+            Log.d("drive", "e nulo");
             loggedUser = userManager.getLoggedDomainUser();
             if(loggedUser.getDriveID() == null) {
                 AirDeskDriveAPI.setContext(this);
-                AirDeskDriveAPI.createUserFolder(loggedUser.getEmail());
+                AirDeskDriveAPI.createUserFolder(userManager);
                 loggedUser = userManager.getLoggedDomainUser();
             }
+        } else {
+            Log.d("drive", "nao e nulo");
+            new Thread(new Runnable() {
+                public void run() {
+                    AirDeskDriveAPI.setContext(getApplicationContext());
+                    AirDeskDriveAPI.localScan(loggedUser);
+                }
+            }).start();
         }
-        new Thread(new Runnable() {
-            public void run() {
-                AirDeskDriveAPI.setContext(getApplicationContext());
-                AirDeskDriveAPI.localScan(loggedUser);
-            }
-        }).start();
     }
-
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("drive", "onConnectionFailed");

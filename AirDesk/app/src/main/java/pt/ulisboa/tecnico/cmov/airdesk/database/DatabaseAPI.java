@@ -604,8 +604,6 @@ public class DatabaseAPI {
                 null
         );
 
-        Log.d("DB", "OWNER IS: " + user);
-
         if (c.moveToFirst()) {
             workspaceQuota = c.getLong(0);
         }

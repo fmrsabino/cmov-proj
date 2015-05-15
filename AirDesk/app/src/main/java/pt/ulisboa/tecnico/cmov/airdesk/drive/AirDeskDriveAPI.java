@@ -31,6 +31,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.database.DatabaseAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.User;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
+import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.UserManager;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
 public abstract class AirDeskDriveAPI {
@@ -179,7 +180,7 @@ public abstract class AirDeskDriveAPI {
     }
 
     //add folder to root (user folder)
-    public static void createUserFolder(String user) {
+    public static void createUserFolder(final UserManager manager) {
 
         final ResultCallback<DriveFolder.DriveFolderResult> createUserFolderCallback = new ResultCallback<DriveFolder.DriveFolderResult>() {
             @Override
@@ -193,11 +194,18 @@ public abstract class AirDeskDriveAPI {
                 if(userDriveID != null){
                     DatabaseAPI.setUserDriveID(AirDeskDbHelper.getInstance(driveContext),userDriveID);
                 }
+                final User loggedUser = manager.getLoggedDomainUser();
+                new Thread(new Runnable() {
+                    public void run() {
+                        AirDeskDriveAPI.localScan(loggedUser);
+                    }
+                }).start();
             }
         };
 
+        User preUser = manager.getLoggedDomainUser();
         MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                .setTitle(user).build();
+                .setTitle(preUser.getEmail()).build();
         Drive.DriveApi.getRootFolder(mGoogleApiClient).createFolder(
                 mGoogleApiClient, changeSet).setResultCallback(createUserFolderCallback);
 
