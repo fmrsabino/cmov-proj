@@ -53,6 +53,30 @@ public class WorkspacesListAdapter extends BaseAdapter
         public String getIp() {
             return ip;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Content other = (Content) obj;
+            if ((this.ws_name == null) || (this.quota == null) || (this.owner == null) || (this.ip == null)) {
+                return false;
+            }
+            if (!this.ws_name.equals(other.ws_name)) {
+                return false;
+            } else if (!this.quota.equals(other.quota)) {
+                return false;
+            } else if (!this.owner.equals(other.owner)) {
+                return false;
+            } else if (!this.ip.equals(other.ip)) {
+                return false;
+            }
+            return true;
+        }
     }
 
     private Activity activity;

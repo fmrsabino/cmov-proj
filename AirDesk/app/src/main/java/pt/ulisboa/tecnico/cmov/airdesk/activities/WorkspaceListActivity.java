@@ -184,7 +184,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
                 if (checked.get(i)) {
                     String workspaceName = listAdapter.getItem(i).getWs_name();
                     String workspaceOwner = listAdapter.getItem(i).getOwner();
-                    directories.remove(i);
+                    //directories.remove(i);
                     unsubscribing = true;
                     wsNameUnsub = workspaceName;
                     wsOwnerUnsub = workspaceOwner;
