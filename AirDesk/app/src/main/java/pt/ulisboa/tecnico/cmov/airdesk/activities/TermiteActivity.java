@@ -92,6 +92,10 @@ public abstract class TermiteActivity extends ActionBarActivity {
     public void unsubscribeViewer(TermiteMessage receivedMessage) {
         String[] contents = (String[]) receivedMessage.contents;
         wsManager.deleteWorkspaceViewer(contents[0], contents[1], contents[2]);
+        Workspace w = wsManager.retrieveWorkspace(contents[1], contents[2]);
+        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_UNSUBSCRIBE_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, new String[]{w.getName(), ""+w.getQuota(), w.getOwner()});
+        taskManager.sendMessage(msg);
+
     }
 
     public void sendWorkspaceViewers(TermiteMessage receivedMessage) {

@@ -434,7 +434,7 @@ public class DatabaseAPI {
     public static Workspace getWorkspace(AirDeskDbHelper dbHelper, String ws_name, String user){
         db = dbHelper.getReadableDatabase();
         List<String> viewers = new ArrayList<>();
-        Workspace ws;
+        Workspace ws = new Workspace("0", 0, 0, "0", null, "0");
 
         String[] ws_projection = {
                 AirDeskContract.Workspaces.COLUMN_NAME_NAME,
@@ -463,7 +463,6 @@ public class DatabaseAPI {
                 AirDeskContract.Viewers.COLUMN_NAME_EMAIL + " ASC";
 
 
-        c.moveToFirst();
 
         Cursor c2 = db.query(
                 AirDeskContract.Viewers.TABLE_NAME,  // The table to query
@@ -478,7 +477,8 @@ public class DatabaseAPI {
         while (c2.moveToNext()) {
             viewers.add(c2.getString(0));
         }
-        
+
+        if(c.moveToFirst())
         ws = new Workspace(c.getString(0), c.getInt(2), c.getInt(3), c.getString(4), viewers, c.getString(1));
 
         c.close();

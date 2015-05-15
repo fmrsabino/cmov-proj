@@ -330,6 +330,11 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
             case WS_SUBSCRIBE_REPLY:
                 populateWorkspaceList();
                 break;
+            case WS_UNSUBSCRIBE_REPLY:
+                String[] ws = (String[]) receivedMessage.contents;
+                directories.remove(new WorkspacesListAdapter.Content(ws[0], ws[1], ws[2] , receivedMessage.srcIp));
+                listAdapter.notifyDataSetChanged();
+                break;
         }
     }
 
