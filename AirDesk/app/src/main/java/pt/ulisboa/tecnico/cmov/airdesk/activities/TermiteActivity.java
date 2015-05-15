@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
-import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.domain.Workspace;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.SimWifiP2pBroadcastReceiver;
@@ -83,6 +82,9 @@ public abstract class TermiteActivity extends ActionBarActivity {
         String subscribingUser = contents[0];
         List<String> items = new ArrayList<>(Arrays.asList(contents[1].split("\\s*,\\s*")));
         wsManager.subscribeWorkspaces(subscribingUser, items);
+
+        TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_SUBSCRIBE_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, null);
+        taskManager.sendMessage(msg);
     }
 
     public void unsubscribeViewer(TermiteMessage receivedMessage) {
@@ -190,7 +192,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
 
     private boolean isQuotaExceeded(String fileContent, String fileName, String wsName, String wsOwner){
         byte[] fileBytes;
-        long finalFileSize =0;
+        long finalFileSize;
         try {
             fileBytes = fileContent.getBytes("UTF-8");
             finalFileSize = fileBytes.length;
