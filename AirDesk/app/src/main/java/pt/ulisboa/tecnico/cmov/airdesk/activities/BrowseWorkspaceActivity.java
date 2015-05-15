@@ -3,8 +3,6 @@ package pt.ulisboa.tecnico.cmov.airdesk.activities;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -18,10 +16,8 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
@@ -32,7 +28,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.dialogs.CreateFileDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.dialogs.ManageWorkspaceDialogFragment;
 import pt.ulisboa.tecnico.cmov.airdesk.drive.AirDeskDriveAPI;
 import pt.ulisboa.tecnico.cmov.airdesk.utilities.TermiteMessage;
-import pt.ulisboa.tecnico.cmov.airdesk.utilities.WorkspacesListAdapter;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.FileManagerLocal;
 import pt.ulisboa.tecnico.cmov.airdesk.workspacemanager.WorkspaceManager;
 
@@ -364,6 +359,13 @@ public class BrowseWorkspaceActivity extends TermiteActivity
 
     @Override
     public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
-
+        if (access.equals("foreign")) {
+            Set<String> devices = newGroupInfo.getDevicesInNetwork();
+            if(!devices.contains(ip)) {
+                Intent intent = new Intent(this, WorkspaceListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        }
     }
 }

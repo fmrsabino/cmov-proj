@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Set;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
@@ -211,6 +212,13 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
 
     @Override
     public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
-
+        if(access.equals("foreign")) {
+            Set<String> devices = newGroupInfo.getDevicesInNetwork();
+            if(!devices.contains(ip)) {
+                Intent intent = new Intent(this, WorkspaceListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        }
     }
 }

@@ -217,6 +217,7 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
         } else if(TextUtils.equals(repo, "foreign")) {
             retrieveForeignWorkspaces();
         }
+        listAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -334,6 +335,6 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
 
     @Override
     public void handleMembershipChange(SimWifiP2pInfo newGroupInfo) {
-
+        populateWorkspaceList();
     }
 }
