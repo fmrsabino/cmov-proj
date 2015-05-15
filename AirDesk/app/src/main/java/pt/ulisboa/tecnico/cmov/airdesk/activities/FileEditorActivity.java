@@ -71,9 +71,6 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
 
     @Override
     protected void onPause() {
-        if (AirDeskDriveAPI.getClient() != null) {
-            //AirDeskDriveAPI.getClient().disconnect();
-        }
         if(access.equals("owned")) {
             Log.d("FILE LOCK", file[0]+file[1]+file[2]);
             if (file != null)
