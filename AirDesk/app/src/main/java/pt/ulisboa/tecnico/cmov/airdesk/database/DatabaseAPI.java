@@ -230,7 +230,7 @@ public class DatabaseAPI {
         //start transaction
         db.beginTransaction();
             //first insert
-            long row = db.insert(AirDeskContract.Workspaces.TABLE_NAME, null,values);
+            long row = db.insert(AirDeskContract.Workspaces.TABLE_NAME, null, values);
             //second insert
             boolean status = addUsersToWorkspace(dbHelper, viewers, name, owner);
             //check status and decide on commit or rollback
@@ -678,10 +678,34 @@ public class DatabaseAPI {
                 }
             }
             if(contains)
-                addUserToWorkspace(dbHelper, viewer, c.getString(0), c.getString(2));
+                if(!userAlreadySubscribed(dbHelper, viewer, c.getString(0), c.getString(2)))
+                    addUserToWorkspace(dbHelper, viewer, c.getString(0), c.getString(2));
         }
 
         c.close();
+    }
+
+    private static boolean userAlreadySubscribed(AirDeskDbHelper dbHelper, String viewer, String wsName, String owner) {
+        db = dbHelper.getReadableDatabase();
+
+        String[] selectionArgs = { viewer, wsName, owner };
+
+        String[] ws_projection = {
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL,
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE,
+                AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER};
+
+        Cursor c = db.query(
+                AirDeskContract.Viewers.TABLE_NAME,
+                ws_projection,
+                AirDeskContract.Viewers.COLUMN_NAME_EMAIL + " LIKE ? AND " + AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE + " LIKE ? AND " + AirDeskContract.Viewers.COLUMN_NAME_WORKSPACE_OWNER + " LIKE ?",
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+         return c.moveToFirst();
     }
 
     public static void clearSubscribedWorkspaces(AirDeskDbHelper dbHelper) {

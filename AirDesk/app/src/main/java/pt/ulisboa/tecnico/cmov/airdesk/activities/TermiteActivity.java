@@ -82,6 +82,7 @@ public abstract class TermiteActivity extends ActionBarActivity {
         String[] contents = (String[]) receivedMessage.contents;
         String subscribingUser = contents[0];
         List<String> items = new ArrayList<>(Arrays.asList(contents[1].split("\\s*,\\s*")));
+
         wsManager.subscribeWorkspaces(subscribingUser, items);
 
         TermiteMessage msg = new TermiteMessage(TermiteMessage.MSG_TYPE.WS_SUBSCRIBE_REPLY, receivedMessage.rcvIp, receivedMessage.srcIp, null);

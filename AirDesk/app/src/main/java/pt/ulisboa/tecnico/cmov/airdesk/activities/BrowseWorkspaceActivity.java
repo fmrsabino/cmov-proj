@@ -336,27 +336,29 @@ public class BrowseWorkspaceActivity extends TermiteActivity
 
     @Override
     public void processMessage(TermiteMessage receivedMessage) {
-        if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_LIST_REPLY) {
-            List<String> filesNames = (List<String>) receivedMessage.contents;
-            files.addAll(filesNames);
-            gridAdapter.notifyDataSetChanged();
-        }
-        if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_CREATE_REPLY) {
-            String fileName = (String) receivedMessage.contents;
-            files.add(fileName);
-            gridAdapter.notifyDataSetChanged();
-        }
-        if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_ERROR) {
-            String[] errorMsg = (String[]) receivedMessage.contents;
-            if(errorMsg.length == 2) {
-                if (errorMsg[0].equals("creationError"))
-                    Toast.makeText(this, "Unable to create file: " + errorMsg[1], Toast.LENGTH_LONG).show();
-                else { //deletion error
-                    Toast.makeText(this, "Unable to delete file: " + errorMsg[1], Toast.LENGTH_LONG).show();
-                    files.add(errorMsg[1]);
-                    gridAdapter.notifyDataSetChanged();
+        switch (receivedMessage.type) {
+            case WS_FILE_LIST_REPLY:
+                List<String> filesNames = (List<String>) receivedMessage.contents;
+                files.addAll(filesNames);
+                gridAdapter.notifyDataSetChanged();
+                break;
+            case WS_FILE_CREATE_REPLY:
+                String fileName = (String) receivedMessage.contents;
+                files.add(fileName);
+                gridAdapter.notifyDataSetChanged();
+                break;
+            case WS_ERROR:
+                String[] errorMsg = (String[]) receivedMessage.contents;
+                if(errorMsg.length == 2) {
+                    if (errorMsg[0].equals("creationError"))
+                        Toast.makeText(this, "Unable to create file: " + errorMsg[1], Toast.LENGTH_LONG).show();
+                    else { //deletion error
+                        Toast.makeText(this, "Unable to delete file: " + errorMsg[1], Toast.LENGTH_LONG).show();
+                        files.add(errorMsg[1]);
+                        gridAdapter.notifyDataSetChanged();
+                    }
                 }
-            }
+                break;
         }
     }
 

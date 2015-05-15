@@ -308,12 +308,12 @@ public class WorkspaceListActivity extends  TermiteActivity implements SimWifiP2
 
             taskManager.sendMessage(msg);
 
-            wsNameUnsub = null;
-            wsOwnerUnsub = null;
-            subscriptionTags = null;
-            unsubscribing = false;
-            subscribing = false;
         }
+        wsNameUnsub = null;
+        wsOwnerUnsub = null;
+        subscriptionTags = null;
+        unsubscribing = false;
+        subscribing = false;
     }
 
     @Override

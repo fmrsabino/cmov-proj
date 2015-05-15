@@ -128,25 +128,26 @@ public class FileViewerActivity extends TermiteActivity implements SimWifiP2pMan
 
     @Override
     public void processMessage(TermiteMessage receivedMessage) {
-        if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_CONTENT_REPLY) {
-            String fileContents = (String) receivedMessage.contents;
-            TextView fileView = (TextView) findViewById(R.id.fileViewContents);
-            fileView.setText(fileContents);
-        }
-        else if (receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_EDIT_LOCK_REPLY) {
-            String contents = (String) receivedMessage.contents;
-
-            Intent intent = new Intent(FileViewerActivity.this, FileEditorActivity.class);
-            intent.putExtra("file_name", file_name);
-            intent.putExtra("workspace_name", workspace_name);
-            intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
-            intent.putExtra(WorkspaceListActivity.ACCESS_KEY, access);
-            intent.putExtra(WorkspaceListActivity.IP_KEY, ip);
-            intent.putExtra("file_content", contents);
-            startActivity(intent);
-        }
-        else if(receivedMessage.type == TermiteMessage.MSG_TYPE.WS_ERROR){
-            Toast.makeText(this, "ERROR: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
+        switch (receivedMessage.type) {
+            case WS_FILE_CONTENT_REPLY:
+                String fileContents = (String) receivedMessage.contents;
+                TextView fileView = (TextView) findViewById(R.id.fileViewContents);
+                fileView.setText(fileContents);
+                break;
+            case WS_FILE_EDIT_LOCK_REPLY:
+                String contents = (String) receivedMessage.contents;
+                Intent intent = new Intent(FileViewerActivity.this, FileEditorActivity.class);
+                intent.putExtra("file_name", file_name);
+                intent.putExtra("workspace_name", workspace_name);
+                intent.putExtra(WorkspaceListActivity.OWNER_KEY, user);
+                intent.putExtra(WorkspaceListActivity.ACCESS_KEY, access);
+                intent.putExtra(WorkspaceListActivity.IP_KEY, ip);
+                intent.putExtra("file_content", contents);
+                startActivity(intent);
+                break;
+            case WS_ERROR:
+                Toast.makeText(this, "ERROR: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
+                break;
         }
     }
 

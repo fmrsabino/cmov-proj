@@ -197,13 +197,15 @@ public class FileEditorActivity extends TermiteActivity implements SimWifiP2pMan
 
     @Override
     public void processMessage(TermiteMessage receivedMessage) {
-        if(receivedMessage.type == TermiteMessage.MSG_TYPE.WS_FILE_EDIT_REPLY){
-            Toast.makeText(this, "Save Successful: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
-            finish();
-        }
-        if(receivedMessage.type == TermiteMessage.MSG_TYPE.WS_ERROR){
-            Toast.makeText(this, "ERROR: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
-            finish();
+        switch (receivedMessage.type) {
+            case WS_FILE_EDIT_REPLY:
+                Toast.makeText(this, "Save Successful: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
+                finish();
+                break;
+            case WS_ERROR:
+                Toast.makeText(this, "ERROR: " + receivedMessage.contents, Toast.LENGTH_LONG).show();
+                finish();
+                break;
         }
     }
 
